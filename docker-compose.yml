@@ -1,0 +1,12 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '8088:3000'
+    environment:
+      #ROOT_URL: ${APP_ROOT_URL:-http://localhost}
+      ROOT_URL: ${APP_ROOT_URL:-http://localhost}
+      MONGO_URL: mongodb://egresosweb:3gres0%24@192.168.15.97:22041/egresosweb?authSource=admin
+      PORT: 3000

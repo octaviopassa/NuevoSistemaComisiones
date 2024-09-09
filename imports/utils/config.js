@@ -1,0 +1,33 @@
+module.exports = {
+  windows_api: "http://172.16.101.206/querys/api/querys/ejecutar",
+  body_fabrica: {
+    usuario: "sa",
+    contrasena: "SU2orange!",
+    servidor: "192.168.68.112,1433\\SQLEXPRESS",
+    baseDatos: "FABRICA_PASSA",
+    parametros: [],
+    esValido: true,
+    mensaje: "",
+    resultado: "",
+  },
+  body_empresas: {
+    usuario: "sa",
+    contrasena: "SU2orange!",
+    servidor: "192.168.68.112,1433\\SQLEXPRESS",
+    baseDatos: "EMPRESAS",
+    parametros: [],
+    esValido: true,
+    mensaje: "",
+    resultado: "",
+  },
+  body_bdseleccionada: {
+    usuario: "sa",
+    contrasena: "SU2orange!",
+    servidor: "192.168.68.112,1433\\SQLEXPRESS",
+    baseDatos: "",
+    parametros: [],
+    esValido: true,
+    mensaje: "",
+    resultado: "",
+  },
+};
