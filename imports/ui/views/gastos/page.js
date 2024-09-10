@@ -26,7 +26,6 @@ import {
   faInfoCircle,
   faFileAlt,
   faFilePdf,
-  faDownload,
   faTrashAlt,
   faUpload,
 } from "@fortawesome/free-solid-svg-icons";
