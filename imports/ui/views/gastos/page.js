@@ -1512,6 +1512,7 @@ const Gastos = () => {
           </div>
         </div>
       </div>
+      
       {/* Modal de Seleccion de Plaza */}
       <Modal isOpen={modalVisible} toggle={toggleModal}>
         <ModalHeader toggle={toggleModal}>Seleccione la Plaza</ModalHeader>

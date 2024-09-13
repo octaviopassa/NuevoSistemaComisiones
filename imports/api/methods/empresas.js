@@ -8,16 +8,13 @@ Meteor.methods({
     const response = await axios.get(conexiones.windows_api, {
       data: conexiones.body_empresas,
     });
-    const respuesta = JSON.parse(response.data.data.resultado);
-    console.log(respuesta);
 
-    return respuesta;
+    return JSON.parse(response.data.data.resultado);
   },
-  "empresas.getById": async (empresaId) => {
-    return empresa;
-  },
+  // "empresas.getById": async (empresaId) => {
+  //   return empresa;
+  // },
   "plazas.getAll": async (datos) => {
-    console.log(datos);
     conexiones.body_bdseleccionada.tipo = "procedimiento";
     conexiones.body_bdseleccionada.query =
       "EXEC MP_WEB_LOGIN_PAZAS_USUARIO " +
@@ -35,13 +32,11 @@ Meteor.methods({
     return respuesta;
   },
   "ingenieros.getAll": async (datos) => {
-    console.log(datos);
     conexiones.body_bdseleccionada.tipo = "procedimiento";
     conexiones.body_bdseleccionada.query =
       "exec SPCB_Carga_Combo_Ingenieros @Plaza= '" +
       datos.plaza +
       "', @HTML = 0";
-    console.log(conexiones.body_bdseleccionada.query);
     conexiones.body_bdseleccionada.baseDatos = datos.baseDatos;
     const response = await axios.get(conexiones.windows_api, {
       data: conexiones.body_bdseleccionada,
@@ -52,7 +47,6 @@ Meteor.methods({
     return respuesta;
   },
   "gastos.pagarA": async (datos) => {
-    console.log(datos);
     conexiones.body_bdseleccionada.tipo = "consulta";
     conexiones.body_bdseleccionada.query =
       "SELECT ID_CUENTA_DESTINO Codigo, NOMBRE_CUENTA_DESTINO  Nombre FROM CONSUMOS_PASSA..CAT_CUENTAS_DESTINO WHERE ESTATUS= 'A' AND cod_usu='" +
@@ -69,7 +63,6 @@ Meteor.methods({
     return respuesta;
   },
   "proveedores.getAll": async (datos) => {
-    console.log(datos);
     conexiones.body_bdseleccionada.tipo = "procedimiento";
     conexiones.body_bdseleccionada.query =
       "Exec MP_Consulta_Proveedores_Nombre_RFC @Texto_Buscar ='" +
@@ -97,9 +90,7 @@ Meteor.methods({
         data: conexiones.body_bdseleccionada,
       });
 
-      const respuesta = JSON.parse(response.data.data.resultado);
-      console.log(respuesta);
-      return respuesta;
+      return JSON.parse(response.data.data.resultado);
     } catch (e) {
       console.log(e);
     }
@@ -155,9 +146,7 @@ Meteor.methods({
         data: conexiones.body_bdseleccionada,
       });
 
-      const respuesta = JSON.parse(response.data.data.resultado);
-      console.log(respuesta);
-      return respuesta;
+      return JSON.parse(response.data.data.resultado);
     } catch (e) {
       console.log(e);
     }
@@ -176,9 +165,7 @@ Meteor.methods({
         data: conexiones.body_bdseleccionada,
       });
 
-      const respuesta = JSON.parse(response.data.data.resultado);
-      console.log(respuesta);
-      return respuesta;
+      return JSON.parse(response.data.data.resultado);
     } catch (e) {
       console.log(e);
     }
@@ -193,31 +180,26 @@ Meteor.methods({
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
       });
-      console.log(response.data);
-      const respuesta = JSON.parse(response.data.data.resultado);
-      console.log(respuesta);
-      return respuesta;
+
+      return JSON.parse(response.data.data.resultado);
     } catch (e) {
       console.log(e);
     }
   },
   "gasolineras.getAll": async (datos) => {
     try {
-      console.log(datos);
       conexiones.body_bdseleccionada.tipo = "procedimiento";
       conexiones.body_bdseleccionada.query =
         "exec dbo.SP_Cat_Gasolineras_Consulta @Cod_Gasolinera='', @Nom_Gasolinera='', @Estatus='', @Cod_Plaza='" +
         datos.plaza +
         "'";
-      console.log(conexiones.body_bdseleccionada.query);
+
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
       });
 
-      const respuesta = JSON.parse(response.data.data.resultado);
-      console.log(respuesta);
-      return respuesta;
+      return JSON.parse(response.data.data.resultado);
     } catch (e) {
       console.log(e);
     }

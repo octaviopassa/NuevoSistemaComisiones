@@ -38,9 +38,7 @@ import "../../api/collections/Collections";
 import "../../api/collections/Page";
 import "../../api/collections/Role";
 
-import "../../api/methods/api";
 import "../../api/methods/clientesAuth";
-import "../../api/methods/getApiMethods";
 import "../../api/methods/page";
 import "../../api/methods/roles";
 import "../../api/methods/usuarios";

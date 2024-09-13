@@ -208,8 +208,8 @@ Meteor.methods({
   "usuarios.loginWithPassa": async (data) => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
-      //conexiones.body_bdseleccionada.servidor = data.SERVIDOR;
       conexiones.body_bdseleccionada.baseDatos = data.BASE_DATOS;
+
       conexiones.body_bdseleccionada.query =
         "EXEC MP_WEB_LOGIN " +
         " @NOMBRE_USUARIO  = '" +
@@ -223,8 +223,6 @@ Meteor.methods({
         data: conexiones.body_bdseleccionada,
       });
 
-      console.log(response.data);
-
       if (response.data.data.esValido) {
         const respuesta = JSON.parse(response.data.data.resultado);
         const userData = respuesta[0];
@@ -234,7 +232,6 @@ Meteor.methods({
           username: data.params.nombre_usuario,
           "profile.baseDatos": data.BASE_DATOS,
         });
-        console.log("exuser", existingUser);
 
         if (!existingUser) {
           console.log("entre aquí");
@@ -259,14 +256,7 @@ Meteor.methods({
         // Generar un token de inicio de sesión para el usuario
         const stampedLoginToken = Accounts._generateStampedLoginToken();
         Accounts._insertLoginToken(existingUser._id, stampedLoginToken);
-        console.log({
-          success: true,
-          data: {
-            userData: userData,
-            userId: existingUser._id,
-            token: stampedLoginToken.token,
-          },
-        });
+        
         return {
           success: true,
           data: {
@@ -277,14 +267,10 @@ Meteor.methods({
         };
       } else {
         console.log(response.data);
-        console.log("error", {
-          success: false,
-          message: response.data.data.message,
-          data: "",
-        });
+       
         return {
           success: false,
-          message: response.data.data.message,
+          message: response.data.data.mensaje,
           data: "",
         };
       }
