@@ -1,26 +1,21 @@
 import React, { useEffect, useState } from "react";
+import toastr from "toastr";
 import EmpresasService from "../../services/empresas";
-
 import { LoginForm } from "./components";
 
 function Login() {
   const [empresas, setEmpresas] = useState([]);
 
   useEffect(() => {
-    const load = async () => {
-      const e = await EmpresasService.getAll();
-      setEmpresas(transformEmpresas(e));
-    };
-
-    load();
+    EmpresasService.getAll()
+      .then((response) => {
+        setEmpresas(response);
+      })
+      .catch((error) => {
+        console.log(error);
+        toastr.error(error.reason);
+      });
   }, []);
-
-  function transformEmpresas(array) {
-    return array.map((item) => ({
-      value: JSON.stringify(item),
-      label: item.BASE_DATOS.trim(),
-    }));
-  }
 
   return (
     <div>

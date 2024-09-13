@@ -1,7 +1,12 @@
 const EmpresasService = {};
 
 EmpresasService.getAll = async () => {
-  return await Meteor.callSync("empresas.getAll");
+  const empresas = await Meteor.callSync("empresas.getAll");
+
+  return empresas.map((item) => ({
+    value: JSON.stringify(item),
+    label: item.BASE_DATOS.trim(),
+  }));
 };
 
 EmpresasService.getByName = async (nombre) => {
