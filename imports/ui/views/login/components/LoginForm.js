@@ -21,7 +21,6 @@ export const LoginForm = ({ empresas }) => {
   const { setUserRol } = useUserRolStore();
 
   const handleSubmit = async (values) => {
-    console.log(values);
     const { user, password, empresa: empresaSeleccionada } = values;
 
     try {

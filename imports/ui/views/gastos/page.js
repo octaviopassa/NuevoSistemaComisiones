@@ -1,43 +1,41 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useRef, useState } from "react";
 import {
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Button,
-  UncontrolledTooltip,
-} from "reactstrap";
-import Page from "../../components/global/Page";
-import useUserSession from "../../store/userSession";
-import GastosService from "../../services/gastos";
-import PlazasService from "../../services/plazas";
-import IngenierosService from "../../services/ingenieros";
-import ProveedoresService from "../../services/proveedores";
-import ClientesService from "../../services/clientes";
-import Select from "react-select/async";
-import TipoGastosService from "../../services/tipoGastos";
-import ConductoresService from "../../services/conductores";
-import VehiculosService from "../../services/vehiculos";
-import CombustiblesService from "../../services/combustible";
-import GasolinerasService from "../../services/gasolinera";
-import toastr from "toastr";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faInfoCircle,
   faFileAlt,
   faFilePdf,
+  faInfoCircle,
   faTrashAlt,
   faUpload,
 } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Select from "react-select/async";
+import { UncontrolledTooltip } from "reactstrap";
+import toastr from "toastr";
+import Page from "../../components/global/Page";
+import ClientesService from "../../services/clientes";
+import ProveedoresService from "../../services/proveedores";
+import useUserSession from "../../store/userSession";
+import { GastosToolbar } from "./components";
+import { ModalCombustible } from "./components/modals/ModalCombustible";
+import ModalImportes from "./components/modals/ModalImportes";
+
+const initialImportesData = {
+  fecha: "",
+  folio: "",
+  subtotal: "0.00",
+  impuesto: "0.00",
+  iva_16: "0.00",
+  iva_8: "0.00",
+  ieps: "0.00",
+  ish: "0.00",
+  tua: "0.00",
+  ret: "0.00",
+  total: "0.00",
+};
 
 const Gastos = () => {
-  const [isCheckedSucursal, setIsCheckedSucursal] = useState(true);
-  const [isCheckedIngeniero, setIsCheckedIngeniero] = useState(false);
-  const [selectedIngeniero, setSelectedIngeniero] = useState("");
   const [plazaSeleccionada, setPlazaSeleccionada] = useState("");
-  const [folio, setFolio] = useState("");
-  const [pagarA, setPagarA] = useState([]);
-  const [pagarASeleccionado, setPagarASeleccionado] = useState("");
+  const [combustibles, setCombustibles] = useState([]);
+
   const [proveedorSeleccionado, setProveedorSeleccionado] = useState("");
   const [clienteSeleccionado, setClienteSeleccionado] = useState("");
   const [tipoGastoSeleccionado, setTipoGastoSeleccionado] = useState("");
@@ -46,239 +44,37 @@ const Gastos = () => {
   const [observaciones, setObservaciones] = useState("");
   const [documentos, setDocumentos] = useState([]);
   const [resumen, setResumen] = useState([]);
-  const [plazas, setPlazas] = useState([]);
-  const [ingenieros, setIngenieros] = useState([]);
   const [tipoGastos, setTipoGastos] = useState([]);
-  const [conductores, setConductores] = useState([]);
-  const [vehiculos, setVehiculos] = useState([]);
-  const [combustibles, setCombustibles] = useState([]);
-  const [gasolineras, setGasolineras] = useState([]);
 
-  const [conductorSeleccionado, setConductorSeleccionado] = useState(null);
-  const [vehiculoSeleccionado, setVehiculoSeleccionado] = useState(null);
-  const [kilometraje, setKilometraje] = useState("");
-  const [litros, setLitros] = useState("");
-  const [combustibleSeleccionado, setCombustibleSeleccionado] = useState(null);
-  const [gasolineraSeleccionada, setGasolineraSeleccionada] = useState(null);
   const [atencionClienteSeleccionado, setAtencionClienteSeleccionado] =
     useState(null);
-  const [xmlArchivo, setXmlArchivo] = useState(null);
-  const [pdfArchivo, setPdfArchivo] = useState(null);
   const [xmlTempData, setXmlTempData] = useState(null);
   const [pdfTempData, setPdfTempData] = useState(null);
 
   const [tipoDocumento, setTipoDocumento] = useState("");
   const [modalImportesVisible, setModalImportesVisible] = useState(false);
-  const [importesData, setImportesData] = useState({
-    fecha: "",
-    folio: "",
-    subtotal: "0.00",
-    impuesto: "0.00",
-    iva_16: "0.00",
-    iva_8: "0.00",
-    ieps: "0.00",
-    ish: "0.00",
-    tua: "0.00",
-    ret: "0.00",
-    total: "0.00",
-  });
+  const [importesData, setImportesData] = useState(initialImportesData);
 
   const [xmlData, setXmlData] = useState(null);
-  const [tooltipOpen, setTooltipOpen] = useState(false);
 
   const [modalCombustibleVisible, setModalCombustibleVisible] = useState(false);
-  const [modalVisible, setModalVisible] = useState(true);
   const [clientesVisible, setClientesVisible] = useState(false);
 
   const tipoDocumentoRef = useRef(null);
   const proveedorRef = useRef(null);
   const clienteRef = useRef(null);
   const tipoGastoRef = useRef(null);
-  const atencionClienteRef = useRef(null);
-
-  const toggleTooltip = () => setTooltipOpen(!tooltipOpen);
-
-  const toggleModalImportes = () => {
-    setModalImportesVisible(!modalImportesVisible);
-  };
-
-  const handleConductorChange = (selectedOption) => {
-    setConductorSeleccionado(selectedOption);
-  };
-
-  const handleImportesChange = (e) => {
-    setImportesData({
-      ...importesData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleVehiculoChange = (selectedOption) => {
-    setVehiculoSeleccionado(selectedOption);
-  };
-
-  const handleKilometrajeChange = (e) => {
-    setKilometraje(e.target.value);
-  };
-
-  const handleLitrosChange = (e) => {
-    setLitros(e.target.value);
-  };
-
-  const handleCombustibleChange = (selectedOption) => {
-    setCombustibleSeleccionado(selectedOption);
-  };
-
-  const handleGasolineraChange = (selectedOption) => {
-    setGasolineraSeleccionada(selectedOption);
-  };
-
-  const handleGuardarCombustible = () => {
-    const datosCombustible = {
-      conductor: conductorSeleccionado,
-      vehiculo: vehiculoSeleccionado,
-      kilometraje,
-      litros,
-      combustible: combustibleSeleccionado,
-      gasolinera: gasolineraSeleccionada,
-    };
-
-    console.log("Datos del combustible guardados:", datosCombustible);
-
-    // Actualizar el documento actual con los datos de combustible
-    setDocumentos(
-      documentos.map((doc, index) => {
-        if (index === documentos.length - 1) {
-          // Asumimos que queremos agregar los datos al último documento
-          return {
-            ...doc,
-            datosCombustible: datosCombustible,
-          };
-        }
-        return doc;
-      })
-    );
-
-    // Limpiar los campos del modal de combustible
-    setConductorSeleccionado(null);
-    setVehiculoSeleccionado(null);
-    setKilometraje("");
-    setLitros("");
-    setCombustibleSeleccionado(null);
-    setGasolineraSeleccionada(null);
-
-    toggleModalCombustible();
-    toastr.success("Datos de combustible agregados al documento");
-  };
 
   const { session } = useUserSession();
   const user = {
     ...session,
   };
 
-  useEffect(() => {
-    const cargaInicial = async () => {
-      if (plazaSeleccionada != "") {
-        console.log("entré a plaza seleccionada", plazaSeleccionada);
-        const vehiculos = await VehiculosService.getAll({
-          plaza: plazaSeleccionada,
-        });
-        console.log("vehiculos", vehiculos);
-        setVehiculos(
-          vehiculos.map((obj) => ({
-            value: obj.Cod_Vehiculo,
-            label: obj.Nom_Vehiculo,
-          }))
-        );
-
-        const gasolineras = await GasolinerasService.getAll({
-          plaza: plazaSeleccionada,
-        });
-        console.log("gasolineras", gasolineras);
-        setGasolineras(
-          gasolineras.map((obj) => ({
-            value: obj.Cod_Gasolinera,
-            label: obj.Nom_Gasolinera,
-          }))
-        );
-
-        const conductores = await ConductoresService.getAll({
-          plaza: plazaSeleccionada,
-        });
-        console.log("conductores", conductores);
-        setConductores(
-          conductores.map((obj) => ({
-            value: obj.Cod_Conductor,
-            label: obj.Nom_Conductor,
-          }))
-        );
-      }
-    };
-    cargaInicial();
-  }, [plazaSeleccionada]);
-
-  useEffect(() => {
-    const cargaInicial = async () => {
-      try {
-        console.log(user);
-        setIsCheckedIngeniero(false);
-        setIsCheckedSucursal(true);
-
-        const obtenerPlazas = await PlazasService.getAll({
-          cod_usu: user.profile.COD_USU,
-          baseDatos: user.profile.baseDatos,
-        });
-        setPlazas(obtenerPlazas);
-
-        const pagarAQuien = await GastosService.pagarA({
-          cod_usu: user.profile.COD_USU,
-          baseDatos: user.profile.baseDatos,
-        });
-        setPagarA(pagarAQuien);
-
-        const tipoGastos = await TipoGastosService.getAll({});
-        console.log(tipoGastos);
-        setTipoGastos(
-          tipoGastos.map((tg) => ({ value: tg.Codigo, label: tg.Nombre }))
-        );
-
-        const combustibles = await CombustiblesService.getAll();
-        console.log("combustibles", combustibles);
-        setCombustibles(
-          combustibles.map((obj) => ({ value: obj.Codigo, label: obj.Nombre }))
-        );
-
-        const cliVisibles = await ClientesService.clientesVisible({
-          baseDatos: user.profile.baseDatos,
-        });
-
-        setClientesVisible(cliVisibles);
-      } catch (error) {
-        console.error("Error durante la carga inicial", error);
-      }
-    };
-
-    cargaInicial();
-  }, [user.profile.COD_USU, user.profile.baseDatos]);
-
-  const toggleModal = () => {
-    setModalVisible(!modalVisible);
-  };
-
-  const handleSelectPlaza = async (e) => {
-    setPlazaSeleccionada(e.target.value);
-    console.log(e.target.value);
-
-    const inges = await IngenierosService.getAll({
-      plaza: e.target.value,
-      baseDatos: user.profile.baseDatos,
-    });
-    console.log(inges);
-    setIngenieros(inges);
+  const toggleModalImportes = () => {
+    setModalImportesVisible(!modalImportesVisible);
   };
 
   const proveedoresOptions = async (inputValue) => {
-    console.log(inputValue);
     if (inputValue.length >= 3) {
       try {
         const proveedores = await ProveedoresService.getAll({
@@ -298,8 +94,8 @@ const Gastos = () => {
     return [];
   };
 
+  //! Error, no funciona
   const clientesOptions = async (inputValue) => {
-    console.log(inputValue);
     if (inputValue.length >= 3) {
       try {
         const clientes = await ClientesService.getAll({
@@ -307,6 +103,7 @@ const Gastos = () => {
           cod_usu: user.profile.COD_USU,
           baseDatos: user.profile.baseDatos,
         });
+
         return clientes.map((p) => ({
           value: p.Codigo,
           label: p.Nombre,
@@ -320,15 +117,12 @@ const Gastos = () => {
   };
 
   const handleXmlUpload = (event, index) => {
-    console.log("Iniciando carga o actualización de XML");
     const file = event.target.files[0];
     if (file && file.name.endsWith(".xml")) {
-      console.log("Archivo XML seleccionado:", file.name);
       const fileName = file.name;
       const reader = new FileReader();
 
       reader.onload = (e) => {
-        console.log("XML leído correctamente");
         const arrayBuffer = e.target.result;
         const byteArray = new Uint8Array(arrayBuffer);
         const base64String = btoa(String.fromCharCode.apply(null, byteArray));
@@ -390,8 +184,6 @@ const Gastos = () => {
           }
         }
 
-        console.log("Datos extraídos del XML:", datos);
-
         const xmlData = {
           archivo: {
             nombre: fileName,
@@ -413,13 +205,9 @@ const Gastos = () => {
                 : doc
             )
           );
-          console.log(
-            `XML actualizado para el documento en el índice ${index}`
-          );
         } else {
           // Es una nueva carga
           setXmlTempData(xmlData);
-          console.log("Datos temporales del XML guardados en el estado");
         }
 
         toastr.success("Archivo XML cargado y analizado correctamente");
@@ -434,15 +222,12 @@ const Gastos = () => {
   };
 
   const handlePdfUpload = (event, index) => {
-    console.log("Iniciando carga de PDF");
     const file = event.target.files[0];
     if (file && file.type === "application/pdf") {
-      console.log("Archivo PDF seleccionado:", file.name);
       const fileName = file.name;
       const reader = new FileReader();
 
       reader.onload = (e) => {
-        console.log("PDF leído correctamente");
         const arrayBuffer = e.target.result;
         const byteArray = new Uint8Array(arrayBuffer);
         const base64String = btoa(String.fromCharCode.apply(null, byteArray));
@@ -459,13 +244,10 @@ const Gastos = () => {
               i === index ? { ...doc, pdfArchivo: pdfData } : doc
             )
           );
-          console.log(
-            `PDF actualizado para el documento en el índice ${index}`
-          );
+
         } else {
           // Es una nueva carga
           setPdfTempData(pdfData);
-          console.log("Datos temporales del PDF guardados en el estado");
         }
 
         toastr.success("Archivo PDF cargado correctamente");
@@ -749,50 +531,6 @@ const Gastos = () => {
     setModalCombustibleVisible(!modalCombustibleVisible);
   };
 
-  const filterConductor = (inputValue) => {
-    return conductores.filter((obj) =>
-      obj.label.toLowerCase().includes(inputValue.toLowerCase())
-    );
-  };
-
-  const promiseOptionsConductor = (inputValue) =>
-    new Promise((resolve) => {
-      resolve(filterConductor(inputValue));
-    });
-
-  const filterVehiculo = (inputValue) => {
-    return vehiculos.filter((obj) =>
-      obj.label.toLowerCase().includes(inputValue.toLowerCase())
-    );
-  };
-
-  const promiseOptionsVehicle = (inputValue) =>
-    new Promise((resolve) => {
-      resolve(filterVehiculo(inputValue));
-    });
-
-  const filterCombustible = (inputValue) => {
-    return combustibles.filter((obj) =>
-      obj.label.toLowerCase().includes(inputValue.toLowerCase())
-    );
-  };
-
-  const promiseOptionsCombustible = (inputValue) =>
-    new Promise((resolve) => {
-      resolve(filterCombustible(inputValue));
-    });
-
-  const filterGasolinera = (inputValue) => {
-    return gasolineras.filter((obj) =>
-      obj.label.toLowerCase().includes(inputValue.toLowerCase())
-    );
-  };
-
-  const promiseOptionsGasolinera = (inputValue) =>
-    new Promise((resolve) => {
-      resolve(filterGasolinera(inputValue));
-    });
-
   const tipoDocumentoOptions = [
     { value: "Factura", label: "Factura" },
     { value: "Nota", label: "Nota" },
@@ -809,20 +547,13 @@ const Gastos = () => {
     callback(filteredOptions);
   };
 
-  const handleGuardarImportes = () => {
-    console.log("Datos de Importes/Impuestos:", importesData);
-    toggleModalImportes();
-  };
-
   const agregarDocumento = () => {
-    console.log("Iniciando proceso de agregar documento");
     if (
       !tipoDocumento ||
       !proveedorSeleccionado ||
       !tipoGastoSeleccionado ||
       !concepto
     ) {
-      console.warn("Campos requeridos faltantes");
       toastr.warning("Por favor, llene todos los campos requeridos.");
       return;
     }
@@ -832,7 +563,6 @@ const Gastos = () => {
     let pdfArchivoFinal = null;
 
     if (tipoDocumento === "Nota") {
-      console.log("Procesando documento tipo Nota");
       importesFinales = {
         subtotal: parseFloat(importesData.subtotal) || 0,
         impuesto: parseFloat(importesData.impuesto) || 0,
@@ -846,9 +576,7 @@ const Gastos = () => {
         total: parseFloat(importesData.total) || 0,
       };
     } else {
-      console.log("Procesando documento con XML");
       if (!xmlTempData) {
-        console.error("No se encontraron datos temporales de XML");
         toastr.error(
           "Por favor, adjunte un archivo XML para este tipo de documento."
         );
@@ -856,7 +584,6 @@ const Gastos = () => {
       }
       importesFinales = xmlTempData.importes;
       xmlArchivoFinal = xmlTempData.archivo;
-      console.log("Datos del XML utilizados:", importesFinales);
     }
 
     // Asegurarse de que todos los valores numéricos sean números y tengan dos decimales
@@ -869,7 +596,6 @@ const Gastos = () => {
     // Manejar el archivo PDF
     if (pdfTempData) {
       pdfArchivoFinal = pdfTempData;
-      console.log("Archivo PDF adjuntado:", pdfArchivoFinal.nombre);
     }
 
     const nuevoDocumento = {
@@ -884,13 +610,11 @@ const Gastos = () => {
       pdfArchivo: pdfArchivoFinal,
     };
 
-    console.log("Nuevo documento a agregar:", nuevoDocumento);
-
     setDocumentos([...documentos, nuevoDocumento]);
     limpiarCampos();
     setXmlTempData(null);
     setPdfTempData(null);
-    console.log("Documento agregado y datos temporales limpiados");
+
     toastr.success("Documento agregado con éxito");
   };
 
@@ -934,171 +658,14 @@ const Gastos = () => {
 
   return (
     <Page name="Gastos">
-      <div className="row mb-3">
-        <div className="col-sm-3">
-          <div className="custom-control-inline">Gastos de:</div>
-          <div className="custom-control custom-radio custom-control-inline">
-            <input
-              type="radio"
-              className="custom-control-input"
-              id="inlineRadioSucursal"
-              name="gastosDe"
-              checked={isCheckedSucursal}
-              onChange={() => {
-                setIsCheckedSucursal(true);
-                setIsCheckedIngeniero(false);
-              }}
-            />
-            <label
-              className="custom-control-label"
-              htmlFor="inlineRadioSucursal"
-            >
-              Sucursal
-            </label>
-          </div>
-
-          <div className="custom-control custom-radio custom-control-inline">
-            <input
-              type="radio"
-              className="custom-control-input"
-              id="inlineRadioIngeniero"
-              name="gastosDe"
-              checked={isCheckedIngeniero}
-              onChange={() => {
-                setIsCheckedIngeniero(true);
-                setIsCheckedSucursal(false);
-              }}
-            />
-            <label
-              className="custom-control-label"
-              htmlFor="inlineRadioIngeniero"
-            >
-              Ingeniero
-            </label>
-          </div>
-        </div>
-        {isCheckedIngeniero ? (
-          <div className="col-sm-3">
-            <div className="input-group">
-              <div className="input-group-prepend">
-                <label className="input-group-text" htmlFor="selectIngeniero">
-                  Ingeniero
-                </label>
-              </div>
-              <select
-                className="custom-select"
-                id="selectIngeniero"
-                value={selectedIngeniero}
-                onChange={(e) => setSelectedIngeniero(e.target.value)}
-              >
-                <option value="">Seleccione...</option>
-                {ingenieros.map((ingeniero) => (
-                  <option key={ingeniero.Codigo} value={ingeniero.Codigo}>
-                    {ingeniero.Nombre}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-        ) : (
-          <></>
-        )}
-        <div className="col-sm-2">
-          <div className="input-group">
-            <div className="input-group-prepend">
-              <label className="input-group-text" htmlFor="selectFecha">
-                Fecha:
-              </label>
-            </div>
-            <input
-              className="form-control"
-              type="date"
-              name="date"
-              id="selectFecha"
-              value={folio}
-              onChange={(e) => setFolio(e.target.value)}
-            />
-          </div>
-        </div>
-        <div className="col-sm-4">
-          <div className="input-group">
-            <div className="input-group-prepend">
-              <label className="input-group-text" htmlFor="selectPlaza">
-                Plaza:
-              </label>
-            </div>
-            <select
-              className="custom-select"
-              id="selectPlaza"
-              value={plazaSeleccionada}
-              onChange={handleSelectPlaza}
-            >
-              <option value="">Seleccione...</option>
-              {plazas.map((plaza) => (
-                <option key={plaza.Codigo} value={plaza.Codigo}>
-                  {plaza.Nombre}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <div className="row mb-3">
-        <div className="col-sm-3">
-          <div className="input-group">
-            <div className="input-group-prepend">
-              <span className="input-group-text">Folio:</span>
-            </div>
-            <input
-              type="text"
-              id="inputFolio"
-              className="form-control"
-              placeholder="GC-002809"
-              aria-label="Folio"
-              aria-describedby="inputFolio"
-              value={folio}
-              onChange={(e) => setFolio(e.target.value)}
-            />
-            <div className="input-group-append">
-              <button
-                className="btn btn-outline-info waves-effect waves-themed"
-                type="button"
-              >
-                <i className="fal fa-arrow-left"></i>
-              </button>
-              <button
-                className="btn btn-outline-info waves-effect waves-themed"
-                type="button"
-              >
-                <i className="fal fa-arrow-right"></i>
-              </button>
-            </div>
-          </div>
-        </div>
-        <div className="col-sm-5">
-          <div className="input-group">
-            <div className="input-group-prepend">
-              <label className="input-group-text" htmlFor="selectPagarA">
-                Pagar a:
-              </label>
-            </div>
-            <select
-              className="custom-select"
-              id="selectPagarA"
-              value={pagarASeleccionado}
-              onChange={(e) => setPagarASeleccionado(e.target.value)}
-            >
-              <option value="">Seleccione...</option>
-              {pagarA.map((p, index) => (
-                <option key={`${p.Codigo}-${index}`} value={p.Codigo}>
-                  {p.Nombre}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-      </div>
+      <GastosToolbar
+        setPlazaSeleccionada={setPlazaSeleccionada}
+        plazaSeleccionada={plazaSeleccionada}
+        user={user}
+        setTipoGastos={setTipoGastos}
+        setCombustibles={setCombustibles}
+        setClientesVisible={setClientesVisible}
+      />
 
       <div className="row">
         <div className="col-sm-12">
@@ -1512,252 +1079,25 @@ const Gastos = () => {
           </div>
         </div>
       </div>
-      
-      {/* Modal de Seleccion de Plaza */}
-      <Modal isOpen={modalVisible} toggle={toggleModal}>
-        <ModalHeader toggle={toggleModal}>Seleccione la Plaza</ModalHeader>
-        <ModalBody>
-          <select
-            className="custom-select"
-            id="selectPlazaModal"
-            value={plazaSeleccionada}
-            onChange={handleSelectPlaza}
-          >
-            <option value="">Seleccione...</option>
-            {plazas.map((plaza) => (
-              <option key={plaza.Codigo} value={plaza.Codigo}>
-                {plaza.Nombre}
-              </option>
-            ))}
-          </select>
-        </ModalBody>
-        <ModalFooter>
-          <Button color="primary" onClick={toggleModal}>
-            Confirmar
-          </Button>
-        </ModalFooter>
-      </Modal>
 
-      {/* Modal de Gasto de Combustible */}
-      <Modal isOpen={modalCombustibleVisible} toggle={toggleModalCombustible}>
-        <ModalHeader toggle={toggleModalCombustible}>
-          Gasto de combustible
-        </ModalHeader>
-        <ModalBody>
-          <div className="form-group">
-            <label>Conductor</label>
-            <Select
-              id="conductor"
-              cacheOptions
-              loadOptions={promiseOptionsConductor}
-              defaultOptions={conductores}
-              onChange={handleConductorChange}
-              placeholder="Seleccione el conductor"
-            />
-          </div>
-          <div className="form-group">
-            <label>Vehículo</label>
-            <Select
-              id="vehiculo"
-              cacheOptions
-              loadOptions={promiseOptionsVehicle}
-              defaultOptions={vehiculos}
-              onChange={handleVehiculoChange}
-              placeholder="Seleccione el vehículo"
-            />
-          </div>
-          <div className="form-group">
-            <label>Kilometraje</label>
-            <input
-              type="number"
-              className="form-control"
-              value={kilometraje}
-              onChange={handleKilometrajeChange}
-            />
-          </div>
-          <div className="form-group">
-            <label>Litros</label>
-            <input
-              type="number"
-              className="form-control"
-              value={litros}
-              onChange={handleLitrosChange}
-            />
-          </div>
-          <div className="form-group">
-            <label>Combustible</label>
-            <Select
-              id="combustible"
-              cacheOptions
-              loadOptions={promiseOptionsCombustible}
-              defaultOptions={combustibles}
-              onChange={handleCombustibleChange}
-              placeholder="Seleccione el combustible"
-            />
-          </div>
-          <div className="form-group">
-            <label>Gasolinera</label>
-            <Select
-              id="gasolinera"
-              cacheOptions
-              loadOptions={promiseOptionsGasolinera}
-              defaultOptions={gasolineras}
-              onChange={handleGasolineraChange}
-              placeholder="Seleccione la gasolinera"
-            />
-          </div>
-        </ModalBody>
-        <ModalFooter>
-          <Button color="secondary" onClick={toggleModalCombustible}>
-            Cancelar
-          </Button>
-          <Button color="primary" onClick={handleGuardarCombustible}>
-            Guardar
-          </Button>
-        </ModalFooter>
-      </Modal>
+      {modalCombustibleVisible && (
+        <ModalCombustible
+          modalCombustibleVisible={modalCombustibleVisible}
+          toggleModalCombustible={toggleModalCombustible}
+          plazaSeleccionada={plazaSeleccionada}
+          combustibles={combustibles}
+        />
+      )}
 
       {/* Modal para Importes / Impuestos */}
-      <Modal
-        isOpen={modalImportesVisible}
-        toggle={toggleModalImportes}
-        size="lg"
-        className="modal-importes"
-      >
-        <ModalHeader toggle={toggleModalImportes}>
-          Importes / Impuestos
-        </ModalHeader>
-        <ModalBody>
-          <div className="container-fluid">
-            <div className="row mb-3">
-              <div className="col-md-4">
-                <label>Fecha</label>
-                <input
-                  type="date"
-                  className="form-control"
-                  name="fecha"
-                  value={importesData.fecha}
-                  onChange={handleImportesChange}
-                />
-              </div>
-              <div className="col-md-4">
-                <label>Folio</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  name="folio"
-                  value={importesData.folio}
-                  onChange={handleImportesChange}
-                />
-              </div>
-              <div className="col-md-4">
-                <label>Subtotal</label>
-                <input
-                  type="number"
-                  className="form-control"
-                  name="subtotal"
-                  value={importesData.subtotal}
-                  onChange={handleImportesChange}
-                />
-              </div>
-            </div>
-            <div className="row mb-3">
-              <div className="col-md-4">
-                <label>Impuesto</label>
-                <input
-                  type="number"
-                  className="form-control"
-                  name="impuesto"
-                  value={importesData.impuesto}
-                  onChange={handleImportesChange}
-                />
-              </div>
-              <div className="col-md-4">
-                <label>IVA_16</label>
-                <input
-                  type="number"
-                  className="form-control"
-                  name="iva_16"
-                  value={importesData.iva_16}
-                  onChange={handleImportesChange}
-                />
-              </div>
-              <div className="col-md-4">
-                <label>IVA_8</label>
-                <input
-                  type="number"
-                  className="form-control"
-                  name="iva_8"
-                  value={importesData.iva_8}
-                  onChange={handleImportesChange}
-                />
-              </div>
-            </div>
-            <div className="row mb-3">
-              <div className="col-md-4">
-                <label>IEPS</label>
-                <input
-                  type="number"
-                  className="form-control"
-                  name="ieps"
-                  value={importesData.ieps}
-                  onChange={handleImportesChange}
-                />
-              </div>
-              <div className="col-md-4">
-                <label>ISH</label>
-                <input
-                  type="number"
-                  className="form-control"
-                  name="ish"
-                  value={importesData.ish}
-                  onChange={handleImportesChange}
-                />
-              </div>
-              <div className="col-md-4">
-                <label>TUA</label>
-                <input
-                  type="number"
-                  className="form-control"
-                  name="tua"
-                  value={importesData.tua}
-                  onChange={handleImportesChange}
-                />
-              </div>
-            </div>
-            <div className="row mb-3">
-              <div className="col-md-4">
-                <label>Ret</label>
-                <input
-                  type="number"
-                  className="form-control"
-                  name="ret"
-                  value={importesData.ret}
-                  onChange={handleImportesChange}
-                />
-              </div>
-              <div className="col-md-4">
-                <label>Total</label>
-                <input
-                  type="number"
-                  className="form-control"
-                  name="total"
-                  value={importesData.total}
-                  onChange={handleImportesChange}
-                />
-              </div>
-            </div>
-          </div>
-        </ModalBody>
-        <ModalFooter>
-          <Button color="primary" onClick={handleGuardarImportes}>
-            Guardar
-          </Button>
-          <Button color="secondary" onClick={toggleModalImportes}>
-            Cancelar
-          </Button>
-        </ModalFooter>
-      </Modal>
+      {modalImportesVisible && (
+        <ModalImportes
+          modalImportesVisible={modalImportesVisible}
+          toggleModalImportes={toggleModalImportes}
+          importesData={importesData}
+          setImportesData={setImportesData}
+        />
+      )}
     </Page>
   );
 };
