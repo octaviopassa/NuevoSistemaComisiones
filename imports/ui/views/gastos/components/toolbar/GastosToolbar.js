@@ -3,7 +3,7 @@ import {
   PlazasService,
   TipoGastosService,
   IngenierosService,
-  CombustiblesService,
+  CombustibleService,
   GastosService,
   ClientesService,
 } from "../../../../services";
@@ -50,7 +50,7 @@ export const GastosToolbar = ({
           tipoGastos.map((tg) => ({ value: tg.Codigo, label: tg.Nombre }))
         );
 
-        const combustibles = await CombustiblesService.getAll();
+        const combustibles = await CombustibleService.getAll();
 
         setCombustibles(
           combustibles.map((obj) => ({ value: obj.Codigo, label: obj.Nombre }))

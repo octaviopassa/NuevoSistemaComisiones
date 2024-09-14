@@ -1,5 +1,6 @@
 export * from './clientes';
 export * from './combustible';
+export * from './conductores';
 export * from './empresas';
 export * from './gasolinera';
 export * from './gastos';
