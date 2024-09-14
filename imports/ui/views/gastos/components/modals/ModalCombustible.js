@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import Select from "react-select/async";
-import VehiculosService from "../../../../services/vehiculos";
-import GasolinerasService from "../../../../services/gasolinera";
-import ConductoresService from "../../../../services/conductores";
+import { VehiculosService, GasolinerasService, ConductoresService } from "../../../../services";
 
 export const ModalCombustible = ({
   plazaSeleccionada,

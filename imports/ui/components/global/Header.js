@@ -1,8 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import toastr from "toastr";
-import { useTranslation, Trans } from "react-i18next";
-import UserService from "../../services/user";
+import { useTranslation } from "react-i18next";
 import useUserLoggedStore from "../../store/userLogged";
 import useUserLenguageStore from "../../store/userLenguage";
 import useUserModulesStore from "../../store/userModules";
@@ -11,7 +9,7 @@ import useUserSession from "../../store/userSession";
 import Swal from "sweetalert2";
 
 export const Header = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { resetAllowedModules } = useUserModulesStore();
   const { resetUserLenguage, setUserLenguage } = useUserLenguageStore();
   const { resetUserLogged } = useUserLoggedStore();

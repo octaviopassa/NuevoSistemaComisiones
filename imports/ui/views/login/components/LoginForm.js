@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import Select from "react-select";
 import { Label } from "reactstrap";
 import toastr from "toastr";
-import UserService from "../../../services/user";
+import { UserService } from "../../../services";
 import useUserLenguageStore from "../../../store/userLenguage";
 import useUserLoggedStore from "../../../store/userLogged";
 import useUserModulesStore from "../../../store/userModules";

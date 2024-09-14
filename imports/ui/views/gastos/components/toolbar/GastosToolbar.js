@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
-import ClientesService from "../../../../services/clientes";
-import CombustiblesService from "../../../../services/combustible";
-import GastosService from "../../../../services/gastos";
-import IngenierosService from "../../../../services/ingenieros";
-import PlazasService from "../../../../services/plazas";
-import TipoGastosService from "../../../../services/tipoGastos";
+import {
+  PlazasService,
+  TipoGastosService,
+  IngenierosService,
+  CombustiblesService,
+  GastosService,
+  ClientesService,
+} from "../../../../services";
 import { ModalPlaza } from "../modals";
 
 export const GastosToolbar = ({

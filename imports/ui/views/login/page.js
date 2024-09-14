@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import toastr from "toastr";
-import EmpresasService from "../../services/empresas";
+import { EmpresasService } from "../../services";
 import { LoginForm } from "./components";
 
 function Login() {

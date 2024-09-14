@@ -14,8 +14,7 @@ import Input from "../global/Input";
 import toastr from "toastr";
 import loadingModal from "../global/Loading";
 import Select from "react-select";
-import ProveedoresService from "../../services/proveedores";
-import DepartamentosService from "../../services/departamentos";
+import { ProveedoresService, DepartamentosService } from "../../services";
 
 function ModalEmpleados({ empleado, ...props }) {
   let formulario = useInput({

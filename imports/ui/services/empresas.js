@@ -20,4 +20,4 @@ EmpresasService.getById = async (empresaId) => {
   return await Meteor.callSync("empresas.getById", empresaId);
 };
 
-export default EmpresasService;
+export { EmpresasService };

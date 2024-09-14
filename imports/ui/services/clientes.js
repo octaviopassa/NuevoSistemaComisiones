@@ -8,4 +8,4 @@ ClientesService.clientesVisible = async (datos) => {
   return await Meteor.callSync("clientes.clientesVisible", datos);
 };
 
-export default ClientesService;
+export { ClientesService };

@@ -10,8 +10,7 @@ import React, { useRef, useState } from "react";
 import Select from "react-select/async";
 import { UncontrolledTooltip } from "reactstrap";
 import toastr from "toastr";
-import ClientesService from "../../../../services/clientes";
-import ProveedoresService from "../../../../services/proveedores";
+import { ClientesService, ProveedoresService } from "../../../../services";
 
 export const TableGastos = ({
   clientesVisible,
@@ -355,11 +354,14 @@ export const TableGastos = ({
     }),
   };
 
-  const filterTipoGastos = (inputValue) => {
-    return tipoGastos.filter((tipoGasto) =>
-      tipoGasto.label.toLowerCase().includes(inputValue.toLowerCase())
-    );
-  };
+  const filterTipoGastos = (inputValue) =>
+    new Promise((resolve) => {
+      resolve(
+        tipoGastos.filter((tipoGasto) =>
+          tipoGasto.label.toLowerCase().includes(inputValue.toLowerCase())
+        )
+      );
+    });
 
   const tipoDocumentoOptions = [
     { value: "Factura", label: "Factura" },

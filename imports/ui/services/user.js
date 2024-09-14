@@ -61,4 +61,4 @@ UserService.loginWithPassa = async (datos) => {
   return await Meteor.callSync("usuarios.loginWithPassa", datos);
 };
 
-export default UserService;
+export { UserService };
