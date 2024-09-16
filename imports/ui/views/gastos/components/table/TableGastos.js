@@ -7,7 +7,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useRef, useState } from "react";
-import Select from "react-select/async";
+import Select from "react-select";
+import AsyncSelect from "react-select/async";
 import { UncontrolledTooltip } from "reactstrap";
 import toastr from "toastr";
 import { ClientesService, ProveedoresService } from "../../../../services";
@@ -59,7 +60,6 @@ export const TableGastos = ({
     return [];
   };
 
-  //! Error, no funciona
   const clientesOptions = async (inputValue) => {
     if (inputValue.length >= 3) {
       try {
@@ -301,21 +301,11 @@ export const TableGastos = ({
   };
 
   const handleSelectProveedor = (selectedOption) => {
-    const proveedor = {
-      Codigo: selectedOption.value,
-      Nombre: selectedOption.label,
-    };
-
-    setProveedorSeleccionado(proveedor);
+    setProveedorSeleccionado(selectedOption);
   };
 
   const handleSelectCliente = (selectedOption) => {
-    const cliente = {
-      Codigo: selectedOption.value,
-      Nombre: selectedOption.label,
-    };
-
-    setClienteSeleccionado(cliente);
+    setClienteSeleccionado(selectedOption);
   };
 
   const handleSelectAtencionCliente = (selectedOption) => {
@@ -357,29 +347,13 @@ export const TableGastos = ({
     }),
   };
 
-  const filterTipoGastos = (inputValue) =>
-    new Promise((resolve) => {
-      resolve(
-        tipoGastos.filter((tipoGasto) =>
-          tipoGasto.label.toLowerCase().includes(inputValue.toLowerCase())
-        )
-      );
-    });
-
   const tipoDocumentoOptions = [
     { value: "Factura", label: "Factura" },
     { value: "Nota", label: "Nota" },
   ];
 
   const handleTipoDocumentoChange = (selectedOption) => {
-    setTipoDocumento(selectedOption.value);
-  };
-
-  const loadTipoDocumentoOptions = (inputValue, callback) => {
-    const filteredOptions = tipoDocumentoOptions.filter((option) =>
-      option.label.toLowerCase().includes(inputValue.toLowerCase())
-    );
-    callback(filteredOptions);
+    setTipoDocumento(selectedOption);
   };
 
   const agregarDocumento = () => {
@@ -397,7 +371,7 @@ export const TableGastos = ({
     let xmlArchivoFinal = null;
     let pdfArchivoFinal = null;
 
-    if (tipoDocumento === "Nota") {
+    if (tipoDocumento.value === "Nota") {
       importesFinales = {
         subtotal: parseFloat(importesData.subtotal) || 0,
         impuesto: parseFloat(importesData.impuesto) || 0,
@@ -434,7 +408,7 @@ export const TableGastos = ({
     }
 
     const nuevoDocumento = {
-      tipoDocumento,
+      tipoDocumento: tipoDocumento.value,
       proveedor: proveedorSeleccionado,
       cliente: clienteSeleccionado,
       tipoGasto: tipoGastoSeleccionado,
@@ -453,6 +427,16 @@ export const TableGastos = ({
     toastr.success("Documento agregado con éxito");
   };
 
+  const eliminarDocumento = (index) => {
+    if (!documentos.length) {
+      toastr.warning("No hay documentos para eliminar");
+      return;
+    }
+
+    setDocumentos(documentos.filter((_, i) => i !== index));
+    toastr.success("Documento eliminado");
+  };
+
   const limpiarCampos = () => {
     setTipoDocumento("");
     setProveedorSeleccionado(null);
@@ -465,15 +449,15 @@ export const TableGastos = ({
     setImportesData({
       fecha: "",
       folio: "",
-      subtotal: "",
-      impuesto: "",
-      iva_16: "",
-      iva_8: "",
-      ieps: "",
-      ish: "",
-      tua: "",
-      ret: "",
-      total: "",
+      subtotal: "0.00",
+      impuesto: "0.00",
+      iva_16: "0.00",
+      iva_8: "0.00",
+      ieps: "0.00",
+      ish: "0.00",
+      tua: "0.00",
+      ret: "0.00",
+      total: "0.00",
     });
 
     // Reiniciar los campos de selección
@@ -491,6 +475,8 @@ export const TableGastos = ({
     }
   };
 
+  console.log(importesData);
+
   return (
     <div className="row">
       <div className="col-sm-12">
@@ -500,55 +486,38 @@ export const TableGastos = ({
               <th className="text-center"></th>
               <th className="text-center">
                 <Select
-                  cacheOptions
-                  defaultOptions={tipoDocumentoOptions}
-                  loadOptions={loadTipoDocumentoOptions}
+                  options={tipoDocumentoOptions}
                   onChange={handleTipoDocumentoChange}
                   placeholder="Tipo de documento"
                   styles={customStyles}
-                  value={tipoDocumentoOptions.find(
-                    (option) => option.value === tipoDocumento
-                  )}
+                  value={tipoDocumento}
                 />
               </th>
               <th className="text-center">
-                <label style={{ fontSize: "8pt" }}>
-                  {proveedorSeleccionado?.Nombre || ""}
-                </label>
-                <Select
+                <AsyncSelect
                   id="proveedor"
-                  cacheOptions
                   loadOptions={proveedoresOptions}
-                  defaultOptions
                   onChange={handleSelectProveedor}
+                  value={proveedorSeleccionado}
                   placeholder="Proveedor"
                   styles={customStyles}
                 />
               </th>
               {clientesVisible == 1 && (
                 <th className="text-center">
-                  <label style={{ fontSize: "8pt" }}>
-                    {clienteSeleccionado?.Nombre || ""}
-                  </label>
-                  <Select
+                  <AsyncSelect
                     id="cliente"
-                    cacheOptions
                     loadOptions={clientesOptions}
-                    defaultOptions
                     onChange={handleSelectCliente}
+                    value={clienteSeleccionado}
                     placeholder="Cliente"
                     styles={customStyles}
                   />
                 </th>
               )}
               <th className="text-center">
-                <label style={{ fontSize: "8pt" }}>
-                  {tipoGastoSeleccionado?.Nombre || ""}
-                </label>
                 <Select
-                  cacheOptions
-                  defaultOptions={tipoGastos}
-                  loadOptions={filterTipoGastos}
+                  options={tipoGastos}
                   onChange={handleTipoGastoChange}
                   value={tipoGastoSeleccionado}
                   placeholder="Tipo de gasto"
@@ -603,15 +572,15 @@ export const TableGastos = ({
                 )}
               </th>
               <th className="text-center">
-                {tipoDocumento === "Nota" && (
+                {tipoDocumento.value === "Nota" && (
                   <a href="#" onClick={toggleModalImportes}>
-                    Registrar importes
+                    Registrar/Editar importes
                   </a>
                 )}
               </th>
 
               <th className="text-center">
-                {tipoDocumento == "Factura" && (
+                {tipoDocumento.value == "Factura" && (
                   <>
                     <label
                       htmlFor="xml-upload"
@@ -630,7 +599,7 @@ export const TableGastos = ({
                 )}
               </th>
               <th className="text-center">
-                {tipoDocumento == "Factura" && (
+                {tipoDocumento.value == "Factura" && (
                   <label htmlFor="pdf-upload" className="btn btn-primary mb-0">
                     <i className="fal fa-file-pdf"></i> PDF
                     <input
@@ -686,9 +655,9 @@ export const TableGastos = ({
               <tr key={i}>
                 <td className="text-center">{i + 1}</td>
                 <td>{doc.tipoDocumento}</td>
-                <td>{doc.proveedor?.Nombre}</td>
-                <td>{doc.cliente?.Nombre}</td>
-                <td>{doc.tipoGasto?.Nombre}</td>
+                <td>{doc.proveedor?.label}</td>
+                <td>{doc.cliente?.label}</td>
+                <td>{doc.tipoGasto?.label}</td>
                 <td>{doc.concepto}</td>
                 <td>{doc.detalleGasto}</td>
                 <td>

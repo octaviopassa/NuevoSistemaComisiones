@@ -10,14 +10,14 @@ import {
 } from "./components";
 
 const Gastos = () => {
-  //TODO: Crear un context de todos los states menos combustibles, de esa forma evitamos el "props drilling".
-  const [plazaSeleccionada, setPlazaSeleccionada] = useState("");
   const [combustibles, setCombustibles] = useState([]);
+  const [documentos, setDocumentos] = useState([]);
+  //TODO: Crear un context de todos los states menos combustibles y documentos, de esa forma evitamos el "props drilling".
+  const [plazaSeleccionada, setPlazaSeleccionada] = useState("");
   const [modalImportesVisible, setModalImportesVisible] = useState(false);
   const [modalCombustibleVisible, setModalCombustibleVisible] = useState(false);
   const [clientesVisible, setClientesVisible] = useState(false);
   const [tipoGastos, setTipoGastos] = useState([]);
-  const [documentos, setDocumentos] = useState([]);
   const [importesData, setImportesData] = useState({
     fecha: "",
     folio: "",
