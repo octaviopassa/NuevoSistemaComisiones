@@ -62,7 +62,7 @@ Meteor.methods({
 
     return respuesta;
   },
-  "proveedores.getAll": async (datos) => {
+  "proveedores.getAllWithName": async (datos) => {
     conexiones.body_bdseleccionada.tipo = "procedimiento";
     conexiones.body_bdseleccionada.query =
       "Exec MP_Consulta_Proveedores_Nombre_RFC @Texto_Buscar ='" +
@@ -77,6 +77,40 @@ Meteor.methods({
     const respuesta = JSON.parse(response.data.data.resultado);
 
     return respuesta;
+  },
+  "proveedores.getAll": async () => {
+    try {
+      conexiones.body_bdseleccionada.tipo = "procedimiento";
+      conexiones.body_bdseleccionada.query =
+        "exec SP_CAT_PROVEEDORES_Consulta @Cod_Proveedor=''";
+      conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
+
+      const response = await axios.get(conexiones.windows_api, {
+        data: conexiones.body_bdseleccionada,
+      });
+
+      //{ "DT_RowId": 1, "Cod_Proveedor": 1, "Nom_Proveedor": "TELEFONIA POR CABLE", "Estatus": "A", "RFC": "TCA0407219T6", "Nom_Estatus": "Activo" },
+
+      const result = JSON.parse(response.data.data.resultado);
+
+      const formattedResult = result.map(
+        ({
+          Cod_Proveedor: codigo,
+          Nom_Proveedor: nombre,
+          RFC: rfc,
+          Nom_Estatus: estatus,
+        }) => ({
+          codigo,
+          nombre,
+          rfc,
+          estatus,
+        })
+      );
+
+      return formattedResult;
+    } catch (error) {
+      console.log(error);
+    }
   },
   "clientes.getAll": async (datos) => {
     try {

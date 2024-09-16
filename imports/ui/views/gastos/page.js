@@ -58,7 +58,6 @@ const Gastos = () => {
 
       <TableGastos
         clientesVisible={clientesVisible}
-        user={user}
         tipoGastos={tipoGastos}
         toggleModalCombustible={toggleModalCombustible}
         toggleModalImportes={toggleModalImportes}

@@ -12,10 +12,10 @@ import AsyncSelect from "react-select/async";
 import { UncontrolledTooltip } from "reactstrap";
 import toastr from "toastr";
 import { ClientesService, ProveedoresService } from "../../../../services";
+import { ModalProveedoresButton } from "../modals";
 
 export const TableGastos = ({
   clientesVisible,
-  user,
   tipoGastos,
   toggleModalCombustible,
   toggleModalImportes,
@@ -43,10 +43,8 @@ export const TableGastos = ({
   const proveedoresOptions = async (inputValue) => {
     if (inputValue.length >= 3) {
       try {
-        const proveedores = await ProveedoresService.getAll({
+        const proveedores = await ProveedoresService.getAllWithName({
           search: inputValue,
-          cod_usu: user.profile.COD_USU,
-          baseDatos: user.profile.baseDatos,
         });
         return proveedores.map((p) => ({
           value: p.Codigo,
@@ -65,8 +63,6 @@ export const TableGastos = ({
       try {
         const clientes = await ClientesService.getAll({
           search: inputValue,
-          cod_usu: user.profile.COD_USU,
-          baseDatos: user.profile.baseDatos,
         });
 
         return clientes.map((p) => ({
@@ -475,7 +471,7 @@ export const TableGastos = ({
     }
   };
 
-  console.log(importesData);
+  console.log(documentos);
 
   return (
     <div className="row">
@@ -630,7 +626,15 @@ export const TableGastos = ({
             <tr>
               <th className="text-center">#</th>
               <th className="text-center">Documento</th>
-              <th className="text-center">Proveedor</th>
+              <th className="text-center">
+                Proveedor
+                {/* <FontAwesomeIcon
+                  cursor={"pointer"}
+                  className="ml-1"
+                  icon={faGear}
+                /> */}
+                <ModalProveedoresButton />
+              </th>
               {clientesVisible == 1 ? (
                 <th className="text-center">Cliente</th>
               ) : null}
