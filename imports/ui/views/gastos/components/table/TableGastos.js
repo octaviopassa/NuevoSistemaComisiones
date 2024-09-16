@@ -18,13 +18,16 @@ export const TableGastos = ({
   tipoGastos,
   toggleModalCombustible,
   toggleModalImportes,
+  setDocumentos,
+  documentos,
+  importesData,
+  setImportesData,
 }) => {
   const [proveedorSeleccionado, setProveedorSeleccionado] = useState("");
   const [clienteSeleccionado, setClienteSeleccionado] = useState("");
   const [tipoGastoSeleccionado, setTipoGastoSeleccionado] = useState("");
   const [concepto, setConcepto] = useState("");
   const [detalleGasto, setDetalleGasto] = useState("");
-  const [documentos, setDocumentos] = useState([]);
   const [atencionClienteSeleccionado, setAtencionClienteSeleccionado] =
     useState(null);
   const [xmlTempData, setXmlTempData] = useState(null);
@@ -568,7 +571,7 @@ export const TableGastos = ({
                         className="btn btn-link"
                         onClick={toggleModalCombustible}
                       >
-                        Ver adjunto
+                        Detalles del gasto
                       </button>
                     ) : tipoGastoSeleccionado.value === 17 ? (
                       <>

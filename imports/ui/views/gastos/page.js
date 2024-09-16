@@ -10,12 +10,27 @@ import {
 } from "./components";
 
 const Gastos = () => {
+  //TODO: Crear un context de todos los states menos combustibles, de esa forma evitamos el "props drilling".
   const [plazaSeleccionada, setPlazaSeleccionada] = useState("");
   const [combustibles, setCombustibles] = useState([]);
   const [modalImportesVisible, setModalImportesVisible] = useState(false);
   const [modalCombustibleVisible, setModalCombustibleVisible] = useState(false);
   const [clientesVisible, setClientesVisible] = useState(false);
   const [tipoGastos, setTipoGastos] = useState([]);
+  const [documentos, setDocumentos] = useState([]);
+  const [importesData, setImportesData] = useState({
+    fecha: "",
+    folio: "",
+    subtotal: "0.00",
+    impuesto: "0.00",
+    iva_16: "0.00",
+    iva_8: "0.00",
+    ieps: "0.00",
+    ish: "0.00",
+    tua: "0.00",
+    ret: "0.00",
+    total: "0.00",
+  });
 
   const { session } = useUserSession();
   const user = {
@@ -47,6 +62,10 @@ const Gastos = () => {
         tipoGastos={tipoGastos}
         toggleModalCombustible={toggleModalCombustible}
         toggleModalImportes={toggleModalImportes}
+        setDocumentos={setDocumentos}
+        documentos={documentos}
+        setImportesData={setImportesData}
+        importesData={importesData}
       />
 
       <TableResumen />
@@ -57,6 +76,7 @@ const Gastos = () => {
           toggleModalCombustible={toggleModalCombustible}
           plazaSeleccionada={plazaSeleccionada}
           combustibles={combustibles}
+          setDocumentos={setDocumentos}
         />
       )}
 
@@ -65,6 +85,8 @@ const Gastos = () => {
         <ModalImportes
           modalImportesVisible={modalImportesVisible}
           toggleModalImportes={toggleModalImportes}
+          setImportesData={setImportesData}
+          importesData={importesData}
         />
       )}
     </Page>

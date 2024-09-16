@@ -1,13 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
+import toastr from "toastr";
 import Select from "react-select/async";
-import { VehiculosService, GasolinerasService, ConductoresService } from "../../../../services";
+import {
+  VehiculosService,
+  GasolinerasService,
+  ConductoresService,
+} from "../../../../services";
 
 export const ModalCombustible = ({
   plazaSeleccionada,
   modalCombustibleVisible,
   toggleModalCombustible,
   combustibles,
+  setDocumentos,
 }) => {
   const [gasolineras, setGasolineras] = useState([]);
   const [conductores, setConductores] = useState([]);
@@ -99,9 +105,9 @@ export const ModalCombustible = ({
     console.log("Datos del combustible guardados:", datosCombustible);
 
     // Actualizar el documento actual con los datos de combustible
-    setDocumentos(
-      documentos.map((doc, index) => {
-        if (index === documentos.length - 1) {
+    setDocumentos((prevDocumentos) =>
+      prevDocumentos.map((doc, index) => {
+        if (index === prevDocumentos.length - 1) {
           // Asumimos que queremos agregar los datos al último documento
           return {
             ...doc,
@@ -125,27 +131,43 @@ export const ModalCombustible = ({
   };
 
   const filterConductor = (inputValue) => {
-    return conductores.filter((obj) =>
-      obj.label.toLowerCase().includes(inputValue.toLowerCase())
-    );
+    return new Promise((resolve) => {
+      resolve(
+        conductores.filter((conductor) =>
+          conductor.label.toLowerCase().includes(inputValue.toLowerCase())
+        )
+      );
+    });
   };
 
   const filterVehiculo = (inputValue) => {
-    return vehiculos.filter((obj) =>
-      obj.label.toLowerCase().includes(inputValue.toLowerCase())
-    );
+    return new Promise((resolve) => {
+      resolve(
+        vehiculos.filter((vehiculo) =>
+          vehiculo.label.toLowerCase().includes(inputValue.toLowerCase())
+        )
+      );
+    });
   };
 
   const filterCombustible = (inputValue) => {
-    return combustibles.filter((obj) =>
-      obj.label.toLowerCase().includes(inputValue.toLowerCase())
-    );
+    return new Promise((resolve) => {
+      resolve(
+        combustibles.filter((combustible) =>
+          combustible.label.toLowerCase().includes(inputValue.toLowerCase())
+        )
+      );
+    });
   };
 
   const filterGasolinera = (inputValue) => {
-    return gasolineras.filter((obj) =>
-      obj.label.toLowerCase().includes(inputValue.toLowerCase())
-    );
+    return new Promise((resolve) => {
+      resolve(
+        gasolineras.filter((gasolinera) =>
+          gasolinera.label.toLowerCase().includes(inputValue.toLowerCase())
+        )
+      );
+    });
   };
 
   return (

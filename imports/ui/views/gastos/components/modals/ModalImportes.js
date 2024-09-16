@@ -1,36 +1,23 @@
 import React from "react";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
-const initialImportesData = {
-  fecha: "",
-  folio: "",
-  subtotal: "0.00",
-  impuesto: "0.00",
-  iva_16: "0.00",
-  iva_8: "0.00",
-  ieps: "0.00",
-  ish: "0.00",
-  tua: "0.00",
-  ret: "0.00",
-  total: "0.00",
-};
-
-const ModalImportes = ({
+export const ModalImportes = ({
   modalImportesVisible,
   toggleModalImportes,
+  setImportesData,
+  importesData,
 }) => {
-  const [importesData, setImportesData] = useState(initialImportesData);
 
   const handleGuardarImportes = () => {
     toggleModalImportes();
   };
 
   const handleImportesChange = (e) => {
-    setImportesData({
-      ...importesData,
+    setImportesData((prevImportesData) => ({
+      ...prevImportesData,
       [e.target.name]: e.target.value,
-    });
-  };
+    }));
+  };  
 
   return (
     <Modal
@@ -175,5 +162,3 @@ const ModalImportes = ({
     </Modal>
   );
 };
-
-export default ModalImportes;
