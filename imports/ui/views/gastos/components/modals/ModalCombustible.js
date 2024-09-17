@@ -44,6 +44,7 @@ export const ModalCombustible = ({
         const gasolineras = await GasolinerasService.getAll({
           plaza: plazaSeleccionada,
         });
+
         setGasolineras(
           gasolineras.map((obj) => ({
             value: obj.Cod_Gasolinera,
@@ -162,8 +163,8 @@ export const ModalCombustible = ({
   const filterGasolinera = (inputValue) => {
     return new Promise((resolve) => {
       resolve(
-        gasolineras.filter((gasolinera) =>
-          gasolinera.label.toLowerCase().includes(inputValue.toLowerCase())
+        gasolineras.filter((obj) =>
+          obj.label.toLowerCase().includes(inputValue.toLowerCase())
         )
       );
     });
