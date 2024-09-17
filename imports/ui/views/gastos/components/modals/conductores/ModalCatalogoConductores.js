@@ -19,15 +19,18 @@ import {
   useSearch,
 } from "../../../../../hooks";
 import { ModalButton } from "../ModalButton";
-import { ModalProveedores } from "./ModalProveedores";
-import { ProveedoresService } from "../../../../../services";
+import { ConductoresService } from "../../../../../services";
+import { ModalConductores } from "./ModalConductores";
 
-export const ModalCatalogoProveedores = ({ isModalOpen, toggle }) => {
-  const { isLoading, data: proveedores, reloadData } = useFetchData(
-    ProveedoresService.getAll
-  );
+export const ModalCatalogoConductores = ({ isModalOpen, toggle }) => {
+  const {
+    isLoading,
+    data: conductores,
+    reloadData,
+  } = useFetchData(ConductoresService.getAll);
+
   const { searchText, setSearchText, filteredData } = useSearch(
-    proveedores || []
+    conductores || []
   );
   const { paginatedData, PaginationComponent, PaginationSelector } =
     useClientPagination(filteredData);
@@ -40,7 +43,7 @@ export const ModalCatalogoProveedores = ({ isModalOpen, toggle }) => {
       size="lg"
     >
       <ModalHeader className="bg-primary text-white" toggle={toggle}>
-        Catálogo de Proveedores
+        Catálogo de Conductores
       </ModalHeader>
       <ModalBody>
         <div className="row">
@@ -49,7 +52,7 @@ export const ModalCatalogoProveedores = ({ isModalOpen, toggle }) => {
               color="primary"
               buttonClasses="w-25 p-2"
               text="Nuevo"
-              ModalComponent={ModalProveedores}
+              ModalComponent={ModalConductores}
               reloadData={reloadData}
             />
           </div>
@@ -71,8 +74,7 @@ export const ModalCatalogoProveedores = ({ isModalOpen, toggle }) => {
           <thead>
             <tr>
               <th>#</th>
-              <th>Proveedoredor</th>
-              <th>RFC</th>
+              <th>Nombre</th>
               <th>Estatus</th>
               <th>Acciones</th>
             </tr>
@@ -85,17 +87,16 @@ export const ModalCatalogoProveedores = ({ isModalOpen, toggle }) => {
                 </td>
               </tr>
             ) : (
-              paginatedData.map((proveedor, i) => (
+              paginatedData.map((conductor, i) => (
                 <tr key={i}>
-                  <td>{proveedor.codigo}</td>
-                  <td>{proveedor.nombre}</td>
-                  <td>{proveedor.rfc}</td>
-                  <td>{proveedor.estatus}</td>
+                  <td>{conductor.Cod_Conductor}</td>
+                  <td>{conductor.Nom_Conductor}</td>
+                  <td>{conductor.Estatus === "A" ? "Activo" : "Inactivo"}</td>
                   <td className="text-center">
                     <ModalButton
                       icon={faPencil}
-                      ModalComponent={ModalProveedores}
-                      proveedor={proveedor}
+                      ModalComponent={ModalConductores}
+                      conductor={conductor}
                       reloadData={reloadData}
                     />
                   </td>

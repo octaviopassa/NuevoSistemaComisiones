@@ -73,7 +73,6 @@ export const LoginForm = ({ empresas }) => {
         const respuesta = await UserService.loginWithPassa(empresa);
 
         if (!respuesta.success) {
-          console.log("Respuesta:", respuesta);
           toastr.error("Aviso", respuesta.message);
           return;
         }

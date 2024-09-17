@@ -11,9 +11,6 @@ Meteor.methods({
 
     return JSON.parse(response.data.data.resultado);
   },
-  // "empresas.getById": async (empresaId) => {
-  //   return empresa;
-  // },
   "plazas.getAll": async (datos) => {
     conexiones.body_bdseleccionada.tipo = "procedimiento";
     conexiones.body_bdseleccionada.query =
@@ -114,23 +111,6 @@ Meteor.methods({
       const respuesta = JSON.parse(response.data.data.resultado);
 
       return respuesta;
-    } catch (e) {
-      console.log(e);
-    }
-  },
-  "conductores.getAll": async (datos) => {
-    try {
-      conexiones.body_bdseleccionada.tipo = "procedimiento";
-      conexiones.body_bdseleccionada.query =
-        "exec SP_CAT_CONDUCTORES_Consulta @Cod_Conductor='', @Nom_Conductor='', @Estatus='', @Cod_Plaza='" +
-        datos.plaza +
-        "'";
-      conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
-      const response = await axios.get(conexiones.windows_api, {
-        data: conexiones.body_bdseleccionada,
-      });
-
-      return JSON.parse(response.data.data.resultado);
     } catch (e) {
       console.log(e);
     }

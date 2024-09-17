@@ -44,6 +44,7 @@ import "../../api/methods/roles";
 import "../../api/methods/usuarios";
 import "../../api/methods/empresas";
 import "../../api/methods/proveedores";
+import "../../api/methods/conductores";
 
 import "./startup";
 import "./initialLoad";

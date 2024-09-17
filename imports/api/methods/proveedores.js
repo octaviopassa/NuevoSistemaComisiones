@@ -59,7 +59,7 @@ Meteor.methods({
         @Cod_Proveedor='0', 
         @Nom_Proveedor='${datos.nombre}',
         @RFC='${datos.rfc}',
-        @Estatus='${datos.estatus ? "Activo" : "Inactivo"}',
+        @Estatus='${datos.estatus ? "A" : "B"}',
         @COD_USUARIO_GRABO='${datos.cod_usu}'
       `;
 
@@ -85,7 +85,7 @@ Meteor.methods({
         @Cod_Proveedor='${datos.codigo}',
         @Nom_Proveedor='${datos.nombre}',
         @RFC='${datos.rfc}',
-        @Estatus='${datos.estatus ? "Activo" : "Inactivo"}',
+        @Estatus='${datos.estatus ? "A" : "B"}',
         @COD_USUARIO_GRABO='${datos.cod_usu}'
       `;
 

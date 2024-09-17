@@ -7,6 +7,9 @@ import {
   GasolinerasService,
   ConductoresService,
 } from "../../../../services";
+import { ModalButton } from "./ModalButton";
+import { faGear } from "@fortawesome/free-solid-svg-icons";
+import { ModalCatalogoConductores } from "./conductores";
 
 export const ModalCombustible = ({
   plazaSeleccionada,
@@ -48,9 +51,7 @@ export const ModalCombustible = ({
           }))
         );
 
-        const conductores = await ConductoresService.getAll({
-          plaza: plazaSeleccionada,
-        });
+        const conductores = await ConductoresService.getAll(plazaSeleccionada);
         setConductores(
           conductores.map((obj) => ({
             value: obj.Cod_Conductor,
@@ -101,8 +102,6 @@ export const ModalCombustible = ({
       combustible: combustibleSeleccionado,
       gasolinera: gasolineraSeleccionada,
     };
-
-    console.log("Datos del combustible guardados:", datosCombustible);
 
     // Actualizar el documento actual con los datos de combustible
     setDocumentos((prevDocumentos) =>
@@ -177,7 +176,13 @@ export const ModalCombustible = ({
       </ModalHeader>
       <ModalBody>
         <div className="form-group">
-          <label>Conductor</label>
+          <label>
+            Conductor
+            <ModalButton
+              icon={faGear}
+              ModalComponent={ModalCatalogoConductores}
+            />
+          </label>
           <Select
             id="conductor"
             cacheOptions
