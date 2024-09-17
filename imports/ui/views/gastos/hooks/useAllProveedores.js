@@ -5,6 +5,7 @@ import toastr from "toastr";
 export const useGetAllProveedores = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [proveedores, setProveedores] = useState([]);
+  const [reload, setReload] = useState(false);
 
   useEffect(() => {
     const loadProviders = async () => {
@@ -20,7 +21,9 @@ export const useGetAllProveedores = () => {
       }
     };
     loadProviders();
-  }, []);
+  }, [reload]);
 
-  return { isLoading, proveedores, total: proveedores.length };
+  const reloadData = () => setReload(!reload);
+
+  return { isLoading, proveedores, total: proveedores.length, reloadData };
 };

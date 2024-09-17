@@ -1,16 +1,18 @@
-import React, { useState, useMemo } from "react";
-import { Pagination, PaginationItem, PaginationLink } from "reactstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { useMemo, useState } from "react";
 import { faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Select from "react-select";
+import { Pagination, PaginationItem, PaginationLink } from "reactstrap";
 
 /**
- * Hook para manejar la paginación en el cliente.
+ * Hook para manejar la paginación en el cliente con selector de items por página.
  * @param {Array} data - Los datos a paginar.
- * @param {number} itemsPerPage - Número de ítems por página.
- * @returns {Object} - Un objeto con la paginación, incluyendo datos paginados y el total de páginas.
+ * @param {number} defaultItemsPerPage - Número de ítems por página por defecto.
+ * @returns {Object} - Un objeto con la paginación, incluyendo datos paginados, total de páginas y componentes de paginación.
  */
-export const useClientPagination = (data, itemsPerPage) => {
+export const useClientPagination = (data, defaultItemsPerPage = 10) => {
   const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(defaultItemsPerPage);
 
   const totalPages = Math.ceil(data.length / itemsPerPage);
 
@@ -96,6 +98,19 @@ export const useClientPagination = (data, itemsPerPage) => {
     </Pagination>
   );
 
+  const PaginationSelector = () => (
+    <Select
+      value={{ value: itemsPerPage, label: itemsPerPage }}
+      onChange={(selectedOption) => setItemsPerPage(selectedOption.value)}
+      options={[
+        { value: 10, label: 10 },
+        { value: 25, label: 25 },
+        { value: 50, label: 50 },
+        { value: 100, label: 100 },
+      ]}
+    />
+  );
+
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
@@ -106,6 +121,7 @@ export const useClientPagination = (data, itemsPerPage) => {
     totalPages,
     paginatedData,
     PaginationComponent,
+    PaginationSelector,
     handlePageChange,
   };
 };

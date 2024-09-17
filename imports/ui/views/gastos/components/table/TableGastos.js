@@ -1,6 +1,7 @@
 import {
   faFileAlt,
   faFilePdf,
+  faGear,
   faInfoCircle,
   faTrashAlt,
   faUpload,
@@ -12,7 +13,7 @@ import AsyncSelect from "react-select/async";
 import { UncontrolledTooltip } from "reactstrap";
 import toastr from "toastr";
 import { ClientesService, ProveedoresService } from "../../../../services";
-import { ModalProveedoresButton } from "../modals";
+import { ModalCatalogoProveedores, ModalButton } from "../modals";
 
 export const TableGastos = ({
   clientesVisible,
@@ -628,12 +629,10 @@ export const TableGastos = ({
               <th className="text-center">Documento</th>
               <th className="text-center">
                 Proveedor
-                {/* <FontAwesomeIcon
-                  cursor={"pointer"}
-                  className="ml-1"
+                <ModalButton
                   icon={faGear}
-                /> */}
-                <ModalProveedoresButton />
+                  ModalComponent={ModalCatalogoProveedores}
+                />
               </th>
               {clientesVisible == 1 ? (
                 <th className="text-center">Cliente</th>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Button,
   Input,
@@ -8,25 +8,23 @@ import {
   ModalBody,
   ModalFooter,
   ModalHeader,
+  Spinner,
   Table,
 } from "reactstrap";
-import { useGetAllProveedores } from "../../hooks";
+import { useGetAllProveedores } from "../../../hooks";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPencil, faSearch } from "@fortawesome/free-solid-svg-icons";
-import { useClientPagination, useSearch } from "../../../../hooks";
+import { useClientPagination, useSearch } from "../../../../../hooks";
+import { ModalButton } from "../ModalButton";
+import { ModalProveedores } from "./ModalProveedores";
 
-export const ModalProveedores = ({ isModalOpen, toggle }) => {
-  const { isLoading, proveedores } = useGetAllProveedores();
+export const ModalCatalogoProveedores = ({ isModalOpen, toggle }) => {
+  const { isLoading, proveedores, reloadData } = useGetAllProveedores();
   const { searchText, setSearchText, filteredData } = useSearch(
     proveedores || []
   );
-  //TODO: Hacer el filtrado de los proveedores
-  const [itemsPerPage] = useState(10);
-
-  const { paginatedData, PaginationComponent } = useClientPagination(
-    filteredData,
-    itemsPerPage
-  );
+  const { paginatedData, PaginationComponent, PaginationSelector } =
+    useClientPagination(filteredData);
 
   return (
     <Modal
@@ -40,8 +38,17 @@ export const ModalProveedores = ({ isModalOpen, toggle }) => {
       </ModalHeader>
       <ModalBody>
         <div className="row">
-          <div className="col-12 d-flex justify-content-end">
-            <InputGroup className="mb-3 col-sm-6 col-md-5">
+          <div className="col-6">
+            <ModalButton
+              color="primary"
+              buttonClasses="w-25 p-2"
+              text="Nuevo"
+              ModalComponent={ModalProveedores}
+              reloadData={reloadData}
+            />
+          </div>
+          <div className="col-6 d-flex justify-content-end">
+            <InputGroup className="mb-3">
               <Input
                 placeholder="Buscar..."
                 onChange={(e) => setSearchText(e.target.value)}
@@ -66,7 +73,11 @@ export const ModalProveedores = ({ isModalOpen, toggle }) => {
           </thead>
           <tbody>
             {isLoading ? (
-              <tr>Cargando...</tr>
+              <tr>
+                <td colSpan={5} className="text-center py-6">
+                  <Spinner color="primary"> </Spinner>
+                </td>
+              </tr>
             ) : (
               paginatedData.map((proveedor, i) => (
                 <tr key={i}>
@@ -75,10 +86,11 @@ export const ModalProveedores = ({ isModalOpen, toggle }) => {
                   <td>{proveedor.rfc}</td>
                   <td>{proveedor.estatus}</td>
                   <td className="text-center">
-                    <FontAwesomeIcon
-                      cursor={"pointer"}
-                      className=""
+                    <ModalButton
                       icon={faPencil}
+                      ModalComponent={ModalProveedores}
+                      proveedor={proveedor}
+                      reloadData={reloadData}
                     />
                   </td>
                 </tr>
@@ -92,7 +104,10 @@ export const ModalProveedores = ({ isModalOpen, toggle }) => {
             <PaginationComponent />
           </div>
 
-          <div className="col-sm-6 col-12">filter</div>
+          <div className="col-sm-6 col-12 d-flex justify-content-end align-items-center">
+            <p className="text-muted mb-0 mr-2">Items por página: </p>
+            <PaginationSelector />
+          </div>
         </div>
       </ModalBody>
       <ModalFooter>

@@ -43,6 +43,7 @@ import "../../api/methods/page";
 import "../../api/methods/roles";
 import "../../api/methods/usuarios";
 import "../../api/methods/empresas";
+import "../../api/methods/proveedores";
 
 import "./startup";
 import "./initialLoad";
