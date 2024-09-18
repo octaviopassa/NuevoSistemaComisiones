@@ -59,44 +59,6 @@ Meteor.methods({
 
     return respuesta;
   },
-  "clientes.getAll": async (datos) => {
-    try {
-      conexiones.body_bdseleccionada.tipo = "procedimiento";
-      conexiones.body_bdseleccionada.query =
-        "Exec MP_Consulta_Clientes_Consumos_Nombre_RFC @Texto_Buscar ='" +
-        datos.search +
-        "'";
-      conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
-      const response = await axios.get(conexiones.windows_api, {
-        data: conexiones.body_bdseleccionada,
-      });
-
-      return JSON.parse(response.data.data.resultado);
-    } catch (e) {
-      console.log(e);
-    }
-  },
-
-  "clientes.clientesVisible": async (datos) => {
-    try {
-      conexiones.body_bdseleccionada.tipo = "procedimiento";
-      conexiones.body_bdseleccionada.query =
-        "SELECT MOSTRAR_COLUMNA_CLIENTES FROM empresas..CAT_DB_EMPRESAS WHERE BASE_DATOS='" +
-        datos.baseDatos +
-        "'";
-      conexiones.body_bdseleccionada.baseDatos = datos.baseDatos;
-
-      const response = await axios.get(conexiones.windows_api, {
-        data: conexiones.body_bdseleccionada,
-      });
-
-      const respuesta = JSON.parse(response.data.data.resultado);
-
-      return respuesta[0].MOSTRAR_COLUMNA_CLIENTES;
-    } catch (e) {
-      console.log(e);
-    }
-  },
   "tipoGastos.getAll": async (datos) => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";

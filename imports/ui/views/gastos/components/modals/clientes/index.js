@@ -1,0 +1,1 @@
+export { ModalCatalogoClientes } from "./ModalCatalogoClientes";

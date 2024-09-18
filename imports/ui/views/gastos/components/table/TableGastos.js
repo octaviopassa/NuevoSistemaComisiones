@@ -13,7 +13,11 @@ import AsyncSelect from "react-select/async";
 import { UncontrolledTooltip } from "reactstrap";
 import toastr from "toastr";
 import { ClientesService, ProveedoresService } from "../../../../services";
-import { ModalCatalogoProveedores, ModalButton } from "../modals";
+import {
+  ModalCatalogoProveedores,
+  ModalButton,
+  ModalCatalogoClientes,
+} from "../modals";
 
 export const TableGastos = ({
   clientesVisible,
@@ -62,7 +66,7 @@ export const TableGastos = ({
   const clientesOptions = async (inputValue) => {
     if (inputValue.length >= 3) {
       try {
-        const clientes = await ClientesService.getAll({
+        const clientes = await ClientesService.getAllByName({
           search: inputValue,
         });
 
@@ -634,9 +638,15 @@ export const TableGastos = ({
                   ModalComponent={ModalCatalogoProveedores}
                 />
               </th>
-              {clientesVisible == 1 ? (
-                <th className="text-center">Cliente</th>
-              ) : null}
+              {clientesVisible == 1 && (
+                <th className="text-center">
+                  Cliente
+                  <ModalButton
+                    icon={faGear}
+                    ModalComponent={ModalCatalogoClientes}
+                  />
+                </th>
+              )}
               <th className="text-center">Tipo de gasto</th>
               <th className="text-center">Concepto</th>
               <th className="text-center">Detalle</th>

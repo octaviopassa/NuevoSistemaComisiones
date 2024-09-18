@@ -6,9 +6,6 @@ export const ProveedorFormSchema = Yup.object().shape({
     .max(50, "Muy largo")
     .required("Campo obligatorio"),
   rfc: Yup.string()
-    .matches(
-      /^([A-ZÑ&]{3,4}) ?(?:- ?)?(\d{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01])) ?(?:- ?)?([A-Z\d]{2})([A\d])$/,
-      "Formato de RFC inválido"
-    )
+    .matches(/^([A-ZÑ&]{3,4})(\d{6})([A-Z0-9]{3})$/, "Formato de RFC inválido")
     .required("Campo obligatorio"),
 });
