@@ -12,6 +12,7 @@ import { faGear } from "@fortawesome/free-solid-svg-icons";
 import { ModalCatalogoConductores } from "./conductores";
 import { ModalCatalogoVehiculos } from "./vehiculos";
 import { usePlazaStore } from "../../store";
+import { ModalCatalogoGasolineras } from "./gasolineras/ModalCatalogoGasolineras";
 
 export const ModalCombustible = ({
   modalCombustibleVisible,
@@ -44,9 +45,7 @@ export const ModalCombustible = ({
           }))
         );
 
-        const gasolineras = await GasolinerasService.getAll({
-          plaza: plazaSeleccionada,
-        });
+        const gasolineras = await GasolinerasService.getAll(plazaSeleccionada);
 
         setGasolineras(
           gasolineras.map((obj) => ({
@@ -199,7 +198,7 @@ export const ModalCombustible = ({
         <div className="form-group">
           <label className="form-label d-flex align-items-center">
             Vehículo
-            <ModalButton icon={faGear} ModalComponent={ModalCatalogoVehiculos} plaza={plazaSeleccionada} />
+            <ModalButton icon={faGear} ModalComponent={ModalCatalogoVehiculos} />
           </label>
           <AsyncSelect
             id="vehiculo"
@@ -246,7 +245,7 @@ export const ModalCombustible = ({
         <div className="form-group">
           <label className="form-label d-flex align-items-center">
             Gasolinera
-            <ModalButton icon={faGear} ModalComponent={() => {}} />
+            <ModalButton icon={faGear} ModalComponent={ModalCatalogoGasolineras} />
           </label>
           <AsyncSelect
             id="gasolinera"

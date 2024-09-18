@@ -19,22 +19,21 @@ import {
   useSearch,
 } from "../../../../../hooks";
 import { ModalButton } from "../ModalButton";
-import { VehiculosService } from "../../../../../services";
-import { ModalVehiculos } from "./ModalVehiculos";
+import { GasolinerasService } from "../../../../../services";
 import { usePlazaStore } from "../../../store";
+import { ModalGasolinera } from "./ModalGasolinera";
 
-export const ModalCatalogoVehiculos = ({ isModalOpen, toggle }) => {
+export const ModalCatalogoGasolineras = ({ isModalOpen, toggle }) => {
   const { plazaSeleccionada: plaza } = usePlazaStore();
   const {
     isLoading,
-    data: vehiculos,
+    data: gasolineras,
     reloadData,
-  } = useFetchData(VehiculosService.getAll, [{ plaza }]);
+  } = useFetchData(GasolinerasService.getAll, [plaza]);
+  console.log(gasolineras);
   const { searchText, setSearchText, filteredData } = useSearch(
-    vehiculos || []
+    gasolineras || []
   );
-
-  console.log(vehiculos);
   const { paginatedData, PaginationComponent, PaginationSelector } =
     useClientPagination(filteredData);
 
@@ -46,7 +45,7 @@ export const ModalCatalogoVehiculos = ({ isModalOpen, toggle }) => {
       size="lg"
     >
       <ModalHeader className="bg-primary text-white" toggle={toggle}>
-        Catálogo de Vehículos
+        Catálogo de Gasolineras
       </ModalHeader>
       <ModalBody>
         <div className="row">
@@ -55,7 +54,7 @@ export const ModalCatalogoVehiculos = ({ isModalOpen, toggle }) => {
               color="primary"
               buttonClasses="w-25 p-2"
               text="Nuevo"
-              ModalComponent={ModalVehiculos}
+              ModalComponent={ModalGasolinera}
               reloadData={reloadData}
             />
           </div>
@@ -90,16 +89,16 @@ export const ModalCatalogoVehiculos = ({ isModalOpen, toggle }) => {
                 </td>
               </tr>
             ) : (
-              paginatedData.map((vehiculo, i) => (
+              paginatedData.map((gasolinera, i) => (
                 <tr key={i}>
-                  <td>{vehiculo.Cod_Vehiculo}</td>
-                  <td>{vehiculo.Nom_Vehiculo_Placa}</td>
-                  <td>{vehiculo.Nom_Estatus}</td>
+                  <td>{gasolinera.Cod_Gasolinera}</td>
+                  <td>{gasolinera.Nom_Gasolinera}</td>
+                  <td>{gasolinera.Nom_Estatus}</td>
                   <td className="text-center">
                     <ModalButton
                       icon={faPencil}
-                      ModalComponent={ModalVehiculos}
-                      vehiculo={vehiculo}
+                      ModalComponent={ModalGasolinera}
+                      gasolinera={gasolinera}
                       reloadData={reloadData}
                     />
                   </td>
