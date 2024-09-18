@@ -16,7 +16,7 @@ export const useSearch = (data) => {
     const lowercasedSearchText = searchText.toLowerCase();
     return data.filter((item) => {
       return Object.values(item).some((value) =>
-        value.toString().toLowerCase().includes(lowercasedSearchText)
+        value?.toString().toLowerCase().includes(lowercasedSearchText)
       );
     });
   }, [searchText, data]);

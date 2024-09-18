@@ -4,6 +4,10 @@ ConductoresService.getAll = async (plaza) => {
   return await Meteor.callSync("conductores.getAll", plaza);
 };
 
+ConductoresService.getAllByPlazaAndCode = async (plaza, code) => {
+  return await Meteor.callSync("conductores.getAllByPlazaAndCode", plaza, code);
+};
+
 ConductoresService.insert = async (data) => {
   return await Meteor.callSync("conductores.insert", data);
 };

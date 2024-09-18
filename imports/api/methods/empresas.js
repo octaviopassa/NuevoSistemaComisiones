@@ -115,25 +115,6 @@ Meteor.methods({
       console.log(e);
     }
   },
-  "vehiculos.getAll": async (datos) => {
-    try {
-      conexiones.body_bdseleccionada.tipo = "consulta";
-      conexiones.body_bdseleccionada.query =
-        "exec dbo.SP_Cat_Vehiculos_Consulta @CODIGO_VEHICULO=0, @NOMBRE_VEHICULO='', @PLACA='', @MODELO='', @NUMERO_SERIE='', @POLIZA_SEGURO='', @CODIGO_ENCARGADO=0, @COD_ZONA='', @ESTATUS=' ', @ES_VEHICULO_OFICIAL='0', @CODIGO_VEHICULO_OFICIAL=0,@Plaza='" +
-        datos.plaza +
-        "'";
-      datos.plaza + "'";
-      console.log("vehiculos", conexiones.body_bdseleccionada.query);
-      conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
-      const response = await axios.get(conexiones.windows_api, {
-        data: conexiones.body_bdseleccionada,
-      });
-
-      return JSON.parse(response.data.data.resultado);
-    } catch (e) {
-      console.log(e);
-    }
-  },
   "combustibles.getAll": async (datos) => {
     try {
       conexiones.body_bdseleccionada.tipo = "consulta";

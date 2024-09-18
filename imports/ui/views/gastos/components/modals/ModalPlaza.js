@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
+import { usePlazaStore } from "../../store";
 
-export const ModalPlaza = ({ plazas, plazaSeleccionada, handleSelectPlaza }) => {
+export const ModalPlaza = ({ plazas, 
+  handleSelectPlaza }) => {
   const [modalVisible, setModalVisible] = useState(true);
+  const { plazaSeleccionada } = usePlazaStore();
 
   const toggleModal = () => {
     setModalVisible(!modalVisible);

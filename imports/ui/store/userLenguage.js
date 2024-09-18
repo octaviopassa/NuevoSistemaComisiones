@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-const useUserLenguageStore = create(
+export const useUserLenguageStore = create(
   persist(
     (set, get) => ({
       userLenguage: "es", // Valor inicial del estado

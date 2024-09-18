@@ -10,7 +10,7 @@ import {
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { ConductorFormSchema } from "../../../schemas";
 import Switch from "react-switch";
-import useUserSession from "../../../../../store/userSession";
+import { useUserSession } from "../../../../../store";
 import toastr from "toastr";
 import { ConductoresService, PlazasService } from "../../../../../services";
 import Select from "react-select";
@@ -52,22 +52,22 @@ export const ModalConductores = ({
     };
 
     try {
-        let result;
-        if (conductor) {
-          result = await ConductoresService.update(data);
-        } else {
-          result = await ConductoresService.insert(data);
-        }
+      let result;
+      if (conductor) {
+        result = await ConductoresService.update(data);
+      } else {
+        result = await ConductoresService.insert(data);
+      }
 
-        if (!result.isValid) {
-          toastr.error(result.message);
-          return;
-        }
+      if (!result.isValid) {
+        toastr.error(result.message);
+        return;
+      }
 
-        toastr.success(
-          result.message ||
-            `${conductor ? "Actualizado" : "Creado"} correctamente`
-        );
+      toastr.success(
+        result.message ||
+          `${conductor ? "Actualizado" : "Creado"} correctamente`
+      );
       toggle();
       reloadData();
     } catch (error) {
@@ -114,17 +114,14 @@ export const ModalConductores = ({
 
               <div className="form-group mt-3">
                 <label htmlFor="plaza">Plaza</label>
-                {/* <Field
-                  name="plaza"
-                  as={Select}
-                  options={isLoadingPlazas ? [] : plazas}
-            
-                /> */}
-                <Select 
+                <Select
                   name="plaza"
                   options={isLoadingPlazas ? [] : plazas}
-                  onChange={(selectedOption) => setFieldValue("plaza", selectedOption.value)}
+                  onChange={(selectedOption) =>
+                    setFieldValue("plaza", selectedOption.value)
+                  }
                   value={plazas.find((plaza) => plaza.value === values.plaza)}
+                  placeholder="Seleccione una plaza"
                 />
                 <ErrorMessage
                   name="plaza"

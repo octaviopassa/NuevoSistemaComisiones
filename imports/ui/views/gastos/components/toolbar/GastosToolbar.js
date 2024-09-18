@@ -8,12 +8,11 @@ import {
   ClientesService,
 } from "../../../../services";
 import { ModalPlaza } from "../modals";
+import { usePlazaStore } from "../../store";
 
 export const GastosToolbar = ({
-  plazaSeleccionada,
   setClientesVisible,
   setCombustibles,
-  setPlazaSeleccionada,
   setTipoGastos,
   user,
 }) => {
@@ -25,6 +24,8 @@ export const GastosToolbar = ({
   const [pagarA, setPagarA] = useState([]);
   const [pagarASeleccionado, setPagarASeleccionado] = useState("");
   const [ingenieros, setIngenieros] = useState([]);
+
+  const { plazaSeleccionada, setPlazaSeleccionada } = usePlazaStore();
 
   useEffect(() => {
     const cargaInicial = async () => {

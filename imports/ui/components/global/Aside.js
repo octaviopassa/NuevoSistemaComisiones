@@ -5,28 +5,19 @@ import {
   faUserGroup,
   faFile,
   faHome,
-  faUsersViewfinder,
-  faBars,
-  faList,
-  faUserGear,
-  faPerson,
-  faStore,
-  faNoteSticky,
-  faFileInvoiceDollar,
   faBuilding,
-  faBuildingUser,
-  faShapes,
-  faFileImport,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useTranslation } from "react-i18next";
 import ProtectModule from "./ProtectModule";
 import Swal from "sweetalert2";
-import useUserLoggedStore from "../../store/userLogged";
-import useUserLenguageStore from "../../store/userLenguage";
-import useUserModulesStore from "../../store/userModules";
-import useUserRolStore from "../../store/userRol";
-import useUserSession from "../../store/userSession";
+import {
+  useUserLoggedStore,
+  useUserLenguageStore,
+  useUserModulesStore,
+  useUserRolStore,
+  useUserSession,
+} from "../../store";
 import { Link } from "react-router-dom";
 
 export const Aside = () => {

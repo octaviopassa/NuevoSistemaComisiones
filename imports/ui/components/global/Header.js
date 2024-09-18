@@ -1,11 +1,13 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import useUserLoggedStore from "../../store/userLogged";
-import useUserLenguageStore from "../../store/userLenguage";
-import useUserModulesStore from "../../store/userModules";
-import useUserRolStore from "../../store/userRol";
-import useUserSession from "../../store/userSession";
+import {
+  useUserLoggedStore,
+  useUserLenguageStore,
+  useUserModulesStore,
+  useUserRolStore,
+  useUserSession,
+} from "../../store";
 import Swal from "sweetalert2";
 
 export const Header = () => {

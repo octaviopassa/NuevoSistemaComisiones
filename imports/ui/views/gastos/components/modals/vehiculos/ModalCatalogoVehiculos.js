@@ -19,18 +19,20 @@ import {
   useSearch,
 } from "../../../../../hooks";
 import { ModalButton } from "../ModalButton";
-import { ConductoresService } from "../../../../../services";
-import { ModalConductores } from "./ModalConductores";
+import { VehiculosService } from "../../../../../services";
+import { ModalVehiculos } from "./ModalVehiculos";
 
-export const ModalCatalogoConductores = ({ isModalOpen, toggle }) => {
+export const ModalCatalogoVehiculos = ({ isModalOpen, toggle, plaza }) => {
   const {
     isLoading,
-    data: conductores,
+    data: vehiculos,
     reloadData,
-  } = useFetchData(ConductoresService.getAll);
+  } = useFetchData(VehiculosService.getAll, [{ plaza }]);
   const { searchText, setSearchText, filteredData } = useSearch(
-    conductores || []
+    vehiculos || []
   );
+
+  console.log(vehiculos);
   const { paginatedData, PaginationComponent, PaginationSelector } =
     useClientPagination(filteredData);
 
@@ -42,7 +44,7 @@ export const ModalCatalogoConductores = ({ isModalOpen, toggle }) => {
       size="lg"
     >
       <ModalHeader className="bg-primary text-white" toggle={toggle}>
-        Catálogo de Conductores
+        Catálogo de Vehículos
       </ModalHeader>
       <ModalBody>
         <div className="row">
@@ -51,7 +53,7 @@ export const ModalCatalogoConductores = ({ isModalOpen, toggle }) => {
               color="primary"
               buttonClasses="w-25 p-2"
               text="Nuevo"
-              ModalComponent={ModalConductores}
+              ModalComponent={ModalVehiculos}
               reloadData={reloadData}
             />
           </div>
@@ -86,16 +88,16 @@ export const ModalCatalogoConductores = ({ isModalOpen, toggle }) => {
                 </td>
               </tr>
             ) : (
-              paginatedData.map((conductor, i) => (
+              paginatedData.map((vehiculo, i) => (
                 <tr key={i}>
-                  <td>{conductor.Cod_Conductor}</td>
-                  <td>{conductor.Nom_Conductor}</td>
-                  <td>{conductor.Estatus === "A" ? "Activo" : "Inactivo"}</td>
+                  <td>{vehiculo.Cod_Vehiculo}</td>
+                  <td>{vehiculo.Nom_Vehiculo_Placa}</td>
+                  <td>{vehiculo.Nom_Estatus}</td>
                   <td className="text-center">
                     <ModalButton
                       icon={faPencil}
-                      ModalComponent={ModalConductores}
-                      conductor={conductor}
+                      ModalComponent={ModalVehiculos}
+                      vehiculo={vehiculo}
                       reloadData={reloadData}
                     />
                   </td>

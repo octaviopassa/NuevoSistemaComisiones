@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Page from "../../components/global/Page";
-import useUserSession from "../../store/userSession";
+import { useUserSession } from "../../store";
 import {
   ModalCombustible,
   ModalImportes,
@@ -11,9 +11,7 @@ import {
 
 const Gastos = () => {
   const [combustibles, setCombustibles] = useState([]);
-  const [documentos, setDocumentos] = useState([]);
-  //TODO: Crear un context de todos los states menos combustibles y documentos, de esa forma evitamos el "props drilling".
-  const [plazaSeleccionada, setPlazaSeleccionada] = useState("");
+  const [documentos, setDocumentos] = useState([]); //? Creo un state para los documentos?
   const [modalImportesVisible, setModalImportesVisible] = useState(false);
   const [modalCombustibleVisible, setModalCombustibleVisible] = useState(false);
   const [clientesVisible, setClientesVisible] = useState(false);
@@ -48,8 +46,6 @@ const Gastos = () => {
   return (
     <Page name="Gastos">
       <GastosToolbar
-        setPlazaSeleccionada={setPlazaSeleccionada}
-        plazaSeleccionada={plazaSeleccionada}
         user={user}
         setTipoGastos={setTipoGastos}
         setCombustibles={setCombustibles}
@@ -73,13 +69,11 @@ const Gastos = () => {
         <ModalCombustible
           modalCombustibleVisible={modalCombustibleVisible}
           toggleModalCombustible={toggleModalCombustible}
-          plazaSeleccionada={plazaSeleccionada}
           combustibles={combustibles}
           setDocumentos={setDocumentos}
         />
       )}
 
-      {/* Modal para Importes / Impuestos */}
       {modalImportesVisible && (
         <ModalImportes
           modalImportesVisible={modalImportesVisible}

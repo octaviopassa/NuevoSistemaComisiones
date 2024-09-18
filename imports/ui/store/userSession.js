@@ -14,7 +14,7 @@ const userDefault = {
   username: undefined,
 };
 
-const useUserSession = create(
+export const useUserSession = create(
   persist(
     (set, get) => ({
       session: userDefault, // Valor inicial del estado

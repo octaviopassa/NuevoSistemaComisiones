@@ -5,11 +5,13 @@ import Select from "react-select";
 import { Label } from "reactstrap";
 import toastr from "toastr";
 import { UserService } from "../../../services";
-import useUserLenguageStore from "../../../store/userLenguage";
-import useUserLoggedStore from "../../../store/userLogged";
-import useUserModulesStore from "../../../store/userModules";
-import useUserRolStore from "../../../store/userRol";
-import useUserSession from "../../../store/userSession";
+import {
+  useUserLenguageStore,
+  useUserLoggedStore,
+  useUserModulesStore,
+  useUserRolStore,
+  useUserSession,
+} from "../../../store";
 import { LoginSchema } from "../schemas";
 
 export const LoginForm = ({ empresas }) => {

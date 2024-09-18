@@ -46,6 +46,7 @@ import "../../api/methods/empresas";
 import "../../api/methods/proveedores";
 import "../../api/methods/conductores";
 import "../../api/methods/gasolineras";
+import "../../api/methods/vehiculos";
 
 import "./startup";
 import "./initialLoad";

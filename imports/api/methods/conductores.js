@@ -20,12 +20,33 @@ Meteor.methods({
       console.log(e);
     }
   },
+  "conductores.getAllByPlazaAndCode": async (plaza, code) => {
+    try {
+      conexiones.body_bdseleccionada.tipo = "procedimiento";
+      conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
+      conexiones.body_bdseleccionada.query = `
+        SELECT COD_USUARIO CODIGO,NOM_USUARIO NOMBRE FROM CONSUMOS_PASSA..CATUSUARIOS Where COD_PLAZA='${plaza}' ${
+        code ? "AND COD_USUARIO='${code}'" : ""
+      }
+      `;
+
+      const response = await axios.get(conexiones.windows_api, {
+        data: conexiones.body_bdseleccionada,
+      });
+
+      return JSON.parse(response.data.data.resultado);
+    } catch (e) {
+      console.log(e);
+    }
+  },
   "conductores.insert": async (datos) => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
       conexiones.body_bdseleccionada.query = `
-        exec [SP_CAT_CONDUCTORES] @Cod_Conductor='0', @Nom_Conductor='${datos.nombre}', @Estatus='${datos.estatus ? "A" : "B"}', @Cod_Plaza='${datos.plaza}'
+        exec [SP_CAT_CONDUCTORES] @Cod_Conductor='0', @Nom_Conductor='${
+          datos.nombre
+        }', @Estatus='${datos.estatus ? "A" : "B"}', @Cod_Plaza='${datos.plaza}'
       `;
 
       const response = await axios.get(conexiones.windows_api, {
@@ -51,7 +72,11 @@ Meteor.methods({
       conexiones.body_bdseleccionada.tipo = "procedimiento";
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
       conexiones.body_bdseleccionada.query = `
-        exec [SP_CAT_CONDUCTORES] @Cod_Conductor='${datos.codigo}', @Nom_Conductor='${datos.nombre}', @Estatus='${datos.estatus ? "A" : "B"}', @Cod_Plaza='${datos.plaza}'
+        exec [SP_CAT_CONDUCTORES] @Cod_Conductor='${
+          datos.codigo
+        }', @Nom_Conductor='${datos.nombre}', @Estatus='${
+        datos.estatus ? "A" : "B"
+      }', @Cod_Plaza='${datos.plaza}'
       `;
 
       const response = await axios.get(conexiones.windows_api, {
@@ -73,11 +98,3 @@ Meteor.methods({
     }
   },
 });
-
-/**
- * exec [SP_CAT_CONDUCTORES] 
-@Cod_Conductor='0', (0 si están insertando, el código si están actualizando)
-@Nom_Conductor='PRUEBA', (textbox nombre)
-@Estatus='A', (Letra A o B como cadena dependiendo si es Activo/Baja)
-@Cod_Plaza='01' (combo Plaza)
- */

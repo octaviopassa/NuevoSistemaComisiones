@@ -71,7 +71,7 @@ export const ModalCatalogoProveedores = ({ isModalOpen, toggle }) => {
           <thead>
             <tr>
               <th>#</th>
-              <th>Proveedoredor</th>
+              <th>Nombre</th>
               <th>RFC</th>
               <th>Estatus</th>
               <th>Acciones</th>

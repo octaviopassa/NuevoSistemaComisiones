@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import toastr from "toastr";
-import Select from "react-select/async";
+import AsyncSelect from "react-select/async";
 import {
   VehiculosService,
   GasolinerasService,
@@ -10,9 +10,10 @@ import {
 import { ModalButton } from "./ModalButton";
 import { faGear } from "@fortawesome/free-solid-svg-icons";
 import { ModalCatalogoConductores } from "./conductores";
+import { ModalCatalogoVehiculos } from "./vehiculos";
+import { usePlazaStore } from "../../store";
 
 export const ModalCombustible = ({
-  plazaSeleccionada,
   modalCombustibleVisible,
   toggleModalCombustible,
   combustibles,
@@ -27,6 +28,8 @@ export const ModalCombustible = ({
   const [litros, setLitros] = useState("");
   const [combustibleSeleccionado, setCombustibleSeleccionado] = useState(null);
   const [gasolineraSeleccionada, setGasolineraSeleccionada] = useState(null);
+
+  const { plazaSeleccionada } = usePlazaStore();
 
   useEffect(() => {
     const cargaInicial = async () => {
@@ -177,14 +180,14 @@ export const ModalCombustible = ({
       </ModalHeader>
       <ModalBody>
         <div className="form-group">
-          <label>
+          <label className="form-label d-flex align-items-center">
             Conductor
             <ModalButton
               icon={faGear}
               ModalComponent={ModalCatalogoConductores}
             />
           </label>
-          <Select
+          <AsyncSelect
             id="conductor"
             cacheOptions
             loadOptions={filterConductor}
@@ -194,8 +197,11 @@ export const ModalCombustible = ({
           />
         </div>
         <div className="form-group">
-          <label>Vehículo</label>
-          <Select
+          <label className="form-label d-flex align-items-center">
+            Vehículo
+            <ModalButton icon={faGear} ModalComponent={ModalCatalogoVehiculos} plaza={plazaSeleccionada} />
+          </label>
+          <AsyncSelect
             id="vehiculo"
             cacheOptions
             loadOptions={filterVehiculo}
@@ -205,7 +211,9 @@ export const ModalCombustible = ({
           />
         </div>
         <div className="form-group">
-          <label>Kilometraje</label>
+          <label className="form-label d-flex align-items-center">
+            Kilometraje
+          </label>
           <input
             type="number"
             className="form-control"
@@ -214,7 +222,7 @@ export const ModalCombustible = ({
           />
         </div>
         <div className="form-group">
-          <label>Litros</label>
+          <label className="form-label d-flex align-items-center">Litros</label>
           <input
             type="number"
             className="form-control"
@@ -223,8 +231,10 @@ export const ModalCombustible = ({
           />
         </div>
         <div className="form-group">
-          <label>Combustible</label>
-          <Select
+          <label className="form-label d-flex align-items-center">
+            Combustible
+          </label>
+          <AsyncSelect
             id="combustible"
             cacheOptions
             loadOptions={filterCombustible}
@@ -234,8 +244,11 @@ export const ModalCombustible = ({
           />
         </div>
         <div className="form-group">
-          <label>Gasolinera</label>
-          <Select
+          <label className="form-label d-flex align-items-center">
+            Gasolinera
+            <ModalButton icon={faGear} ModalComponent={() => {}} />
+          </label>
+          <AsyncSelect
             id="gasolinera"
             cacheOptions
             loadOptions={filterGasolinera}

@@ -11,7 +11,7 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import { ProveedorFormSchema } from "../../../schemas";
 import Switch from "react-switch";
 import { ProveedoresService } from "../../../../../services";
-import useUserSession from "../../../../../store/userSession";
+import { useUserSession } from "../../../../../store";
 import toastr from "toastr";
 
 export const ModalProveedores = ({
