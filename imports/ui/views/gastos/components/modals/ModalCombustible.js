@@ -174,7 +174,7 @@ export const ModalCombustible = ({
 
   return (
     <Modal isOpen={modalCombustibleVisible} toggle={toggleModalCombustible}>
-      <ModalHeader toggle={toggleModalCombustible}>
+      <ModalHeader className="bg-primary text-white" toggle={toggleModalCombustible}>
         Gasto de combustible
       </ModalHeader>
       <ModalBody>

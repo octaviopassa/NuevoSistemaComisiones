@@ -7,7 +7,6 @@ export const ModalImportes = ({
   setImportesData,
   importesData,
 }) => {
-
   const handleGuardarImportes = () => {
     toggleModalImportes();
   };
@@ -17,7 +16,7 @@ export const ModalImportes = ({
       ...prevImportesData,
       [e.target.name]: e.target.value,
     }));
-  };  
+  };
 
   return (
     <Modal
@@ -26,7 +25,10 @@ export const ModalImportes = ({
       size="lg"
       className="modal-importes"
     >
-      <ModalHeader toggle={toggleModalImportes}>
+      <ModalHeader
+        className="bg-primary text-white"
+        toggle={toggleModalImportes}
+      >
         Importes / Impuestos
       </ModalHeader>
       <ModalBody>

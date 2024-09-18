@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import { usePlazaStore } from "../../store";
 
-export const ModalPlaza = ({ plazas, 
-  handleSelectPlaza }) => {
+export const ModalPlaza = ({ plazas, handleSelectPlaza }) => {
   const [modalVisible, setModalVisible] = useState(true);
   const { plazaSeleccionada } = usePlazaStore();
 
