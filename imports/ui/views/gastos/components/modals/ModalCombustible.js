@@ -6,6 +6,7 @@ import {
   VehiculosService,
   GasolinerasService,
   ConductoresService,
+  CombustibleService,
 } from "../../../../services";
 import { ModalButton } from "./ModalButton";
 import { faGear } from "@fortawesome/free-solid-svg-icons";
@@ -14,13 +15,9 @@ import { ModalCatalogoVehiculos } from "./vehiculos";
 import { usePlazaStore } from "../../store";
 import { ModalCatalogoGasolineras } from "./gasolineras/ModalCatalogoGasolineras";
 
-export const ModalCombustible = ({
-  modalCombustibleVisible,
-  toggleModalCombustible,
-  combustibles,
-  setDocumentos,
-}) => {
+export const ModalCombustible = ({ isModalOpen, toggle, setDocumentos }) => {
   const [gasolineras, setGasolineras] = useState([]);
+  const [combustibles, setCombustibles] = useState("");
   const [conductores, setConductores] = useState([]);
   const [vehiculos, setVehiculos] = useState([]);
   const [conductorSeleccionado, setConductorSeleccionado] = useState(null);
@@ -35,17 +32,19 @@ export const ModalCombustible = ({
   useEffect(() => {
     const cargaInicial = async () => {
       if (plazaSeleccionada != "") {
+        const gasolineras = await GasolinerasService.getAll(plazaSeleccionada);
         const vehiculos = await VehiculosService.getAll({
           plaza: plazaSeleccionada,
         });
+        const conductores = await ConductoresService.getAll(plazaSeleccionada);
+        const combustibles = await CombustibleService.getAll();
+
         setVehiculos(
           vehiculos.map((obj) => ({
             value: obj.Cod_Vehiculo,
             label: obj.Nom_Vehiculo,
           }))
         );
-
-        const gasolineras = await GasolinerasService.getAll(plazaSeleccionada);
 
         setGasolineras(
           gasolineras.map((obj) => ({
@@ -54,12 +53,15 @@ export const ModalCombustible = ({
           }))
         );
 
-        const conductores = await ConductoresService.getAll(plazaSeleccionada);
         setConductores(
           conductores.map((obj) => ({
             value: obj.Cod_Conductor,
             label: obj.Nom_Conductor,
           }))
+        );
+
+        setCombustibles(
+          combustibles.map((obj) => ({ value: obj.Codigo, label: obj.Nombre }))
         );
       }
     };
@@ -128,7 +130,7 @@ export const ModalCombustible = ({
     setCombustibleSeleccionado(null);
     setGasolineraSeleccionada(null);
 
-    toggleModalCombustible();
+    toggle();
     toastr.success("Datos de combustible agregados al documento");
   };
 
@@ -173,8 +175,8 @@ export const ModalCombustible = ({
   };
 
   return (
-    <Modal isOpen={modalCombustibleVisible} toggle={toggleModalCombustible}>
-      <ModalHeader className="bg-primary text-white" toggle={toggleModalCombustible}>
+    <Modal isOpen={isModalOpen} toggle={toggle}>
+      <ModalHeader className="bg-primary text-white" toggle={toggle}>
         Gasto de combustible
       </ModalHeader>
       <ModalBody>
@@ -198,7 +200,10 @@ export const ModalCombustible = ({
         <div className="form-group">
           <label className="form-label d-flex align-items-center">
             Vehículo
-            <ModalButton icon={faGear} ModalComponent={ModalCatalogoVehiculos} />
+            <ModalButton
+              icon={faGear}
+              ModalComponent={ModalCatalogoVehiculos}
+            />
           </label>
           <AsyncSelect
             id="vehiculo"
@@ -245,7 +250,10 @@ export const ModalCombustible = ({
         <div className="form-group">
           <label className="form-label d-flex align-items-center">
             Gasolinera
-            <ModalButton icon={faGear} ModalComponent={ModalCatalogoGasolineras} />
+            <ModalButton
+              icon={faGear}
+              ModalComponent={ModalCatalogoGasolineras}
+            />
           </label>
           <AsyncSelect
             id="gasolinera"
@@ -258,7 +266,7 @@ export const ModalCombustible = ({
         </div>
       </ModalBody>
       <ModalFooter>
-        <Button color="secondary" onClick={toggleModalCombustible}>
+        <Button color="secondary" onClick={toggle}>
           Cancelar
         </Button>
         <Button color="primary" onClick={handleGuardarCombustible}>

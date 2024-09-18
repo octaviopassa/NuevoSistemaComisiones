@@ -7,14 +7,13 @@ import {
   GastosService,
   ClientesService,
 } from "../../../../services";
-import { ModalPlaza } from "../modals";
+import { ModalButton, ModalPlaza } from "../modals";
 import { usePlazaStore } from "../../store";
+import { useUserSession } from "../../../../store";
 
 export const GastosToolbar = ({
   setClientesVisible,
-  setCombustibles,
   setTipoGastos,
-  user,
 }) => {
   const [plazas, setPlazas] = useState([]);
   const [isCheckedSucursal, setIsCheckedSucursal] = useState(true);
@@ -25,6 +24,7 @@ export const GastosToolbar = ({
   const [pagarASeleccionado, setPagarASeleccionado] = useState("");
   const [ingenieros, setIngenieros] = useState([]);
 
+  const { session: user } = useUserSession();
   const { plazaSeleccionada, setPlazaSeleccionada } = usePlazaStore();
 
   useEffect(() => {
@@ -49,12 +49,6 @@ export const GastosToolbar = ({
 
         setTipoGastos(
           tipoGastos.map((tg) => ({ value: tg.Codigo, label: tg.Nombre }))
-        );
-
-        const combustibles = await CombustibleService.getAll();
-
-        setCombustibles(
-          combustibles.map((obj) => ({ value: obj.Codigo, label: obj.Nombre }))
         );
 
         const cliVisibles = await ClientesService.clientesVisible({
@@ -247,6 +241,21 @@ export const GastosToolbar = ({
                 </option>
               ))}
             </select>
+            <ModalButton
+              color="primary"
+              buttonClasses="px-3 ml-2"
+              text="Agregar"
+              ModalComponent={() => {}}
+            />
+            {pagarASeleccionado && (
+              <ModalButton
+                color="secondary"
+                buttonClasses="px-3 ml-2"
+                text="Modificar Cuenta"
+                ModalComponent={() => {}}
+                pagarA={pagarA.find((p) => p.Codigo === pagarASeleccionado)}
+              />
+            )}
           </div>
         </div>
       </div>

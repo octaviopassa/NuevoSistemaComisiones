@@ -2,13 +2,13 @@ import React from "react";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
 export const ModalImportes = ({
-  modalImportesVisible,
-  toggleModalImportes,
+  isModalOpen,
+  toggle,
   setImportesData,
   importesData,
 }) => {
   const handleGuardarImportes = () => {
-    toggleModalImportes();
+    toggle();
   };
 
   const handleImportesChange = (e) => {
@@ -20,14 +20,14 @@ export const ModalImportes = ({
 
   return (
     <Modal
-      isOpen={modalImportesVisible}
-      toggle={toggleModalImportes}
+      isOpen={isModalOpen}
+      toggle={toggle}
       size="lg"
       className="modal-importes"
     >
       <ModalHeader
         className="bg-primary text-white"
-        toggle={toggleModalImportes}
+        toggle={toggle}
       >
         Importes / Impuestos
       </ModalHeader>
@@ -157,7 +157,7 @@ export const ModalImportes = ({
         <Button color="primary" onClick={handleGuardarImportes}>
           Guardar
         </Button>
-        <Button color="secondary" onClick={toggleModalImportes}>
+        <Button color="secondary" onClick={toggle}>
           Cancelar
         </Button>
       </ModalFooter>

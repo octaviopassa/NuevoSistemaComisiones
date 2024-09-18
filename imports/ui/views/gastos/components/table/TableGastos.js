@@ -17,17 +17,15 @@ import {
   ModalCatalogoProveedores,
   ModalButton,
   ModalCatalogoClientes,
+  ModalImportes,
+  ModalCombustible,
 } from "../modals";
 
 export const TableGastos = ({
   clientesVisible,
   tipoGastos,
-  toggleModalCombustible,
-  toggleModalImportes,
   setDocumentos,
   documentos,
-  importesData,
-  setImportesData,
 }) => {
   const [proveedorSeleccionado, setProveedorSeleccionado] = useState("");
   const [clienteSeleccionado, setClienteSeleccionado] = useState("");
@@ -39,6 +37,19 @@ export const TableGastos = ({
   const [xmlTempData, setXmlTempData] = useState(null);
   const [pdfTempData, setPdfTempData] = useState(null);
   const [tipoDocumento, setTipoDocumento] = useState("");
+  const [importesData, setImportesData] = useState({
+    fecha: "",
+    folio: "",
+    subtotal: "0.00",
+    impuesto: "0.00",
+    iva_16: "0.00",
+    iva_8: "0.00",
+    ieps: "0.00",
+    ish: "0.00",
+    tua: "0.00",
+    ret: "0.00",
+    total: "0.00",
+  });
 
   const tipoDocumentoRef = useRef(null);
   const proveedorRef = useRef(null);
@@ -537,12 +548,13 @@ export const TableGastos = ({
                 {tipoGastoSeleccionado && (
                   <>
                     {tipoGastoSeleccionado.value === 1 ? (
-                      <button
-                        className="btn btn-link"
-                        onClick={toggleModalCombustible}
-                      >
-                        Detalles del gasto
-                      </button>
+                      <ModalButton 
+                        color=""
+                        buttonClasses="btn btn-link"
+                        text="Detalles del gasto"
+                        ModalComponent={ModalCombustible}
+                        setDocumentos={setDocumentos}
+                      />
                     ) : tipoGastoSeleccionado.value === 17 ? (
                       <>
                         <label style={{ fontSize: "8pt" }}>
@@ -574,9 +586,14 @@ export const TableGastos = ({
               </th>
               <th className="text-center">
                 {tipoDocumento.value === "Nota" && (
-                  <a href="#" onClick={toggleModalImportes}>
-                    Registrar/Editar importes
-                  </a>
+                  <ModalButton
+                    color=""
+                    text="Importes"
+                    buttonClasses="px-3 py-1 border"
+                    ModalComponent={ModalImportes}
+                    importesData={importesData}
+                    setImportesData={setImportesData}
+                  />
                 )}
               </th>
 
