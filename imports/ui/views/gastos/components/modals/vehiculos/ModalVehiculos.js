@@ -14,7 +14,7 @@ import toastr from "toastr";
 import { ConductoresService, VehiculosService } from "../../../../../services";
 import Select from "react-select";
 import { useFetchData } from "../../../../../hooks";
-import { usePlazaStore } from "../../../store/plazaSeleccionadaState";
+import { useGastosData } from "../../../store";
 
 export const ModalVehiculos = ({
   isModalOpen,
@@ -22,7 +22,7 @@ export const ModalVehiculos = ({
   vehiculo,
   reloadData,
 }) => {
-  const { plazaSeleccionada: plaza } = usePlazaStore();
+  const { plazaSeleccionada: plaza } = useGastosData();
   const { data, isLoading: isLoadingConductores } = useFetchData(
     ConductoresService.getAllByPlazaAndCode,
     [plaza]

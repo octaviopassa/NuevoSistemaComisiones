@@ -20,11 +20,11 @@ import {
 } from "../../../../../hooks";
 import { ModalButton } from "../ModalButton";
 import { GasolinerasService } from "../../../../../services";
-import { usePlazaStore } from "../../../store";
+import { useGastosData } from "../../../store";
 import { ModalGasolinera } from "./ModalGasolinera";
 
 export const ModalCatalogoGasolineras = ({ isModalOpen, toggle }) => {
-  const { plazaSeleccionada: plaza } = usePlazaStore();
+  const { plazaSeleccionada: plaza } = useGastosData();
   const {
     isLoading,
     data: gasolineras,

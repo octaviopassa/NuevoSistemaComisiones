@@ -5,24 +5,28 @@ import {
   GastosService,
   ClientesService,
 } from "../../../../services";
-import { ModalButton, ModalPlaza } from "../modals";
-import { usePlazaStore } from "../../store";
+import { ModalButton } from "../modals";
+import { useGastosData } from "../../store";
 import { useUserSession } from "../../../../store";
 import { ModalCuentas } from "../modals/ModalCuentas";
 
 export const GastosToolbar = ({ setClientesVisible }) => {
   const [plazas, setPlazas] = useState([]);
   const [isCheckedSucursal, setIsCheckedSucursal] = useState(true);
-  const [isCheckedIngeniero, setIsCheckedIngeniero] = useState(false);
-  const [selectedIngeniero, setSelectedIngeniero] = useState("");
-  const [folio, setFolio] = useState("");
   const [pagarA, setPagarA] = useState([]);
-  const [pagarASeleccionado, setPagarASeleccionado] = useState("");
   const [ingenieros, setIngenieros] = useState([]);
   const [reloadData, setReloadData] = useState(false);
+  const [folio, setFolio] = useState("");
 
   const { session: user } = useUserSession();
-  const { plazaSeleccionada, setPlazaSeleccionada } = usePlazaStore();
+  const {
+    plazaSeleccionada,
+    setPlazaSeleccionada,
+    pagarASeleccionado,
+    setPagarASeleccionado,
+    selectedIngeniero,
+    setSelectedIngeniero,
+  } = useGastosData();
 
   useEffect(() => {
     const cargaInicial = async () => {
@@ -58,14 +62,8 @@ export const GastosToolbar = ({ setClientesVisible }) => {
     cargaInicial();
   }, [user.profile.COD_USU, user.profile.baseDatos, reloadData]);
 
-  const handleCheckSucursal = () => {
-    setIsCheckedSucursal(true);
-    setIsCheckedIngeniero(false);
-  };
-
-  const handleCheckIngeniero = () => {
-    setIsCheckedIngeniero(true);
-    setIsCheckedSucursal(false);
+  const handleChecks = () => {
+    setIsCheckedSucursal(!isCheckedSucursal);
   };
 
   const handleSelectPlaza = async (e) => {
@@ -89,7 +87,7 @@ export const GastosToolbar = ({ setClientesVisible }) => {
               id="inlineRadioSucursal"
               name="gastosDe"
               checked={isCheckedSucursal}
-              onChange={handleCheckSucursal}
+              onChange={handleChecks}
             />
             <label
               className="custom-control-label"
@@ -105,8 +103,8 @@ export const GastosToolbar = ({ setClientesVisible }) => {
               className="custom-control-input"
               id="inlineRadioIngeniero"
               name="gastosDe"
-              checked={isCheckedIngeniero}
-              onChange={handleCheckIngeniero}
+              checked={!isCheckedSucursal}
+              onChange={handleChecks}
             />
             <label
               className="custom-control-label"
@@ -117,7 +115,7 @@ export const GastosToolbar = ({ setClientesVisible }) => {
           </div>
         </div>
 
-        {isCheckedIngeniero && (
+        {!isCheckedSucursal && (
           <div className="col-sm-3">
             <div className="input-group">
               <div className="input-group-prepend">
@@ -257,12 +255,6 @@ export const GastosToolbar = ({ setClientesVisible }) => {
           </div>
         </div>
       </div>
-
-      {/* <ModalPlaza
-        plazas={plazas}
-        plazaSeleccionada={plazaSeleccionada}
-        handleSelectPlaza={handleSelectPlaza}
-      /> */}
     </>
   );
 };

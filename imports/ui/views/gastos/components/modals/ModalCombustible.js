@@ -12,7 +12,7 @@ import { ModalButton } from "./ModalButton";
 import { faGear } from "@fortawesome/free-solid-svg-icons";
 import { ModalCatalogoConductores } from "./conductores";
 import { ModalCatalogoVehiculos } from "./vehiculos";
-import { usePlazaStore } from "../../store";
+import { useGastosData } from "../../store";
 import { ModalCatalogoGasolineras } from "./gasolineras/ModalCatalogoGasolineras";
 
 export const ModalCombustible = ({ isModalOpen, toggle, setDocumentos }) => {
@@ -27,7 +27,7 @@ export const ModalCombustible = ({ isModalOpen, toggle, setDocumentos }) => {
   const [combustibleSeleccionado, setCombustibleSeleccionado] = useState(null);
   const [gasolineraSeleccionada, setGasolineraSeleccionada] = useState(null);
 
-  const { plazaSeleccionada } = usePlazaStore();
+  const { plazaSeleccionada } = useGastosData();
 
   useEffect(() => {
     const cargaInicial = async () => {

@@ -11,7 +11,7 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import { GasolineraFormSchema } from "../../../schemas";
 import Switch from "react-switch";
 import toastr from "toastr";
-import { usePlazaStore } from "../../../store";
+import { useGastosData } from "../../../store";
 import { GasolinerasService } from "../../../../../services";
 
 export const ModalGasolinera = ({
@@ -20,7 +20,7 @@ export const ModalGasolinera = ({
   gasolinera,
   reloadData,
 }) => {
-  const { plazaSeleccionada: plaza } = usePlazaStore();
+  const { plazaSeleccionada: plaza } = useGastosData();
 
   const initialValues = {
     codigo: gasolinera ? gasolinera.Cod_Gasolinera : "#",

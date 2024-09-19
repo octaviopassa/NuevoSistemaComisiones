@@ -21,10 +21,10 @@ import {
 import { ModalButton } from "../ModalButton";
 import { VehiculosService } from "../../../../../services";
 import { ModalVehiculos } from "./ModalVehiculos";
-import { usePlazaStore } from "../../../store";
+import { useGastosData } from "../../../store";
 
 export const ModalCatalogoVehiculos = ({ isModalOpen, toggle }) => {
-  const { plazaSeleccionada: plaza } = usePlazaStore();
+  const { plazaSeleccionada: plaza } = useGastosData();
   const {
     isLoading,
     data: vehiculos,

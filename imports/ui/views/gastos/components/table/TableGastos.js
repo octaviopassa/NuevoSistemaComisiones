@@ -25,8 +25,9 @@ import {
   ModalCombustible,
 } from "../modals";
 import { useFetchData } from "../../../../hooks";
+import { useGastosData } from "../../store";
 
-export const TableGastos = ({ clientesVisible, setDocumentos, documentos }) => {
+export const TableGastos = ({ clientesVisible }) => {
   const [proveedorSeleccionado, setProveedorSeleccionado] = useState("");
   const [clienteSeleccionado, setClienteSeleccionado] = useState("");
   const [tipoGastoSeleccionado, setTipoGastoSeleccionado] = useState("");
@@ -50,6 +51,8 @@ export const TableGastos = ({ clientesVisible, setDocumentos, documentos }) => {
     ret: "0.00",
     total: "0.00",
   });
+  
+  const { setDocumentos, documentos } = useGastosData();
   const { data: dataTipoGastos } = useFetchData(TipoGastosService.getAll);
   const tipoGastos = dataTipoGastos.map((tg) => ({
     value: tg.Codigo,
