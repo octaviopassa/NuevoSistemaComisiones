@@ -6,6 +6,7 @@ import {
   faFile,
   faHome,
   faBuilding,
+  faBars,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useTranslation } from "react-i18next";
@@ -20,8 +21,7 @@ import {
 } from "../../store";
 import { Link } from "react-router-dom";
 
-export const Aside = () => {
-  const { t } = useTranslation();
+export const Aside = ({ isOpen, toggleSidebar, setIsSidebarOpen }) => {
   const { resetAllowedModules } = useUserModulesStore();
   const { resetUserLenguage } = useUserLenguageStore();
   const { resetUserLogged } = useUserLoggedStore();
@@ -33,15 +33,12 @@ export const Aside = () => {
     rol: rol,
   };
 
-  const [activeLink, setActiveLink] = useState();
-  const [Sidebar, setSidebar] = useState(false);
-
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth > 767) {
-        setSidebar(true);
+        setIsSidebarOpen(true);
       } else {
-        setSidebar(false);
+        setIsSidebarOpen(false);
       }
     };
 
@@ -71,26 +68,23 @@ export const Aside = () => {
     });
   };
 
-  const ShowSidebars = () => setSidebar(!Sidebar);
-
   return (
-    <div>
-      <div className={Sidebar ? "sidebar open" : "sidebar"}>
+    <div className="">
+      <div className={isOpen ? "sidebar open" : "sidebar"}>
         <div className="logo-details">
           <div className="logo-name">
-            <img src="/img/logo-header.png" alt="" className="" />
+            <img src="/img/logo-header.png" alt="" className="z-50" />
           </div>
 
-          {/* <FontAwesomeIcon
+          <FontAwesomeIcon
             icon={faBars}
-            className="icono1"
-            id="btn"
-            onClick={ShowSidebars}
-          /> */}
+            onClick={toggleSidebar}
+            className="cursor-pointer text-2xl"
+          />
         </div>
-        <ul className="nav-list">
+        <ul className="nav-list items-center">
           <li>
-            <Link data-filter-tags="Home" to="/">
+            <Link className="" data-filter-tags="Home" to="/">
               <FontAwesomeIcon icon={faHome} className="icono1" />
 
               <span className="linkname">Inicio</span>
@@ -99,7 +93,7 @@ export const Aside = () => {
           </li>
           <ProtectModule method="remove" page="Roles" module="view">
             <li>
-              <Link data-filter-tags="Roles" to="/roles">
+              <Link className="" data-filter-tags="Roles" to="/roles">
                 <FontAwesomeIcon icon={faUserGroup} className="icono1" />
 
                 <span className="linkname">Roles</span>
@@ -109,7 +103,7 @@ export const Aside = () => {
           </ProtectModule>
           <ProtectModule method="remove" page="Pages" module="view">
             <li>
-              <Link data-filter-tags="Pages" to="/pages">
+              <Link className="" data-filter-tags="Pages" to="/pages">
                 <FontAwesomeIcon icon={faFile} className="icono1" />
                 <span className="linkname">Páginas</span>
               </Link>
@@ -118,7 +112,7 @@ export const Aside = () => {
           </ProtectModule>
           <ProtectModule method="remove" page="Usuarios" module="view">
             <li>
-              <Link data-filter-tags="Usuarios" to="/usuarios">
+              <Link className="" data-filter-tags="Usuarios" to="/usuarios">
                 <FontAwesomeIcon icon={faUsersGear} className="icono1" />
 
                 <span className="linkname">Usuarios</span>
@@ -128,7 +122,7 @@ export const Aside = () => {
           </ProtectModule>
           <ProtectModule method="remove" page="Gastos" module="view">
             <li>
-              <Link data-filter-tags="Gastos" to="/gastos">
+              <Link className="" data-filter-tags="Gastos" to="/gastos">
                 <FontAwesomeIcon icon={faBuilding} className="icono1" />
 
                 <span className="linkname">Gastos</span>

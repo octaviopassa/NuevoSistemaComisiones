@@ -30,7 +30,6 @@ export const ModalCatalogoGasolineras = ({ isModalOpen, toggle }) => {
     data: gasolineras,
     reloadData,
   } = useFetchData(GasolinerasService.getAll, [plaza]);
-  console.log(gasolineras);
   const { searchText, setSearchText, filteredData } = useSearch(
     gasolineras || []
   );

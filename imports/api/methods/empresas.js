@@ -45,10 +45,20 @@ Meteor.methods({
   },
   "gastos.pagarA": async (datos) => {
     conexiones.body_bdseleccionada.tipo = "consulta";
-    conexiones.body_bdseleccionada.query =
-      "SELECT ID_CUENTA_DESTINO Codigo, NOMBRE_CUENTA_DESTINO  Nombre FROM CONSUMOS_PASSA..CAT_CUENTAS_DESTINO WHERE ESTATUS= 'A' AND cod_usu='" +
-      datos.cod_usu +
-      "'";
+    conexiones.body_bdseleccionada.query = `SELECT 
+      ID_CUENTA_DESTINO Codigo, 
+      NOMBRE_CUENTA_DESTINO  Nombre, 
+      NOMBRE_COMPLETO, 
+      APELLIDOS,
+      NUMERO,
+      TIPO,
+      BANCO,
+      ESTATUS,
+      RFC,
+      CURP
+    FROM CONSUMOS_PASSA..CAT_CUENTAS_DESTINO 
+    WHERE ESTATUS= 'A' AND cod_usu='${datos.cod_usu}'
+    `;
     conexiones.body_bdseleccionada.baseDatos = datos.baseDatos;
 
     const response = await axios.get(conexiones.windows_api, {
@@ -59,7 +69,7 @@ Meteor.methods({
 
     return respuesta;
   },
-  "tipoGastos.getAll": async (datos) => {
+  "tipoGastos.getAll": async () => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
       conexiones.body_bdseleccionada.query =

@@ -8,64 +8,66 @@ import {
   Input,
 } from "reactstrap";
 import { Formik, Form, Field, ErrorMessage } from "formik";
-import { VehiculoFormSchema } from "../../../schemas";
+import { CuentaFormSchema } from "../../schemas";
 import Switch from "react-switch";
 import toastr from "toastr";
-import { ConductoresService, VehiculosService } from "../../../../../services";
+import { CuentasService } from "../../../../services";
 import Select from "react-select";
-import { useFetchData } from "../../../../../hooks";
-import { usePlazaStore } from "../../../store/plazaSeleccionadaState";
+import { useFetchData } from "../../../../hooks";
+import { useUserSession } from "../../../../store";
 
-export const ModalVehiculos = ({
-  isModalOpen,
-  toggle,
-  vehiculo,
-  reloadData,
-}) => {
-  const { plazaSeleccionada: plaza } = usePlazaStore();
-  const { data, isLoading: isLoadingConductores } = useFetchData(
-    ConductoresService.getAllByPlazaAndCode,
-    [plaza]
+const tipoOptions = [
+  { value: "TARJETA DE CREDITO", label: "Tarjeta de Crédito" },
+  { value: "TARJETA DE DEBITO", label: "Tarjeta de Débito" },
+  { value: "CUENTA BANCARIA", label: "Cuenta Bancaria" },
+  { value: "CLABE INTERBANCARIA", label: "Clabe interbancaria" },
+];
+
+export const ModalCuentas = ({ isModalOpen, toggle, cuenta, reloadData }) => {
+  const { session } = useUserSession();
+  const { data, isLoading: isLoadingBancos } = useFetchData(
+    CuentasService.getBancos,
+    [session.profile.baseDatos]
   );
 
-  const conductores = data.map((conductor) => ({
-    value: conductor.CODIGO,
-    label: conductor.NOMBRE,
+  const bancos = data?.map((banco) => ({
+    value: banco.CODIGO,
+    label: banco.NOMBRE,
   }));
 
   const initialValues = {
-    codigo: vehiculo ? vehiculo.Cod_Vehiculo : "#",
-    nombre: vehiculo ? vehiculo.Nom_Vehiculo : "",
-    placa: vehiculo ? vehiculo.PLACA : "",
-    modelo: vehiculo ? vehiculo.MODELO : "",
-    numero_serie: vehiculo ? vehiculo.NUMERO_SERIE : "",
-    numero_poliza: vehiculo ? vehiculo.POLIZA_SEGURO : "",
-    conductor: vehiculo ? vehiculo.CODIGO_ENCARGADO : "",
-    estatus: vehiculo ? vehiculo.Nom_Estatus === "Activo" : true,
+    codigo: cuenta ? cuenta.Codigo : "#",
+    nombre: cuenta ? cuenta.NOMBRE_COMPLETO : "",
+    apellidos: cuenta ? cuenta.APELLIDOS : "",
+    num_tarjeta: cuenta ? cuenta.NUMERO : "",
+    tipo: cuenta ? cuenta.TIPO : "",
+    banco: cuenta ? cuenta.BANCO : "",
+    rfc: cuenta ? cuenta.RFC : "",
+    curp: cuenta ? cuenta.CURP : "",
+    estatus: cuenta ? cuenta.ESTATUS === "A" : true,
   };
 
   const handleSubmit = async (values) => {
     const data = {
       ...values,
-      plaza
-    }
+      cod_usu: session.profile.COD_USU,
+    };
     try {
-        let result;
-        if (vehiculo) {
-          result = await VehiculosService.update(data);
-        } else {
-          result = await VehiculosService.insert(data);
-        }
+      let result;
+      if (cuenta) {
+        result = await CuentasService.update(data);
+      } else {
+        result = await CuentasService.insert(data);
+      }
 
-        if (!result.isValid) {
-          toastr.error(result.message);
-          return;
-        }
+      if (!result.isValid) {
+        toastr.error(result.message);
+        return;
+      }
 
-        toastr.success(
-          result.message ||
-            `${vehiculo ? "Actualizado" : "Creado"} correctamente`
-        );
+      toastr.success(
+        result.message || `${cuenta ? "Actualizado" : "Creado"} correctamente`
+      );
       toggle();
       reloadData();
     } catch (error) {
@@ -77,13 +79,13 @@ export const ModalVehiculos = ({
     <Modal isOpen={isModalOpen} toggle={toggle}>
       <Formik
         initialValues={initialValues}
-        validationSchema={VehiculoFormSchema}
+        validationSchema={CuentaFormSchema}
         onSubmit={handleSubmit}
       >
         {({ values, handleSubmit, setFieldValue, isSubmitting }) => (
           <Form onSubmit={handleSubmit}>
             <ModalHeader className="bg-primary text-white" toggle={toggle}>
-              {vehiculo ? "Editar Vehículo" : "Agregar Vehículo"}
+              {cuenta ? "Editar Cuenta" : "Agregar Cuenta"}
             </ModalHeader>
             <ModalBody>
               <div className="form-group">
@@ -102,6 +104,7 @@ export const ModalVehiculos = ({
                   Nombre
                 </label>
                 <Field
+                  autoComplete="given-name"
                   name="nombre"
                   as={Input}
                   className="form-control"
@@ -115,94 +118,112 @@ export const ModalVehiculos = ({
               </div>
 
               <div className="form-group mt-3">
-                <label className="form-label" htmlFor="placa">
-                  Placa
+                <label className="form-label" htmlFor="apellidos">
+                  Apellidos
                 </label>
                 <Field
-                  name="placa"
+                  autoComplete="family-name"
+                  name="apellidos"
                   as={Input}
                   className="form-control"
-                  invalid={!!values.placa && values.placa.length < 2}
+                  invalid={!!values.apellidos && values.apellidos.length < 2}
                 />
                 <ErrorMessage
-                  name="placa"
+                  name="apellidos"
                   component="div"
                   className="text-danger"
                 />
               </div>
 
               <div className="form-group mt-3">
-                <label className="form-label" htmlFor="modelo">
-                  Modelo
+                <label className="form-label" htmlFor="num_tarjeta">
+                  Número de Tarjeta
                 </label>
                 <Field
-                  name="modelo"
-                  as={Input}
-                  className="form-control"
-                  invalid={!!values.modelo && values.modelo.length < 2}
-                />
-                <ErrorMessage
-                  name="modelo"
-                  component="div"
-                  className="text-danger"
-                />
-              </div>
-
-              <div className="form-group mt-3">
-                <label className="form-label" htmlFor="numero_serie">
-                  Número de Serie
-                </label>
-                <Field
-                  name="numero_serie"
+                  autoComplete="cc-number"
+                  name="num_tarjeta"
                   as={Input}
                   className="form-control"
                   invalid={
-                    !!values.numero_serie && values.numero_serie.length < 2
+                    !!values.num_tarjeta && values.num_tarjeta.length < 2
                   }
                 />
                 <ErrorMessage
-                  name="numero_serie"
+                  name="num_tarjeta"
                   component="div"
                   className="text-danger"
                 />
               </div>
 
               <div className="form-group mt-3">
-                <label className="form-label" htmlFor="numero_poliza">
-                  Número de Poliza
-                </label>
-                <Field
-                  name="numero_poliza"
-                  as={Input}
-                  className="form-control"
-                  invalid={
-                    !!values.numero_poliza && values.numero_poliza.length < 2
-                  }
-                />
-                <ErrorMessage
-                  name="numero_poliza"
-                  component="div"
-                  className="text-danger"
-                />
-              </div>
-
-              <div className="form-group mt-3">
-                <label className="form-label" htmlFor="conductor">
-                  Conductor
+                <label className="form-label" htmlFor="tipo">
+                  Tipo
                 </label>
                 <Select
-                  name="conductor"
-                  options={isLoadingConductores ? [] : conductores}
+                  name="tipo"
+                  options={tipoOptions}
                   onChange={(selectedOption) =>
-                    setFieldValue("conductor", selectedOption.value)
+                    setFieldValue("tipo", selectedOption.value)
                   }
-                  value={conductores.find(
-                    (conductor) => conductor.value === values.conductor
-                  )}
-                  placeholder="Seleccione un conductor"
+                  value={tipoOptions.find((tipo) => tipo.value === values.tipo)}
+                  placeholder="Seleccione un tipo de tarjeta..."
                 />
                 <ErrorMessage
-                  name="conductor"
+                  name="tipo"
+                  component="div"
+                  className="text-danger"
+                />
+              </div>
+
+              <div className="form-group mt-3">
+                <label className="form-label" htmlFor="banco">
+                  Banco
+                </label>
+                <Select
+                  name="banco"
+                  options={isLoadingBancos ? [] : bancos}
+                  onChange={(selectedOption) =>
+                    setFieldValue("banco", selectedOption.value)
+                  }
+                  value={bancos.find((banco) => banco.value === values.banco)}
+                  placeholder="Seleccione un banco..."
+                />
+                <ErrorMessage
+                  name="banco"
+                  component="div"
+                  className="text-danger"
+                />
+              </div>
+
+              <div className="form-group mt-3">
+                <label className="form-label" htmlFor="rfc">
+                  RFC
+                </label>
+                <Field
+                  name="rfc"
+                  as={Input}
+                  className="form-control"
+                  invalid={!!values.rfc && values.rfc.length < 2}
+                />
+                <ErrorMessage
+                  name="rfc"
+                  component="div"
+                  className="text-danger"
+                />
+              </div>
+
+              <div className="form-group mt-3">
+                <label className="form-label" htmlFor="curp">
+                  CURP
+                </label>
+                <Field
+                  name="curp"
+                  as={Input}
+                  className="form-control"
+                  invalid={!!values.curp && values.curp.length < 2}
+                />
+                <ErrorMessage
+                  name="curp"
                   component="div"
                   className="text-danger"
                 />
@@ -226,7 +247,7 @@ export const ModalVehiculos = ({
 
               <div className="ml-auto">
                 <Button disabled={isSubmitting} color="primary" type="submit">
-                  {vehiculo ? "Guardar Cambios" : "Agregar"}
+                  {cuenta ? "Guardar Cambios" : "Agregar"}
                   {isSubmitting && (
                     <span className="spinner-border spinner-border-sm ml-2"></span>
                   )}

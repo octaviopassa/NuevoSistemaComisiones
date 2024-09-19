@@ -1,28 +1,17 @@
 import React, { useState } from "react";
 import Page from "../../components/global/Page";
-import {
-  GastosToolbar,
-  TableGastos,
-  TableResumen,
-} from "./components";
+import { GastosToolbar, TableGastos, TableResumen } from "./components";
 
 const Gastos = () => {
-  const [documentos, setDocumentos] = useState([]); 
-  //? Creo un store para los documentos?
-  //! Se ocuparia en la tabla de resumen. Por ahora no.
+  const [documentos, setDocumentos] = useState([]);
   const [clientesVisible, setClientesVisible] = useState(false);
-  const [tipoGastos, setTipoGastos] = useState([]);
 
   return (
     <Page name="Gastos">
-      <GastosToolbar
-        setTipoGastos={setTipoGastos}
-        setClientesVisible={setClientesVisible}
-      />
+      <GastosToolbar setClientesVisible={setClientesVisible} />
 
       <TableGastos
         clientesVisible={clientesVisible}
-        tipoGastos={tipoGastos}
         setDocumentos={setDocumentos}
         documentos={documentos}
       />

@@ -34,7 +34,6 @@ export const ModalCatalogoVehiculos = ({ isModalOpen, toggle }) => {
     vehiculos || []
   );
 
-  console.log(vehiculos);
   const { paginatedData, PaginationComponent, PaginationSelector } =
     useClientPagination(filteredData);
 

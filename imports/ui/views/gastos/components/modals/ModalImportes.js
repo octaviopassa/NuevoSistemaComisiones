@@ -12,10 +12,31 @@ export const ModalImportes = ({
   };
 
   const handleImportesChange = (e) => {
-    setImportesData((prevImportesData) => ({
-      ...prevImportesData,
-      [e.target.name]: e.target.value,
-    }));
+    const { name, value } = e.target;
+
+    const updatedData = {
+      ...importesData,
+      [name]: value,
+    };
+
+    const impuestos = [
+      Number(updatedData.iva_16) || 0,
+      Number(updatedData.iva_8) || 0,
+      Number(updatedData.ieps) || 0,
+      Number(updatedData.ish) || 0,
+      Number(updatedData.tua) || 0,
+      Number(updatedData.ret) || 0,
+    ];
+
+    const totalImpuestos = impuestos.reduce(
+      (acc, impuesto) => acc + impuesto,
+      0
+    );
+
+    updatedData.impuesto = totalImpuestos;
+    updatedData.total = Number(updatedData.subtotal || 0) + totalImpuestos;
+
+    setImportesData(updatedData);
   };
 
   return (
@@ -25,10 +46,7 @@ export const ModalImportes = ({
       size="lg"
       className="modal-importes"
     >
-      <ModalHeader
-        className="bg-primary text-white"
-        toggle={toggle}
-      >
+      <ModalHeader className="bg-primary text-white" toggle={toggle}>
         Importes / Impuestos
       </ModalHeader>
       <ModalBody>
@@ -72,6 +90,7 @@ export const ModalImportes = ({
                 type="number"
                 className="form-control"
                 name="impuesto"
+                disabled
                 value={importesData.impuesto}
                 onChange={handleImportesChange}
               />
@@ -146,6 +165,7 @@ export const ModalImportes = ({
                 type="number"
                 className="form-control"
                 name="total"
+                disabled
                 value={importesData.total}
                 onChange={handleImportesChange}
               />

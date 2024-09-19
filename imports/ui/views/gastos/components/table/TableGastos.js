@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   faFileAlt,
   faFilePdf,
@@ -7,12 +8,15 @@ import {
   faUpload,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useRef, useState } from "react";
 import Select from "react-select";
 import AsyncSelect from "react-select/async";
 import { UncontrolledTooltip } from "reactstrap";
 import toastr from "toastr";
-import { ClientesService, ProveedoresService } from "../../../../services";
+import {
+  ClientesService,
+  ProveedoresService,
+  TipoGastosService,
+} from "../../../../services";
 import {
   ModalCatalogoProveedores,
   ModalButton,
@@ -20,13 +24,9 @@ import {
   ModalImportes,
   ModalCombustible,
 } from "../modals";
+import { useFetchData } from "../../../../hooks";
 
-export const TableGastos = ({
-  clientesVisible,
-  tipoGastos,
-  setDocumentos,
-  documentos,
-}) => {
+export const TableGastos = ({ clientesVisible, setDocumentos, documentos }) => {
   const [proveedorSeleccionado, setProveedorSeleccionado] = useState("");
   const [clienteSeleccionado, setClienteSeleccionado] = useState("");
   const [tipoGastoSeleccionado, setTipoGastoSeleccionado] = useState("");
@@ -50,11 +50,11 @@ export const TableGastos = ({
     ret: "0.00",
     total: "0.00",
   });
-
-  const tipoDocumentoRef = useRef(null);
-  const proveedorRef = useRef(null);
-  const clienteRef = useRef(null);
-  const tipoGastoRef = useRef(null);
+  const { data: dataTipoGastos } = useFetchData(TipoGastosService.getAll);
+  const tipoGastos = dataTipoGastos.map((tg) => ({
+    value: tg.Codigo,
+    label: tg.Nombre,
+  }));
 
   const proveedoresOptions = async (inputValue) => {
     if (inputValue.length >= 3) {
@@ -471,23 +471,7 @@ export const TableGastos = ({
       ret: "0.00",
       total: "0.00",
     });
-
-    // Reiniciar los campos de selección
-    if (tipoDocumentoRef.current) {
-      tipoDocumentoRef.current.clearValue();
-    }
-    if (proveedorRef.current) {
-      proveedorRef.current.clearValue();
-    }
-    if (clienteRef.current) {
-      clienteRef.current.clearValue();
-    }
-    if (tipoGastoRef.current) {
-      tipoGastoRef.current.clearValue();
-    }
   };
-
-  console.log(documentos);
 
   return (
     <div className="row">
@@ -548,7 +532,7 @@ export const TableGastos = ({
                 {tipoGastoSeleccionado && (
                   <>
                     {tipoGastoSeleccionado.value === 1 ? (
-                      <ModalButton 
+                      <ModalButton
                         color=""
                         buttonClasses="btn btn-link"
                         text="Detalles del gasto"
@@ -584,12 +568,16 @@ export const TableGastos = ({
                   </>
                 )}
               </th>
-              <th className="text-center">
+              <th className="text-center" style={{ minWidth: "105px" }}>
                 {tipoDocumento.value === "Nota" && (
                   <ModalButton
                     color=""
-                    text="Importes"
-                    buttonClasses="px-3 py-1 border"
+                    text={
+                      importesData.total > 0
+                        ? "Editar Importe"
+                        : "Agregar Importe"
+                    }
+                    buttonClasses="px-2 py-2 btn btn-sm btn-info d-flex align-items-center w-100"
                     ModalComponent={ModalImportes}
                     importesData={importesData}
                     setImportesData={setImportesData}
@@ -632,16 +620,16 @@ export const TableGastos = ({
               </th>
 
               <th className="text-center">
-                <button className="btn btn-danger">
-                  <i className="fal fa-trash-alt"></i> Eliminar
+                <button className="btn btn-danger btn-sm d-flex align-items-center py-2 px-3">
+                  <i className="fal fa-trash-alt mr-1"></i> Eliminar
                 </button>
               </th>
               <th>
                 <button
-                  className="btn btn-primary float-right"
+                  className="btn btn-primary btn-sm d-flex align-items-center py-2 px-3"
                   onClick={agregarDocumento}
                 >
-                  <i className="fal fa-plus mr-1"></i>
+                  <i className="fal fa-plus mr-1"></i> Agregar
                 </button>
               </th>
             </tr>

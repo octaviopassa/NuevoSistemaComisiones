@@ -48,6 +48,7 @@ import "../../api/methods/conductores";
 import "../../api/methods/gasolineras";
 import "../../api/methods/vehiculos";
 import "../../api/methods/clientes";
+import "../../api/methods/cuentas";
 
 import "./startup";
 import "./initialLoad";

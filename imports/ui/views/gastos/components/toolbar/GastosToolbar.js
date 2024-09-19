@@ -1,20 +1,16 @@
 import React, { useEffect, useState } from "react";
 import {
   PlazasService,
-  TipoGastosService,
   IngenierosService,
-  CombustibleService,
   GastosService,
   ClientesService,
 } from "../../../../services";
 import { ModalButton, ModalPlaza } from "../modals";
 import { usePlazaStore } from "../../store";
 import { useUserSession } from "../../../../store";
+import { ModalCuentas } from "../modals/ModalCuentas";
 
-export const GastosToolbar = ({
-  setClientesVisible,
-  setTipoGastos,
-}) => {
+export const GastosToolbar = ({ setClientesVisible }) => {
   const [plazas, setPlazas] = useState([]);
   const [isCheckedSucursal, setIsCheckedSucursal] = useState(true);
   const [isCheckedIngeniero, setIsCheckedIngeniero] = useState(false);
@@ -23,6 +19,7 @@ export const GastosToolbar = ({
   const [pagarA, setPagarA] = useState([]);
   const [pagarASeleccionado, setPagarASeleccionado] = useState("");
   const [ingenieros, setIngenieros] = useState([]);
+  const [reloadData, setReloadData] = useState(false);
 
   const { session: user } = useUserSession();
   const { plazaSeleccionada, setPlazaSeleccionada } = usePlazaStore();
@@ -30,31 +27,28 @@ export const GastosToolbar = ({
   useEffect(() => {
     const cargaInicial = async () => {
       try {
-        setIsCheckedIngeniero(false);
-        setIsCheckedSucursal(true);
-
-        const obtenerPlazas = await PlazasService.getAll({
+        const obtenerPlazasPromise = PlazasService.getAll({
           cod_usu: user.profile.COD_USU,
           baseDatos: user.profile.baseDatos,
         });
+
+        const pagarAQuienPromise = GastosService.pagarA({
+          cod_usu: user.profile.COD_USU,
+          baseDatos: user.profile.baseDatos,
+        });
+
+        const cliVisiblesPromise = ClientesService.clientesVisible({
+          baseDatos: user.profile.baseDatos,
+        });
+
+        const [obtenerPlazas, pagarAQuien, cliVisibles] = await Promise.all([
+          obtenerPlazasPromise,
+          pagarAQuienPromise,
+          cliVisiblesPromise,
+        ]);
+
         setPlazas(obtenerPlazas);
-
-        const pagarAQuien = await GastosService.pagarA({
-          cod_usu: user.profile.COD_USU,
-          baseDatos: user.profile.baseDatos,
-        });
         setPagarA(pagarAQuien);
-
-        const tipoGastos = await TipoGastosService.getAll({});
-
-        setTipoGastos(
-          tipoGastos.map((tg) => ({ value: tg.Codigo, label: tg.Nombre }))
-        );
-
-        const cliVisibles = await ClientesService.clientesVisible({
-          baseDatos: user.profile.baseDatos,
-        });
-
         setClientesVisible(cliVisibles);
       } catch (error) {
         console.error("Error durante la carga inicial", error);
@@ -62,7 +56,7 @@ export const GastosToolbar = ({
     };
 
     cargaInicial();
-  }, [user.profile.COD_USU, user.profile.baseDatos]);
+  }, [user.profile.COD_USU, user.profile.baseDatos, reloadData]);
 
   const handleCheckSucursal = () => {
     setIsCheckedSucursal(true);
@@ -245,26 +239,30 @@ export const GastosToolbar = ({
               color="primary"
               buttonClasses="px-3 ml-2"
               text="Agregar"
-              ModalComponent={() => {}}
+              ModalComponent={ModalCuentas}
+              reloadData={() => setReloadData(!reloadData)}
             />
             {pagarASeleccionado && (
               <ModalButton
                 color="secondary"
                 buttonClasses="px-3 ml-2"
                 text="Modificar Cuenta"
-                ModalComponent={() => {}}
-                pagarA={pagarA.find((p) => p.Codigo === pagarASeleccionado)}
+                ModalComponent={ModalCuentas}
+                cuenta={pagarA.find(
+                  (p) => p.Codigo === Number(pagarASeleccionado)
+                )}
+                reloadData={() => setReloadData(!reloadData)}
               />
             )}
           </div>
         </div>
       </div>
 
-      <ModalPlaza
+      {/* <ModalPlaza
         plazas={plazas}
         plazaSeleccionada={plazaSeleccionada}
         handleSelectPlaza={handleSelectPlaza}
-      />
+      /> */}
     </>
   );
 };

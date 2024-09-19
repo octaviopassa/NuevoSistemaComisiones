@@ -11,12 +11,16 @@ export default function Layout() {
   };
 
   return (
-    <div style={{ display: "flex" }}>
-      <Aside isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
-      <div className={`home-section ${isSidebarOpen ? "" : "full-width"}`}>
-        <Header toggleSidebar={toggleSidebar} />
+    <>
+      <Aside
+        isOpen={isSidebarOpen}
+        toggleSidebar={toggleSidebar}
+        setIsSidebarOpen={setIsSidebarOpen}
+      />
+      <Header toggleSidebar={toggleSidebar} />
+      <div className={`animate__animated animate__delay-1s ${isSidebarOpen ? "home-section" : ""}`} style={{ marginLeft: isSidebarOpen ? "0" : "80px" }}>
         <Outlet />
       </div>
-    </div>
+    </>
   );
 }
