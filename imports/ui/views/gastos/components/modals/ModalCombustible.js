@@ -15,56 +15,36 @@ import { ModalCatalogoVehiculos } from "./vehiculos";
 import { useGastosData } from "../../store";
 import { ModalCatalogoGasolineras } from "./gasolineras/ModalCatalogoGasolineras";
 
-export const ModalCombustible = ({ isModalOpen, toggle, setDocumentos }) => {
+export const ModalCombustible = ({
+  isModalOpen,
+  toggle,
+  setDetalleGasto,
+  detalleGasto,
+}) => {
   const [gasolineras, setGasolineras] = useState([]);
   const [combustibles, setCombustibles] = useState("");
   const [conductores, setConductores] = useState([]);
   const [vehiculos, setVehiculos] = useState([]);
-  const [conductorSeleccionado, setConductorSeleccionado] = useState(null);
-  const [vehiculoSeleccionado, setVehiculoSeleccionado] = useState(null);
-  const [kilometraje, setKilometraje] = useState("");
-  const [litros, setLitros] = useState("");
-  const [combustibleSeleccionado, setCombustibleSeleccionado] = useState(null);
-  const [gasolineraSeleccionada, setGasolineraSeleccionada] = useState(null);
+  const [conductorSeleccionado, setConductorSeleccionado] = useState(
+    detalleGasto.conductor || null
+  );
+  const [vehiculoSeleccionado, setVehiculoSeleccionado] = useState(
+    detalleGasto.vehiculo || null
+  );
+  const [kilometraje, setKilometraje] = useState(
+    detalleGasto.kilometraje || ""
+  );
+  const [litros, setLitros] = useState(detalleGasto.litros || "");
+  const [combustibleSeleccionado, setCombustibleSeleccionado] = useState(
+    detalleGasto.combustible || null
+  );
+  const [gasolineraSeleccionada, setGasolineraSeleccionada] = useState(
+    detalleGasto.gasolinera || null
+  );
 
   const { plazaSeleccionada } = useGastosData();
 
   useEffect(() => {
-    const cargaInicial = async () => {
-      if (plazaSeleccionada != "") {
-        const gasolineras = await GasolinerasService.getAll(plazaSeleccionada);
-        const vehiculos = await VehiculosService.getAll({
-          plaza: plazaSeleccionada,
-        });
-        const conductores = await ConductoresService.getAll(plazaSeleccionada);
-        const combustibles = await CombustibleService.getAll();
-
-        setVehiculos(
-          vehiculos.map((obj) => ({
-            value: obj.Cod_Vehiculo,
-            label: obj.Nom_Vehiculo,
-          }))
-        );
-
-        setGasolineras(
-          gasolineras.map((obj) => ({
-            value: obj.Cod_Gasolinera,
-            label: obj.Nom_Gasolinera,
-          }))
-        );
-
-        setConductores(
-          conductores.map((obj) => ({
-            value: obj.Cod_Conductor,
-            label: obj.Nom_Conductor,
-          }))
-        );
-
-        setCombustibles(
-          combustibles.map((obj) => ({ value: obj.Codigo, label: obj.Nombre }))
-        );
-      }
-    };
     cargaInicial();
 
     return () => {
@@ -73,6 +53,42 @@ export const ModalCombustible = ({ isModalOpen, toggle, setDocumentos }) => {
       setVehiculos([]);
     };
   }, [plazaSeleccionada]);
+
+  const cargaInicial = async () => {
+    if (plazaSeleccionada != "") {
+      const gasolineras = await GasolinerasService.getAll(plazaSeleccionada);
+      const vehiculos = await VehiculosService.getAll({
+        plaza: plazaSeleccionada,
+      });
+      const conductores = await ConductoresService.getAll(plazaSeleccionada);
+      const combustibles = await CombustibleService.getAll();
+
+      setVehiculos(
+        vehiculos.map((obj) => ({
+          value: obj.Cod_Vehiculo,
+          label: obj.Nom_Vehiculo,
+        }))
+      );
+
+      setGasolineras(
+        gasolineras.map((obj) => ({
+          value: obj.Cod_Gasolinera,
+          label: obj.Nom_Gasolinera,
+        }))
+      );
+
+      setConductores(
+        conductores.map((obj) => ({
+          value: obj.Cod_Conductor,
+          label: obj.Nom_Conductor,
+        }))
+      );
+
+      setCombustibles(
+        combustibles.map((obj) => ({ value: obj.Codigo, label: obj.Nombre }))
+      );
+    }
+  };
 
   const handleConductorChange = (selectedOption) => {
     setConductorSeleccionado(selectedOption);
@@ -109,18 +125,7 @@ export const ModalCombustible = ({ isModalOpen, toggle, setDocumentos }) => {
     };
 
     // Actualizar el documento actual con los datos de combustible
-    setDocumentos((prevDocumentos) =>
-      prevDocumentos.map((doc, index) => {
-        if (index === prevDocumentos.length - 1) {
-          // Asumimos que queremos agregar los datos al último documento
-          return {
-            ...doc,
-            datosCombustible: datosCombustible,
-          };
-        }
-        return doc;
-      })
-    );
+    setDetalleGasto(datosCombustible);
 
     // Limpiar los campos del modal de combustible
     setConductorSeleccionado(null);
@@ -186,6 +191,7 @@ export const ModalCombustible = ({ isModalOpen, toggle, setDocumentos }) => {
             <ModalButton
               icon={faGear}
               ModalComponent={ModalCatalogoConductores}
+              reloadDataCombustible={cargaInicial}
             />
           </label>
           <AsyncSelect
@@ -195,6 +201,7 @@ export const ModalCombustible = ({ isModalOpen, toggle, setDocumentos }) => {
             defaultOptions={conductores}
             onChange={handleConductorChange}
             placeholder="Seleccione el conductor"
+            value={conductorSeleccionado}
           />
         </div>
         <div className="form-group">
@@ -203,6 +210,7 @@ export const ModalCombustible = ({ isModalOpen, toggle, setDocumentos }) => {
             <ModalButton
               icon={faGear}
               ModalComponent={ModalCatalogoVehiculos}
+              reloadDataCombustible={cargaInicial}
             />
           </label>
           <AsyncSelect
@@ -212,6 +220,7 @@ export const ModalCombustible = ({ isModalOpen, toggle, setDocumentos }) => {
             defaultOptions={vehiculos}
             onChange={handleVehiculoChange}
             placeholder="Seleccione el vehículo"
+            value={vehiculoSeleccionado}
           />
         </div>
         <div className="form-group">
@@ -244,6 +253,7 @@ export const ModalCombustible = ({ isModalOpen, toggle, setDocumentos }) => {
             loadOptions={filterCombustible}
             defaultOptions={combustibles}
             onChange={handleCombustibleChange}
+            value={combustibleSeleccionado}
             placeholder="Seleccione el combustible"
           />
         </div>
@@ -253,6 +263,7 @@ export const ModalCombustible = ({ isModalOpen, toggle, setDocumentos }) => {
             <ModalButton
               icon={faGear}
               ModalComponent={ModalCatalogoGasolineras}
+              reloadDataCombustible={cargaInicial}
             />
           </label>
           <AsyncSelect
@@ -262,6 +273,7 @@ export const ModalCombustible = ({ isModalOpen, toggle, setDocumentos }) => {
             defaultOptions={gasolineras}
             onChange={handleGasolineraChange}
             placeholder="Seleccione la gasolinera"
+            value={gasolineraSeleccionada}
           />
         </div>
       </ModalBody>

@@ -1,4 +1,5 @@
 import React from "react";
+import toastr from "toastr";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
 export const ModalImportes = ({
@@ -8,6 +9,16 @@ export const ModalImportes = ({
   importesData,
 }) => {
   const handleGuardarImportes = () => {
+    if (
+      !importesData.fecha ||
+      !importesData.folio ||
+      !importesData.subtotal ||
+      !importesData.total
+    ) {
+      toastr.warning("Todos los campos son obligatorios");
+      return;
+    }
+
     toggle();
   };
 
@@ -34,7 +45,10 @@ export const ModalImportes = ({
     );
 
     updatedData.impuesto = totalImpuestos;
-    updatedData.total = Number(updatedData.subtotal || 0) + totalImpuestos;
+    updatedData.total =
+      Number(updatedData.subtotal || 0) +
+      totalImpuestos +
+      Number(updatedData.ret || 0);
 
     setImportesData(updatedData);
   };

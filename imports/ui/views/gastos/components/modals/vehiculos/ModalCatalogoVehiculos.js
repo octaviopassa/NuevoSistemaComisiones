@@ -23,7 +23,11 @@ import { VehiculosService } from "../../../../../services";
 import { ModalVehiculos } from "./ModalVehiculos";
 import { useGastosData } from "../../../store";
 
-export const ModalCatalogoVehiculos = ({ isModalOpen, toggle }) => {
+export const ModalCatalogoVehiculos = ({
+  isModalOpen,
+  toggle,
+  reloadDataCombustible,
+}) => {
   const { plazaSeleccionada: plaza } = useGastosData();
   const {
     isLoading,
@@ -36,6 +40,11 @@ export const ModalCatalogoVehiculos = ({ isModalOpen, toggle }) => {
 
   const { paginatedData, PaginationComponent, PaginationSelector } =
     useClientPagination(filteredData);
+
+  const reloadAllData = () => {
+    reloadData();
+    reloadDataCombustible();
+  };
 
   return (
     <Modal
@@ -55,7 +64,7 @@ export const ModalCatalogoVehiculos = ({ isModalOpen, toggle }) => {
               buttonClasses="w-25 p-2"
               text="Nuevo"
               ModalComponent={ModalVehiculos}
-              reloadData={reloadData}
+              reloadData={reloadAllData}
             />
           </div>
           <div className="col-6 d-flex justify-content-end">
@@ -99,7 +108,7 @@ export const ModalCatalogoVehiculos = ({ isModalOpen, toggle }) => {
                       icon={faPencil}
                       ModalComponent={ModalVehiculos}
                       vehiculo={vehiculo}
-                      reloadData={reloadData}
+                      reloadData={reloadAllData}
                     />
                   </td>
                 </tr>

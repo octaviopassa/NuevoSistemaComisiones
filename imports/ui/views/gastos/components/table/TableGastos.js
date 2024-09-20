@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import {
-  faFileAlt,
-  faFilePdf,
+  faDownload,
   faGear,
   faInfoCircle,
-  faTrashAlt,
+  faRetweet,
   faUpload,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -26,6 +25,9 @@ import {
 } from "../modals";
 import { useFetchData } from "../../../../hooks";
 import { useGastosData } from "../../store";
+import { format } from "date-fns";
+
+const GRABADO = false;
 
 export const TableGastos = ({ clientesVisible }) => {
   const [proveedorSeleccionado, setProveedorSeleccionado] = useState("");
@@ -51,8 +53,9 @@ export const TableGastos = ({ clientesVisible }) => {
     ret: "0.00",
     total: "0.00",
   });
-  
+
   const { setDocumentos, documentos } = useGastosData();
+  console.log("documentos", documentos);
   const { data: dataTipoGastos } = useFetchData(TipoGastosService.getAll);
   const tipoGastos = dataTipoGastos.map((tg) => ({
     value: tg.Codigo,
@@ -98,6 +101,7 @@ export const TableGastos = ({ clientesVisible }) => {
 
   const handleXmlUpload = (event, index) => {
     const file = event.target.files[0];
+
     if (file && file.name.endsWith(".xml")) {
       const fileName = file.name;
       const reader = new FileReader();
@@ -106,12 +110,15 @@ export const TableGastos = ({ clientesVisible }) => {
         const arrayBuffer = e.target.result;
         const byteArray = new Uint8Array(arrayBuffer);
         const base64String = btoa(String.fromCharCode.apply(null, byteArray));
-        const xmlDoc = new DOMParser().parseFromString(
-          new TextDecoder().decode(arrayBuffer),
-          "text/xml"
-        );
-
+        const xmlContent = new TextDecoder().decode(arrayBuffer);
+        const xmlDoc = new DOMParser().parseFromString(xmlContent, "text/xml");
         const comprobante = xmlDoc.getElementsByTagName("cfdi:Comprobante")[0];
+
+        if (!comprobante) {
+          toastr.error("El archivo XML no contiene un nodo 'cfdi:Comprobante'");
+          return;
+        }
+
         const datos = {
           fecha: comprobante.getAttribute("Fecha") || "",
           folio: comprobante.getAttribute("Folio") || "",
@@ -126,37 +133,109 @@ export const TableGastos = ({ clientesVisible }) => {
           ret: "0",
         };
 
-        const impuestos = comprobante.getElementsByTagName("cfdi:Impuestos")[0];
-        if (impuestos) {
-          datos.impuesto =
-            impuestos.getAttribute("TotalImpuestosTrasladados") || "0";
-          datos.ret = impuestos.getAttribute("TotalImpuestosRetenidos") || "0";
+        const impuestosList = Array.from(
+          comprobante.getElementsByTagName("cfdi:Impuestos") || []
+        );
 
-          const traslados = impuestos.getElementsByTagName("cfdi:Traslados")[0];
-          if (traslados) {
-            const trasladoItems =
-              traslados.getElementsByTagName("cfdi:Traslado");
-            for (let traslado of trasladoItems) {
+        impuestosList.forEach((impuestos) => {
+          const totalImpuestosTrasladados = impuestos.getAttribute(
+            "TotalImpuestosTrasladados"
+          );
+
+          if (totalImpuestosTrasladados) {
+            // datos.impuesto = totalImpuestosTrasladados;
+
+            const traslados = impuestos.getElementsByTagName("cfdi:Traslado");
+
+            for (let traslado of traslados) {
               const impuesto = traslado.getAttribute("Impuesto");
               const tasa = traslado.getAttribute("TasaOCuota");
               const importe = traslado.getAttribute("Importe") || "0";
 
               if (impuesto === "002") {
-                // IVA
                 if (tasa === "0.160000") {
-                  datos.iva_16 = importe;
+                  datos.iva_16 = (
+                    parseFloat(datos.iva_16) + parseFloat(importe)
+                  ).toFixed(2);
                 } else if (tasa === "0.080000") {
-                  datos.iva_8 = importe;
+                  datos.iva_8 = (
+                    parseFloat(datos.iva_8) + parseFloat(importe)
+                  ).toFixed(2);
                 }
               } else if (impuesto === "003") {
                 // IEPS
-                datos.ieps = importe;
+                datos.ieps = (
+                  parseFloat(datos.ieps) + parseFloat(importe)
+                ).toFixed(2);
+              }
+            }
+          }
+
+          const totalImpuestosRetenidos = impuestos.getAttribute(
+            "TotalImpuestosRetenidos"
+          );
+
+          if (totalImpuestosRetenidos) {
+            datos.ret = totalImpuestosRetenidos;
+          }
+        });
+
+        const complemento = xmlDoc.getElementsByTagName("cfdi:Complemento")[0];
+        if (complemento) {
+          const impuestosLocales = complemento.getElementsByTagName(
+            "implocal:ImpuestosLocales"
+          )[0];
+
+          const impuestoTUA = complemento.getElementsByTagName(
+            "aerolineas:Aerolineas"
+          )[0];
+
+          if (impuestoTUA) {
+            const totalTUA = impuestoTUA.getAttribute("TUA");
+
+            if (totalTUA) {
+              datos.tua = totalTUA;
+            }
+          }
+
+          if (impuestosLocales) {
+            const totaldeRetenciones =
+              impuestosLocales.getAttribute("TotaldeRetenciones");
+
+            if (totaldeRetenciones) {
+              datos.ret = totaldeRetenciones;
+            }
+
+            const trasladosLocales = impuestosLocales.getElementsByTagName(
+              "implocal:TrasladosLocales"
+            );
+            for (let traslado of trasladosLocales) {
+              const impuesto = traslado.getAttribute("ImpLocTrasladado");
+              const importe = traslado.getAttribute("Importe") || "0";
+
+              if (impuesto === "ISH") {
+                datos.ish = (
+                  parseFloat(datos.ish) + parseFloat(importe)
+                ).toFixed(2);
+              } else if (impuesto === "TUA") {
+                datos.tua = (
+                  parseFloat(datos.tua) + parseFloat(importe)
+                ).toFixed(2);
               }
             }
           }
         }
 
-        // Convertir todos los valores numéricos y aplicar toFixed()
+        // suma total de todos los impuestos de todo tipo
+        datos.impuesto = parseFloat(
+          datos.ieps +
+            datos.iva_16 +
+            datos.iva_8 +
+            datos.ish +
+            datos.tua +
+            datos.ret
+        ).toFixed(2);
+
         for (let key in datos) {
           if (key !== "fecha" && key !== "folio") {
             const valor = parseFloat(datos[key]);
@@ -173,7 +252,6 @@ export const TableGastos = ({ clientesVisible }) => {
         };
 
         if (index !== undefined) {
-          // Estamos actualizando un documento existente
           setDocumentos(
             documentos.map((doc, i) =>
               i === index
@@ -186,7 +264,6 @@ export const TableGastos = ({ clientesVisible }) => {
             )
           );
         } else {
-          // Es una nueva carga
           setXmlTempData(xmlData);
         }
 
@@ -195,15 +272,15 @@ export const TableGastos = ({ clientesVisible }) => {
 
       reader.readAsArrayBuffer(file);
     } else {
-      console.error("Archivo inválido seleccionado");
       toastr.error("Por favor, seleccione un archivo XML válido");
       event.target.value = null;
     }
   };
 
+  //TODO: Fix this
   const handlePdfUpload = (event, index) => {
-    const file = event.target.files[0];
-    if (file && file.type === "application/pdf") {
+    try {
+      const file = event.target.files[0];
       const fileName = file.name;
       const reader = new FileReader();
 
@@ -233,10 +310,9 @@ export const TableGastos = ({ clientesVisible }) => {
       };
 
       reader.readAsArrayBuffer(file);
-    } else {
+    } catch (error) {
       console.error("Archivo inválido seleccionado");
       toastr.error("Por favor, seleccione un archivo PDF válido");
-      event.target.value = null;
     }
   };
 
@@ -324,12 +400,8 @@ export const TableGastos = ({ clientesVisible }) => {
   };
 
   const handleSelectAtencionCliente = (selectedOption) => {
-    const atencionCliente = {
-      Codigo: selectedOption.value,
-      Nombre: selectedOption.label,
-    };
-
-    setAtencionClienteSeleccionado(atencionCliente);
+    setAtencionClienteSeleccionado(selectedOption);
+    setDetalleGasto(selectedOption);
   };
 
   const handleTipoGastoChange = (selectedOption) => {
@@ -531,34 +603,27 @@ export const TableGastos = ({ clientesVisible }) => {
                   placeholder="Concepto"
                 />
               </th>
-              <th className="text-center">
+              <th className="text-center" style={{ minWidth: "105px" }}>
                 {tipoGastoSeleccionado && (
                   <>
                     {tipoGastoSeleccionado.value === 1 ? (
                       <ModalButton
                         color=""
-                        buttonClasses="btn btn-link"
-                        text="Detalles del gasto"
+                        buttonClasses="px-2 py-2 btn btn-sm btn-secondary d-flex align-items-center justify-content-center w-100"
+                        text={detalleGasto ? `Editar Gasto` : "Agregar Gasto"}
                         ModalComponent={ModalCombustible}
-                        setDocumentos={setDocumentos}
+                        setDetalleGasto={setDetalleGasto}
+                        detalleGasto={detalleGasto}
                       />
                     ) : tipoGastoSeleccionado.value === 17 ? (
-                      <>
-                        <label style={{ fontSize: "8pt" }}>
-                          {atencionClienteSeleccionado
-                            ? atencionClienteSeleccionado.Nombre
-                            : ""}
-                        </label>
-                        <Select
-                          id="atencionCliente"
-                          cacheOptions
-                          loadOptions={clientesOptions}
-                          defaultOptions
-                          onChange={handleSelectAtencionCliente}
-                          placeholder="Seleccione cliente"
-                          value={atencionClienteSeleccionado}
-                        />
-                      </>
+                      <AsyncSelect
+                        id="atencionCliente"
+                        loadOptions={clientesOptions}
+                        onChange={handleSelectAtencionCliente}
+                        placeholder="Seleccione cliente"
+                        value={atencionClienteSeleccionado}
+                        styles={customStyles}
+                      />
                     ) : (
                       <input
                         type="text"
@@ -580,7 +645,7 @@ export const TableGastos = ({ clientesVisible }) => {
                         ? "Editar Importe"
                         : "Agregar Importe"
                     }
-                    buttonClasses="px-2 py-2 btn btn-sm btn-info d-flex align-items-center w-100"
+                    buttonClasses="px-2 py-2 btn btn-sm btn-info d-flex align-items-center justify-content-center w-100"
                     ModalComponent={ModalImportes}
                     importesData={importesData}
                     setImportesData={setImportesData}
@@ -593,9 +658,14 @@ export const TableGastos = ({ clientesVisible }) => {
                   <>
                     <label
                       htmlFor="xml-upload"
-                      className="btn btn-primary mb-0"
+                      className="btn btn-primary mb-0 d-flex align-items-center py-2 px-3"
                     >
-                      <i className="fal fa-file-alt"></i> XML
+                      {xmlTempData ? (
+                        <i className="fal fa-solid fa-repeat mr-1"></i>
+                      ) : (
+                        <i className="fal fa-file-alt mr-1"></i>
+                      )}
+                      <span>XML</span>
                     </label>
                     <input
                       id="xml-upload"
@@ -609,23 +679,25 @@ export const TableGastos = ({ clientesVisible }) => {
               </th>
               <th className="text-center">
                 {tipoDocumento.value == "Factura" && (
-                  <label htmlFor="pdf-upload" className="btn btn-primary mb-0">
-                    <i className="fal fa-file-pdf"></i> PDF
+                  <label
+                    htmlFor="pdf-upload"
+                    className="btn btn-primary mb-0 d-flex align-items-center py-2 px-3"
+                  >
+                    {pdfTempData ? (
+                      <i className="fal fa-solid fa-repeat mr-1"></i>
+                    ) : (
+                      <i className="fal fa-file-pdf mr-1"></i>
+                    )}
+                    <span>PDF/IMG</span>
                     <input
                       id="pdf-upload"
                       type="file"
-                      accept=".pdf"
+                      accept=".pdf,.jpg,.jpeg,.png,image/jpeg,image/png"
                       style={{ display: "none" }}
                       onChange={handlePdfUpload}
                     />
                   </label>
                 )}
-              </th>
-
-              <th className="text-center">
-                <button className="btn btn-danger btn-sm d-flex align-items-center py-2 px-3">
-                  <i className="fal fa-trash-alt mr-1"></i> Eliminar
-                </button>
               </th>
               <th>
                 <button
@@ -658,17 +730,28 @@ export const TableGastos = ({ clientesVisible }) => {
               <th className="text-center">Tipo de gasto</th>
               <th className="text-center">Concepto</th>
               <th className="text-center">Detalle</th>
-              <th className="text-center">Importes</th>
+              <th
+                className="text-center"
+                style={{
+                  minWidth: "105px !important",
+                  maxWidth: "130px !important",
+                }}
+              >
+                Importe
+              </th>
               <th className="text-center">
                 <i className="fal fa-file-alt"></i>
               </th>
               <th className="text-center">
                 <i className="fal fa-file"></i>
               </th>
-              <th className="text-center">
-                <i className="fal fa-cog"></i>
-              </th>
-              <th className="text-center">Acciones</th>
+              {GRABADO ? (
+                <th className="text-center">
+                  <i className="fal fa-cog"></i>
+                </th>
+              ) : (
+                <th className="text-center">Acciones</th>
+              )}
             </tr>
           </thead>
           <tbody>
@@ -680,11 +763,53 @@ export const TableGastos = ({ clientesVisible }) => {
                 <td>{doc.cliente?.label}</td>
                 <td>{doc.tipoGasto?.label}</td>
                 <td>{doc.concepto}</td>
-                <td>{doc.detalleGasto}</td>
                 <td>
-                  <span>Fecha: {doc.importes?.fecha || "N/A"}</span>,{" "}
+                  {doc.tipoGasto.label === "GASOLINA" ? (
+                    <span className="">
+                      {doc.tipoGasto.label}
+                      <FontAwesomeIcon
+                        icon={faInfoCircle}
+                        className="ml-1"
+                        style={{ color: "orange", cursor: "pointer" }}
+                        id={`tipoGasto-${i}`}
+                      />
+                      <UncontrolledTooltip
+                        target={`tipoGasto-${i}`}
+                        placement="right"
+                      >
+                        <strong>Detalles de importes:</strong>
+                        <br />
+                        Conductor: {doc.detalleGasto.conductor.label}
+                        <br />
+                        Combustible: {doc.detalleGasto.combustible.label}
+                        <br />
+                        Gasolinera: {doc.detalleGasto.gasolinera.label}
+                        <br />
+                        Kilometraje: {doc.detalleGasto.kilometraje}
+                        <br />
+                        Litros: {doc.detalleGasto.litros}
+                        <br />
+                        Vehiculo: {doc.detalleGasto.vehiculo.label}
+                      </UncontrolledTooltip>
+                    </span>
+                  ) : doc.tipoGasto.label === "ATENCION A CLIENTES" ? (
+                    <>
+                      <strong>Cliente: </strong> {doc.detalleGasto.label}
+                    </>
+                  ) : (
+                    doc.detalleGasto
+                  )}
+                </td>
+                <td>
                   <span>
-                    Total: ${parseFloat(doc.importes?.total || 0).toFixed(2)}{" "}
+                    <strong>Fecha: </strong>{" "}
+                    {format(new Date(doc.importes?.fecha), "dd/MM/yyyy") ||
+                      "N/A"}
+                  </span>
+                  <br />
+                  <span>
+                    <strong>Total:</strong> $
+                    {parseFloat(doc.importes?.total || 0).toFixed(2)}{" "}
                     <FontAwesomeIcon
                       icon={faInfoCircle}
                       style={{ color: "blue", cursor: "pointer" }}
@@ -698,9 +823,9 @@ export const TableGastos = ({ clientesVisible }) => {
                       <br />
                       Subtotal: $
                       {parseFloat(doc.importes?.subtotal || 0).toFixed(2)}
-                      <br />
+                      {/* <br />
                       Impuesto: $
-                      {parseFloat(doc.importes?.impuesto || 0).toFixed(2)}
+                      {parseFloat(doc.importes?.impuesto || 0).toFixed(2)} */}
                       <br />
                       IVA_16: $
                       {parseFloat(doc.importes?.iva_16 || 0).toFixed(2)}
@@ -717,22 +842,31 @@ export const TableGastos = ({ clientesVisible }) => {
                     </UncontrolledTooltip>
                   </span>
                 </td>
-                <td className="text-center">
+                <td>
                   {doc.tipoDocumento === "Factura" &&
                     (doc.xmlArchivo ? (
-                      <>
+                      <div className="d-flex align-items-center justify-content-center">
                         <FontAwesomeIcon
-                          icon={faFileAlt}
+                          icon={faDownload}
                           style={{ marginRight: "5px", cursor: "pointer" }}
                           onClick={() => handleXmlDownload(i)}
                           title={doc.xmlArchivo.nombre}
                         />
-                        <FontAwesomeIcon
-                          icon={faTrashAlt}
+                        <label
+                          htmlFor={`xml-upload-${i}`}
                           style={{ cursor: "pointer" }}
-                          onClick={() => handleXmlDelete(i)}
-                        />
-                      </>
+                          className="mt-2"
+                        >
+                          <FontAwesomeIcon icon={faRetweet} />
+                          <input
+                            id={`xml-upload-${i}`}
+                            type="file"
+                            accept=".xml"
+                            style={{ display: "none" }}
+                            onChange={(e) => handleXmlUpload(e, i)}
+                          />
+                        </label>
+                      </div>
                     ) : (
                       <label
                         htmlFor={`xml-upload-${i}`}
@@ -754,13 +888,13 @@ export const TableGastos = ({ clientesVisible }) => {
                     (doc.pdfArchivo ? (
                       <>
                         <FontAwesomeIcon
-                          icon={faFilePdf}
+                          icon={faDownload}
                           style={{ marginRight: "5px", cursor: "pointer" }}
                           onClick={() => handlePdfDownload(i)}
                           title={doc.pdfArchivo.nombre}
                         />
                         <FontAwesomeIcon
-                          icon={faTrashAlt}
+                          icon={faRetweet}
                           style={{ cursor: "pointer" }}
                           onClick={() => handlePdfDelete(i)}
                         />
@@ -774,24 +908,27 @@ export const TableGastos = ({ clientesVisible }) => {
                         <input
                           id={`pdf-upload-${i}`}
                           type="file"
-                          accept=".pdf"
+                          accept=".pdf,.jpg,.jpeg,.png,image/jpeg,image/png"
                           style={{ display: "none" }}
                           onChange={(e) => handlePdfUpload(e, i)}
                         />
                       </label>
                     ))}
                 </td>
-                <td className="text-center">
-                  <i className="fal fa-cog"></i>
-                </td>
-                <td className="text-center">
-                  <button
-                    className="btn btn-danger btn-sm"
-                    onClick={() => eliminarDocumento(i)}
-                  >
-                    <i className="fal fa-trash-alt"></i> Eliminar
-                  </button>
-                </td>
+                {GRABADO ? (
+                  <td className="text-center">
+                    <i className="fal fa-cog"></i>
+                  </td>
+                ) : (
+                  <td className="text-center">
+                    <button
+                      className="btn btn-danger btn-sm"
+                      onClick={() => eliminarDocumento(i)}
+                    >
+                      <i className="fal fa-trash-alt"></i> Eliminar
+                    </button>
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>

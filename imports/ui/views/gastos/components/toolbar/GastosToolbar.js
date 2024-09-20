@@ -12,13 +12,14 @@ import { ModalCuentas } from "../modals/ModalCuentas";
 
 export const GastosToolbar = ({ setClientesVisible }) => {
   const [plazas, setPlazas] = useState([]);
-  const [isCheckedSucursal, setIsCheckedSucursal] = useState(true);
   const [pagarA, setPagarA] = useState([]);
+  const [isCheckedSucursal, setIsCheckedSucursal] = useState(true);
   const [ingenieros, setIngenieros] = useState([]);
   const [reloadData, setReloadData] = useState(false);
   const [folio, setFolio] = useState("");
 
   const { session: user } = useUserSession();
+  console.log("user", user);
   const {
     plazaSeleccionada,
     setPlazaSeleccionada,
@@ -26,6 +27,8 @@ export const GastosToolbar = ({ setClientesVisible }) => {
     setPagarASeleccionado,
     selectedIngeniero,
     setSelectedIngeniero,
+    gastosDate,
+    setGastosDate,
   } = useGastosData();
 
   useEffect(() => {
@@ -62,17 +65,23 @@ export const GastosToolbar = ({ setClientesVisible }) => {
     cargaInicial();
   }, [user.profile.COD_USU, user.profile.baseDatos, reloadData]);
 
-  const handleChecks = () => {
+  useEffect(() => {
+    if (plazaSeleccionada) {
+      IngenierosService.getAll({
+        plaza: plazaSeleccionada,
+        baseDatos: user.profile.baseDatos,
+      })
+        .then((inges) => setIngenieros(inges))
+        .catch((error) => console.error(error));
+    }
+  }, [plazaSeleccionada]);
+
+  const handleChecks = async () => {
     setIsCheckedSucursal(!isCheckedSucursal);
   };
 
   const handleSelectPlaza = async (e) => {
     setPlazaSeleccionada(e.target.value);
-    const inges = await IngenierosService.getAll({
-      plaza: e.target.value,
-      baseDatos: user.profile.baseDatos,
-    });
-    setIngenieros(inges);
   };
 
   return (
@@ -152,8 +161,8 @@ export const GastosToolbar = ({ setClientesVisible }) => {
               type="date"
               name="date"
               id="selectFecha"
-              value={folio}
-              onChange={(e) => setFolio(e.target.value)}
+              value={gastosDate}
+              onChange={(e) => setGastosDate(e.target.value)}
             />
           </div>
         </div>

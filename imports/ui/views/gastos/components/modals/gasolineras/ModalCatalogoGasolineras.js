@@ -23,7 +23,11 @@ import { GasolinerasService } from "../../../../../services";
 import { useGastosData } from "../../../store";
 import { ModalGasolinera } from "./ModalGasolinera";
 
-export const ModalCatalogoGasolineras = ({ isModalOpen, toggle }) => {
+export const ModalCatalogoGasolineras = ({
+  isModalOpen,
+  toggle,
+  reloadDataCombustible,
+}) => {
   const { plazaSeleccionada: plaza } = useGastosData();
   const {
     isLoading,
@@ -35,6 +39,11 @@ export const ModalCatalogoGasolineras = ({ isModalOpen, toggle }) => {
   );
   const { paginatedData, PaginationComponent, PaginationSelector } =
     useClientPagination(filteredData);
+
+  const reloadAllData = () => {
+    reloadData();
+    reloadDataCombustible();
+  };
 
   return (
     <Modal
@@ -54,7 +63,7 @@ export const ModalCatalogoGasolineras = ({ isModalOpen, toggle }) => {
               buttonClasses="w-25 p-2"
               text="Nuevo"
               ModalComponent={ModalGasolinera}
-              reloadData={reloadData}
+              reloadData={reloadAllData}
             />
           </div>
           <div className="col-6 d-flex justify-content-end">
@@ -98,7 +107,7 @@ export const ModalCatalogoGasolineras = ({ isModalOpen, toggle }) => {
                       icon={faPencil}
                       ModalComponent={ModalGasolinera}
                       gasolinera={gasolinera}
-                      reloadData={reloadData}
+                      reloadData={reloadAllData}
                     />
                   </td>
                 </tr>

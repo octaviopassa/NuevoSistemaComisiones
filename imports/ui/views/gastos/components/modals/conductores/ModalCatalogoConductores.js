@@ -22,7 +22,11 @@ import { ModalButton } from "../ModalButton";
 import { ConductoresService } from "../../../../../services";
 import { ModalConductores } from "./ModalConductores";
 
-export const ModalCatalogoConductores = ({ isModalOpen, toggle }) => {
+export const ModalCatalogoConductores = ({
+  isModalOpen,
+  toggle,
+  reloadDataCombustible,
+}) => {
   const {
     isLoading,
     data: conductores,
@@ -33,6 +37,11 @@ export const ModalCatalogoConductores = ({ isModalOpen, toggle }) => {
   );
   const { paginatedData, PaginationComponent, PaginationSelector } =
     useClientPagination(filteredData);
+
+  const reloadAllData = () => {
+    reloadData();
+    reloadDataCombustible();
+  };
 
   return (
     <Modal
@@ -52,7 +61,7 @@ export const ModalCatalogoConductores = ({ isModalOpen, toggle }) => {
               buttonClasses="w-25 p-2"
               text="Nuevo"
               ModalComponent={ModalConductores}
-              reloadData={reloadData}
+              reloadData={reloadAllData}
             />
           </div>
           <div className="col-6 d-flex justify-content-end">
@@ -96,7 +105,7 @@ export const ModalCatalogoConductores = ({ isModalOpen, toggle }) => {
                       icon={faPencil}
                       ModalComponent={ModalConductores}
                       conductor={conductor}
-                      reloadData={reloadData}
+                      reloadData={reloadAllData}
                     />
                   </td>
                 </tr>

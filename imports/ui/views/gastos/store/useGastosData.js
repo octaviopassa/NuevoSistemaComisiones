@@ -19,6 +19,9 @@ export const useGastosData = create(
       selectedIngeniero: "",
       setSelectedIngeniero: (nuevoIngeniero) =>
         set({ selectedIngeniero: nuevoIngeniero }),
+
+      gastosDate: "",
+      setGastosDate: (nuevaFecha) => set({ gastosDate: nuevaFecha }),
     }),
     {
       name: "global-data-fetch",

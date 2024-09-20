@@ -1,6 +1,12 @@
 import React, { useState } from "react";
 import Page from "../../components/global/Page";
-import { GastosToolbar, TableGastos, TableResumen } from "./components";
+import {
+  EstatusGasto,
+  GastosToolbar,
+  TableCantidades,
+  TableGastos,
+  TableResumen,
+} from "./components";
 
 const Gastos = () => {
   const [clientesVisible, setClientesVisible] = useState(false);
@@ -11,7 +17,13 @@ const Gastos = () => {
 
       <TableGastos clientesVisible={clientesVisible} />
 
-      <TableResumen />
+      <div className="row">
+        <EstatusGasto />
+
+        <TableResumen />
+
+        <TableCantidades />
+      </div>
     </Page>
   );
 };
