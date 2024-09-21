@@ -22,6 +22,9 @@ export const useGastosData = create(
 
       gastosDate: "",
       setGastosDate: (nuevaFecha) => set({ gastosDate: nuevaFecha }),
+
+      folio: "",
+      setFolio: (nuevoFolio) => set({ folio: nuevoFolio }),
     }),
     {
       name: "global-data-fetch",

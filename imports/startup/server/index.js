@@ -49,6 +49,7 @@ import "../../api/methods/gasolineras";
 import "../../api/methods/vehiculos";
 import "../../api/methods/clientes";
 import "../../api/methods/cuentas";
+import "../../api/methods/gastos";
 
 import "./startup";
 import "./initialLoad";

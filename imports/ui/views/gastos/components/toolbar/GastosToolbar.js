@@ -16,7 +16,6 @@ export const GastosToolbar = ({ setClientesVisible }) => {
   const [isCheckedSucursal, setIsCheckedSucursal] = useState(true);
   const [ingenieros, setIngenieros] = useState([]);
   const [reloadData, setReloadData] = useState(false);
-  const [folio, setFolio] = useState("");
 
   const { session: user } = useUserSession();
   const {
@@ -28,52 +27,66 @@ export const GastosToolbar = ({ setClientesVisible }) => {
     setSelectedIngeniero,
     gastosDate,
     setGastosDate,
+    folio,
+    setFolio,
   } = useGastosData();
 
   useEffect(() => {
-    const cargaInicial = async () => {
-      try {
-        const obtenerPlazasPromise = PlazasService.getAll({
-          cod_usu: user.profile.COD_USU,
-          baseDatos: user.profile.baseDatos,
-        });
-
-        const pagarAQuienPromise = GastosService.pagarA({
-          cod_usu: user.profile.COD_USU,
-          baseDatos: user.profile.baseDatos,
-        });
-
-        const cliVisiblesPromise = ClientesService.clientesVisible({
-          baseDatos: user.profile.baseDatos,
-        });
-
-        const [obtenerPlazas, pagarAQuien, cliVisibles] = await Promise.all([
-          obtenerPlazasPromise,
-          pagarAQuienPromise,
-          cliVisiblesPromise,
-        ]);
-
-        setPlazas(obtenerPlazas);
-        setPagarA(pagarAQuien);
-        setClientesVisible(cliVisibles);
-      } catch (error) {
-        console.error("Error durante la carga inicial", error);
-      }
-    };
-
     cargaInicial();
   }, [user.profile.COD_USU, user.profile.baseDatos, reloadData]);
 
   useEffect(() => {
-    if (plazaSeleccionada) {
-      IngenierosService.getAll({
+    if (plazaSeleccionada) getFolioIgenieros();
+  }, [plazaSeleccionada]);
+
+  const cargaInicial = async () => {
+    try {
+      const [obtenerPlazas, pagarAQuien, cliVisibles] = await Promise.all([
+        PlazasService.getAll({
+          cod_usu: user.profile.COD_USU,
+          baseDatos: user.profile.baseDatos,
+        }),
+        GastosService.pagarA({
+          cod_usu: user.profile.COD_USU,
+          baseDatos: user.profile.baseDatos,
+        }),
+        ClientesService.clientesVisible({ baseDatos: user.profile.baseDatos }),
+      ]);
+
+      setPlazas(obtenerPlazas);
+      setPagarA(pagarAQuien);
+      setClientesVisible(cliVisibles);
+    } catch (error) {
+      console.error("Error durante la carga inicial", error);
+    }
+  };
+
+  const getFolioIgenieros = async () => {
+    try {
+      if (!folio) {
+        const [folioData, ingenierosData] = await Promise.all([
+          GastosService.getFolioProvisional(plazaSeleccionada),
+          IngenierosService.getAll({
+            plaza: plazaSeleccionada,
+            baseDatos: user.profile.baseDatos,
+          }),
+        ]);
+        setFolio(folioData[0]?.Folio || "");
+        setIngenieros(ingenierosData);
+
+        return;
+      }
+
+      const ingenierosData = await IngenierosService.getAll({
         plaza: plazaSeleccionada,
         baseDatos: user.profile.baseDatos,
-      })
-        .then((inges) => setIngenieros(inges))
-        .catch((error) => console.error(error));
+      });
+
+      setIngenieros(ingenierosData);
+    } catch (error) {
+      console.error("Error en getFolioIgenieros", error);
     }
-  }, [plazaSeleccionada]);
+  };
 
   const handleChecks = async () => {
     setIsCheckedSucursal(!isCheckedSucursal);
@@ -203,6 +216,7 @@ export const GastosToolbar = ({ setClientesVisible }) => {
               aria-label="Folio"
               aria-describedby="inputFolio"
               value={folio}
+              disabled
               onChange={(e) => setFolio(e.target.value)}
             />
             <div className="input-group-append">
