@@ -90,6 +90,11 @@ export const GastosToolbar = ({ setClientesVisible }) => {
 
   const handleChecks = async () => {
     setIsCheckedSucursal(!isCheckedSucursal);
+
+    // Si cuando esta en sucursal esta en true entonces cuando este en sucursal quiero eliminar al selectedIngeniero
+    if (isCheckedSucursal) {
+      setSelectedIngeniero("");
+    }
   };
 
   const handleSelectPlaza = async (e) => {

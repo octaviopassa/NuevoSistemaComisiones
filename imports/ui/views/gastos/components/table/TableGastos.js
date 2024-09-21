@@ -55,7 +55,7 @@ export const TableGastos = ({ clientesVisible }) => {
   });
 
   const { setDocumentos, documentos } = useGastosData();
-  console.log("documentos", documentos);
+  console.log("documentos", proveedorSeleccionado, clienteSeleccionado);
   const { data: dataTipoGastos } = useFetchData(TipoGastosService.getAll);
   const tipoGastos = dataTipoGastos.map((tg) => ({
     value: tg.Codigo,
@@ -277,7 +277,6 @@ export const TableGastos = ({ clientesVisible }) => {
     }
   };
 
-  //TODO: Fix this
   const handleFileUpload = (event, index) => {
     try {
       const file = event.target.files[0];
@@ -505,6 +504,7 @@ export const TableGastos = ({ clientesVisible }) => {
       importes: importesFinales,
       xmlArchivo: xmlArchivoFinal,
       pdfArchivo: pdfArchivoFinal,
+      documentoEstatus: "Activo",
     };
 
     setDocumentos([...documentos, nuevoDocumento]);
@@ -757,7 +757,7 @@ export const TableGastos = ({ clientesVisible }) => {
           </thead>
           <tbody>
             {documentos.map((doc, i) => (
-              <tr key={i}>
+              <tr key={i} className={doc.documentoEstatus ? "" : "table-danger"}>
                 <td className="text-center">{i + 1}</td>
                 <td>{doc.tipoDocumento}</td>
                 <td>{doc.proveedor?.label}</td>
@@ -929,7 +929,8 @@ export const TableGastos = ({ clientesVisible }) => {
                 </td>
                 {GRABADO ? (
                   <td className="text-center">
-                    <i className="fal fa-cog"></i>
+                    <i className="fal fa-trash-alt mr-2" onClick={() => {}}></i>
+                    <i className="fal fa-edit" onClick={() => {}}></i>
                   </td>
                 ) : (
                   <td className="text-center">

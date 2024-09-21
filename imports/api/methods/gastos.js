@@ -63,4 +63,46 @@ Meteor.methods({
       console.log(e);
     }
   },
+  "gastos.grabar": async (datos, accion = "INSERTAR") => {
+    try {
+      conexiones.body_bdseleccionada.tipo = "procedimiento";
+      conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
+      // TODO: Poner el RFC correcto.
+      conexiones.body_bdseleccionada.query = `
+        exec dbo.MP_GRABA_GASTO_GLOBAL
+        @FOLIO_GASTO='${datos.folio}',
+        @PLAZA='${datos.plaza}',
+        @FECHA='${datos.fecha}',
+        @COD_USU='${datos.cod_usu}',
+        @SUBTOTAL=${datos.subtotal},
+        @IVA=${datos.iva},
+        @IVA_16=${datos.iva_16},
+        @IVA_8=${datos.iva_8},
+        @IEPS=${datos.ieps},
+        @RETENCION=${datos.retencion},
+        @TOTAL=${datos.total},
+        @ORIGEN='${datos.origen}',
+        @CODIGO_VENDEDOR='${datos.ingeniero}',
+        @PAGAR_A='${datos.pagar_a}',
+        @ISH=${datos.ish},
+        @TUA=${datos.tua},
+        @OBSERVACIONES='${datos.observaciones}'
+        @ACCION='${accion}',
+        @EsWeb=1,
+        @RFC_RECEPTOR='NFPP170927MHA'
+      `;
+
+      const response = await axios.get(conexiones.windows_api, {
+        data: conexiones.body_bdseleccionada,
+      });
+
+      return {
+        isValid: response.data.isValid,
+        data: JSON.parse(response.data.data.resultado),
+        message: response.data.data.mensaje,
+      };
+    } catch (e) {
+      console.log(e);
+    }
+  },
 });

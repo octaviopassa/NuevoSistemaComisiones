@@ -20,6 +20,7 @@ import {
   useUserSession,
 } from "../../store";
 import { Link } from "react-router-dom";
+import { useGastosData } from "../../views/gastos/store";
 
 export const Aside = ({ isOpen, toggleSidebar, setIsSidebarOpen }) => {
   const { resetAllowedModules } = useUserModulesStore();
@@ -27,6 +28,7 @@ export const Aside = ({ isOpen, toggleSidebar, setIsSidebarOpen }) => {
   const { resetUserLogged } = useUserLoggedStore();
   const { resetUserSession, session } = useUserSession();
   const { resetUserRol, rol } = useUserRolStore();
+  const { resetData } = useGastosData();
 
   const user = {
     ...session,
@@ -63,6 +65,7 @@ export const Aside = ({ isOpen, toggleSidebar, setIsSidebarOpen }) => {
         resetUserSession();
         resetUserLogged();
         resetUserRol();
+        resetData();
         Meteor.logout();
       }
     });

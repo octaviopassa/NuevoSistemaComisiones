@@ -9,6 +9,7 @@ import {
   useUserSession,
 } from "../../store";
 import Swal from "sweetalert2";
+import { useGastosData } from "../../views/gastos/store";
 
 export const Header = () => {
   const { t } = useTranslation();
@@ -17,6 +18,7 @@ export const Header = () => {
   const { resetUserLogged } = useUserLoggedStore();
   const { resetUserSession, session } = useUserSession();
   const { resetUserRol, rol } = useUserRolStore();
+  const { resetData } = useGastosData();
   const navigate = useNavigate();
 
   const user = {
@@ -38,6 +40,7 @@ export const Header = () => {
         resetUserSession();
         resetUserLogged();
         resetUserRol();
+        resetData();
         navigate("/");
         Meteor.logout();
       }

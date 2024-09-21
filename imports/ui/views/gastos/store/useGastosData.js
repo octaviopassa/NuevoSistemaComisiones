@@ -3,7 +3,7 @@ import { persist } from "zustand/middleware";
 
 export const useGastosData = create(
   persist(
-    (set) => ({
+    (set, get) => ({
       plazaSeleccionada: "",
       setPlazaSeleccionada: (nuevaPlaza) =>
         set({ plazaSeleccionada: nuevaPlaza }),
@@ -25,6 +25,29 @@ export const useGastosData = create(
 
       folio: "",
       setFolio: (nuevoFolio) => set({ folio: nuevoFolio }),
+
+      estatus: {
+        estatus: "Nuevo",
+        grabo: "",
+        observaciones: "",
+      },
+      setEstatus: (nuevoEstatus) => set({ estatus: nuevoEstatus }),
+
+      resetData: () => {
+        set({
+          plazaSeleccionada: "",
+          documentos: [],
+          pagarASeleccionado: "",
+          selectedIngeniero: "",
+          gastosDate: "",
+          folio: "",
+          estatus: {
+            estatus: "Nuevo",
+            grabo: "",
+            observaciones: "",
+          },
+        });
+      },
     }),
     {
       name: "global-data-fetch",
