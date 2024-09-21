@@ -19,7 +19,6 @@ export const GastosToolbar = ({ setClientesVisible }) => {
   const [folio, setFolio] = useState("");
 
   const { session: user } = useUserSession();
-  console.log("user", user);
   const {
     plazaSeleccionada,
     setPlazaSeleccionada,

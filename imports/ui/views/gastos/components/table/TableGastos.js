@@ -278,38 +278,60 @@ export const TableGastos = ({ clientesVisible }) => {
   };
 
   //TODO: Fix this
-  const handlePdfUpload = (event, index) => {
+  const handleFileUpload = (event, index) => {
     try {
       const file = event.target.files[0];
+      const validFileTypes = [
+        "application/pdf",
+        "image/png",
+        "image/jpeg",
+        "image/jpg",
+      ];
+      const maxSizeInMB = 4;
+      const maxSizeInBytes = maxSizeInMB * 1024 * 1024;
+
+      if (!file) {
+        toastr.error("Por favor, seleccione un archivo.");
+        return;
+      }
+
+      if (!validFileTypes.includes(file.type)) {
+        toastr.error(
+          "Por favor, seleccione un archivo PDF o una imagen válida (PNG, JPG, JPEG)."
+        );
+        return;
+      }
+
+      if (file.size > maxSizeInBytes) {
+        toastr.error(
+          `El tamaño del archivo no debe exceder ${maxSizeInMB} MB.`
+        );
+        return;
+      }
+
       const fileName = file.name;
       const reader = new FileReader();
 
       reader.onload = (e) => {
-        const arrayBuffer = e.target.result;
-        const byteArray = new Uint8Array(arrayBuffer);
-        const base64String = btoa(String.fromCharCode.apply(null, byteArray));
-
+        const base64String = e.target.result.split(",")[1];
         const pdfData = {
           nombre: fileName,
           contenido: base64String,
         };
 
         if (index !== undefined) {
-          // Estamos actualizando un documento existente
           setDocumentos(
             documentos.map((doc, i) =>
               i === index ? { ...doc, pdfArchivo: pdfData } : doc
             )
           );
         } else {
-          // Es una nueva carga
           setPdfTempData(pdfData);
         }
-
-        toastr.success("Archivo PDF cargado correctamente");
+        toastr.success("Archivo cargado correctamente");
       };
 
-      reader.readAsArrayBuffer(file);
+      reader.readAsDataURL(file);
     } catch (error) {
       console.error("Archivo inválido seleccionado");
       toastr.error("Por favor, seleccione un archivo PDF válido");
@@ -343,7 +365,7 @@ export const TableGastos = ({ clientesVisible }) => {
     }
   };
 
-  const handlePdfDownload = (index) => {
+  const handleFileDownload = (index) => {
     const doc = documentos[index];
     if (doc.pdfArchivo) {
       // Convertir la cadena base64 a un Blob
@@ -368,27 +390,6 @@ export const TableGastos = ({ clientesVisible }) => {
       console.error("No se encontró archivo PDF para este documento");
       toastr.error("No hay archivo PDF disponible para descargar");
     }
-  };
-
-  const handleXmlDelete = (index) => {
-    const newDocumentos = [...documentos];
-    newDocumentos[index] = {
-      ...newDocumentos[index],
-      xmlArchivo: null,
-      xmlData: null,
-    };
-    setDocumentos(newDocumentos);
-    toastr.success("Archivo XML eliminado");
-  };
-
-  const handlePdfDelete = (index) => {
-    const newDocumentos = [...documentos];
-    newDocumentos[index] = {
-      ...newDocumentos[index],
-      pdfArchivo: null,
-    };
-    setDocumentos(newDocumentos);
-    toastr.success("Archivo PDF eliminado");
   };
 
   const handleSelectProveedor = (selectedOption) => {
@@ -694,7 +695,7 @@ export const TableGastos = ({ clientesVisible }) => {
                       type="file"
                       accept=".pdf,.jpg,.jpeg,.png,image/jpeg,image/png"
                       style={{ display: "none" }}
-                      onChange={handlePdfUpload}
+                      onChange={handleFileUpload}
                     />
                   </label>
                 )}
@@ -794,7 +795,9 @@ export const TableGastos = ({ clientesVisible }) => {
                     </span>
                   ) : doc.tipoGasto.label === "ATENCION A CLIENTES" ? (
                     <>
-                      <strong>Cliente: </strong> {doc.detalleGasto.label}
+                      <strong>Cliente: </strong>
+                      <br />
+                      {doc.detalleGasto.label}
                     </>
                   ) : (
                     doc.detalleGasto
@@ -848,18 +851,18 @@ export const TableGastos = ({ clientesVisible }) => {
                       <div className="d-flex align-items-center justify-content-center">
                         <FontAwesomeIcon
                           icon={faDownload}
-                          style={{ marginRight: "5px", cursor: "pointer" }}
+                          style={{ marginRight: "8px", cursor: "pointer" }}
                           onClick={() => handleXmlDownload(i)}
                           title={doc.xmlArchivo.nombre}
                         />
                         <label
-                          htmlFor={`xml-upload-${i}`}
+                          htmlFor={`xml-replace-${i}`}
                           style={{ cursor: "pointer" }}
                           className="mt-2"
                         >
                           <FontAwesomeIcon icon={faRetweet} />
                           <input
-                            id={`xml-upload-${i}`}
+                            id={`xml-replace-${i}`}
                             type="file"
                             accept=".xml"
                             style={{ display: "none" }}
@@ -886,19 +889,28 @@ export const TableGastos = ({ clientesVisible }) => {
                 <td className="text-center">
                   {doc.tipoDocumento === "Factura" &&
                     (doc.pdfArchivo ? (
-                      <>
+                      <div className="d-flex align-items-center justify-content-center">
                         <FontAwesomeIcon
                           icon={faDownload}
-                          style={{ marginRight: "5px", cursor: "pointer" }}
-                          onClick={() => handlePdfDownload(i)}
+                          style={{ marginRight: "8px", cursor: "pointer" }}
+                          onClick={() => handleFileDownload(i)}
                           title={doc.pdfArchivo.nombre}
                         />
-                        <FontAwesomeIcon
-                          icon={faRetweet}
+                        <label
+                          htmlFor={`pdf-replace-${i}`}
                           style={{ cursor: "pointer" }}
-                          onClick={() => handlePdfDelete(i)}
-                        />
-                      </>
+                          className="mt-2"
+                        >
+                          <FontAwesomeIcon icon={faRetweet} />
+                          <input
+                            id={`pdf-replace-${i}`}
+                            type="file"
+                            accept=".pdf,.jpg,.jpeg,.png,image/jpeg,image/png"
+                            style={{ display: "none" }}
+                            onChange={(e) => handleFileUpload(e, i)}
+                          />
+                        </label>
+                      </div>
                     ) : (
                       <label
                         htmlFor={`pdf-upload-${i}`}
@@ -910,7 +922,7 @@ export const TableGastos = ({ clientesVisible }) => {
                           type="file"
                           accept=".pdf,.jpg,.jpeg,.png,image/jpeg,image/png"
                           style={{ display: "none" }}
-                          onChange={(e) => handlePdfUpload(e, i)}
+                          onChange={(e) => handleFileUpload(e, i)}
                         />
                       </label>
                     ))}
