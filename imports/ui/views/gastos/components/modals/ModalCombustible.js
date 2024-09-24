@@ -115,6 +115,17 @@ export const ModalCombustible = ({
   };
 
   const handleGuardarCombustible = () => {
+    if (
+      !conductorSeleccionado ||
+      !vehiculoSeleccionado ||
+      !kilometraje ||
+      !litros ||
+      !combustibleSeleccionado ||
+      !gasolineraSeleccionada
+    ) {
+      toastr.error("Todos los campos son obligatorios");
+      return;
+    }
     const datosCombustible = {
       conductor: conductorSeleccionado,
       vehiculo: vehiculoSeleccionado,

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { ModalLoading } from "../../../components/global/ModalLoading";
-import { GuardarButton } from "./modals/actions/GuardarButton";
+import { GuardarButton } from "./actions";
 
 // TODO: Refactor this. Cada boton de accion sera un componente con su respectiva funcion.
 export const GastosActions = () => {
@@ -25,6 +25,7 @@ export const GastosActions = () => {
         <GuardarButton setLoading={setLoading} />
         <button
           type="button"
+          onClick={() => window.print()}
           className="btn btn-secondary bg-warning-900color-warning-900
               waves-effect waves-themed text-white ml-2 mr-2"
         >

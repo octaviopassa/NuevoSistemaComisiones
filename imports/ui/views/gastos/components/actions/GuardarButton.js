@@ -1,11 +1,12 @@
 import React from "react";
-import { useGastosData } from "../../../store";
-import { useUserSession } from "../../../../../store";
+import { useGastosData } from "../../store";
+import { useUserSession } from "../../../../store";
 import {
   DocumentosService,
   EmpresasService,
   GastosService,
-} from "../../../../../services";
+} from "../../../../services";
+import toastr from "toastr";
 
 export const GuardarButton = ({ setLoading }) => {
   const {
@@ -51,7 +52,7 @@ export const GuardarButton = ({ setLoading }) => {
     //TODO: Usar estatos.estatus para dependiendo si es nuevo o grabado ver si se manda la accion de EDITAR o INSERTAR.
     e.preventDefault();
     try {
-      if (!plazaSeleccionada || !pagarASeleccionado || !gastosDate) {
+      if (!plazaSeleccionada || !pagarASeleccionado || !gastosDate || documentos.length === 0) {
         toastr.warning("Por favor, llene todos los campos requeridos.");
         return;
       }
