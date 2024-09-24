@@ -59,4 +59,19 @@ Meteor.methods({
       console.log(e);
     }
   },
+  "empresas.getRFC": async (database) => {
+    try {
+      conexiones.body_bdseleccionada.tipo = "consulta";
+      conexiones.body_bdseleccionada.query = "SELECT rfc FROM facpars;"
+      conexiones.body_bdseleccionada.baseDatos = database;
+
+      const response = await axios.get(conexiones.windows_api, {
+        data: conexiones.body_bdseleccionada,
+      });
+
+      return JSON.parse(response.data.data.resultado);
+    } catch (e) {
+      console.log(e);
+    }
+  }
 });

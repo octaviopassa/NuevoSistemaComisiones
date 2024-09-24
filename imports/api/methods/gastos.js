@@ -67,7 +67,6 @@ Meteor.methods({
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
-      // TODO: Poner el RFC correcto.
       conexiones.body_bdseleccionada.query = `
         exec dbo.MP_GRABA_GASTO_GLOBAL
         @FOLIO_GASTO='${datos.folio}',
@@ -83,13 +82,94 @@ Meteor.methods({
         @TOTAL=${datos.total},
         @ORIGEN='${datos.origen}',
         @CODIGO_VENDEDOR='${datos.ingeniero}',
-        @PAGAR_A='${datos.pagar_a}',
+        @PAGAR_A='${datos.pagarA}',
         @ISH=${datos.ish},
         @TUA=${datos.tua},
-        @OBSERVACIONES='${datos.observaciones}'
+        @OBSERVACION='${datos.observaciones}',
         @ACCION='${accion}',
         @EsWeb=1,
-        @RFC_RECEPTOR='NFPP170927MHA'
+        @RFC_RECEPTOR='${datos.rfc}'
+      `;
+
+      const response = await axios.get(conexiones.windows_api, {
+        data: conexiones.body_bdseleccionada,
+      });
+
+      return {
+        isValid: response.data.isValid,
+        data: JSON.parse(response.data.data.resultado),
+        message: response.data.data.mensaje,
+      };
+    } catch (e) {
+      console.log(e);
+    }
+  },
+  "gastos.grabarRenglon": async (datos) => {
+    try {
+      conexiones.body_bdseleccionada.tipo = "procedimiento";
+      conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
+      conexiones.body_bdseleccionada.query = `
+        exec [MP_GRABA_GASTO_DETALLE]
+        @ID_GASTO_DETALLE=0,
+        @FOLIO_GASTO='${datos.folio}',
+        @TIPO_DOCUMENTO='${datos.tipoDocumento}',
+        @CODIGO_PROVEEDOR=${datos.proveedor},
+        @CODIGO_GASTO=${datos.tipoGasto},
+        @CONCEPTO='${datos.concepto}',
+        @FECHA='${datos.fecha}',
+        @FOLIO_PROVEEDOR='${datos.folioProveedor}',
+        @SUBTOTAL=${datos.subtotal},
+        @IVA=${datos.iva},
+        @IVA_16=${datos.iva_16},
+        @IVA_8=${datos.iva_8},
+        @IEPS=${datos.ieps},
+        @RETENCION=${datos.retencion},
+        @TOTAL=${datos.total},
+        @CCON='',
+        @ID_MANTENIMIENTO_GLOBAL=0,
+        @RECIBIDO='0',
+        @ISH=${datos.ish},
+        @CADENA_XML='${datos.cadena_xml}',
+        @UUID='${datos.uuid}',
+        @TUA=${datos.tua},
+        @TIENE_TUA_DESGLOSADO='${datos.tua_desglosado}',
+        @CLIENTE='${datos.cliente}',
+        @ROWUID_PDF_EN_SERVIBOX=''
+      `;
+
+      const response = await axios.get(conexiones.windows_api, {
+        data: conexiones.body_bdseleccionada,
+      });
+
+      return {
+        isValid: response.data.isValid,
+        data: JSON.parse(response.data.data.resultado),
+        message: response.data.data.mensaje,
+      };
+    } catch (e) {
+      console.log(e);
+    }
+  },
+  "gastos.grabarGastoCombustible": async (datos) => {
+    try {
+      conexiones.body_bdseleccionada.tipo = "procedimiento";
+      conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
+      conexiones.body_bdseleccionada.query = `
+        exec [MP_CONSUMOS_VALE_COMBUSTIBLE_GRABA] 
+        @IDVALE=${datos.idVale || 0},
+        @FOLIO='${datos.folio}',
+        @FECHA='${datos.fecha}',
+        @CODIGO_VEHICULO='${datos.vehiculo}',
+        @CODIGO_ENCARGADO='${datos.conductor}',
+        @IMPORTE=${datos.importe},
+        @LITROS=${datos.litros},
+        @KM=${datos.km},
+        @TIPO_COMBUSTIBLE='${datos.combustible}',
+        @CODIGO_USUARIO_GRABO='${datos.cod_usu}',
+        @CODIGO_GASOLINERA=${datos.gasolinera},
+        @COD_PLAZA='${datos.plaza}',
+        @FOLIO_GASTO='${datos.folioGasto}',
+        @ACCION='${datos.idVale ? "ACTUALIZAR" : "INSERTAR"}'
       `;
 
       const response = await axios.get(conexiones.windows_api, {

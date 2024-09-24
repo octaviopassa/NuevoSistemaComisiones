@@ -55,7 +55,6 @@ export const TableGastos = ({ clientesVisible }) => {
   });
 
   const { setDocumentos, documentos } = useGastosData();
-  console.log("documentos", proveedorSeleccionado, clienteSeleccionado);
   const { data: dataTipoGastos } = useFetchData(TipoGastosService.getAll);
   const tipoGastos = dataTipoGastos.map((tg) => ({
     value: tg.Codigo,
@@ -119,6 +118,13 @@ export const TableGastos = ({ clientesVisible }) => {
           return;
         }
 
+        const metodo = comprobante.getAttribute("MetodoPago");
+
+        if (metodo !== "PUE") {
+          toastr.error("XML de tipo invalido");
+          return;
+        }
+
         const datos = {
           fecha: comprobante.getAttribute("Fecha") || "",
           folio: comprobante.getAttribute("Folio") || "",
@@ -132,6 +138,7 @@ export const TableGastos = ({ clientesVisible }) => {
           tua: "0",
           ret: "0",
         };
+        let uuid;
 
         const impuestosList = Array.from(
           comprobante.getElementsByTagName("cfdi:Impuestos") || []
@@ -182,6 +189,23 @@ export const TableGastos = ({ clientesVisible }) => {
 
         const complemento = xmlDoc.getElementsByTagName("cfdi:Complemento")[0];
         if (complemento) {
+          const timbreFiscal = complemento.getElementsByTagName(
+            "tfd:TimbreFiscalDigital"
+          )[0];
+
+          if (timbreFiscal) {
+            const uuidFiscal = timbreFiscal.getAttribute("UUID");
+
+            if (uuidFiscal) {
+              uuid = uuidFiscal;
+            } else {
+              toastr.warning("XML de tipo invalido");
+              return;
+            }
+          } else {
+            toastr.warning("XML de tipo invalido");
+            return;
+          }
           const impuestosLocales = complemento.getElementsByTagName(
             "implocal:ImpuestosLocales"
           )[0];
@@ -247,6 +271,7 @@ export const TableGastos = ({ clientesVisible }) => {
           archivo: {
             nombre: fileName,
             contenido: base64String,
+            uuid,
           },
           importes: datos,
         };
@@ -484,7 +509,7 @@ export const TableGastos = ({ clientesVisible }) => {
 
     // Asegurarse de que todos los valores numéricos sean números y tengan dos decimales
     for (let key in importesFinales) {
-      if (key !== "fecha") {
+      if (key !== "fecha" && key !== "folio") {
         importesFinales[key] = parseFloat(importesFinales[key]).toFixed(2);
       }
     }
@@ -757,7 +782,10 @@ export const TableGastos = ({ clientesVisible }) => {
           </thead>
           <tbody>
             {documentos.map((doc, i) => (
-              <tr key={i} className={doc.documentoEstatus ? "" : "table-danger"}>
+              <tr
+                key={i}
+                className={doc.documentoEstatus ? "" : "table-danger"}
+              >
                 <td className="text-center">{i + 1}</td>
                 <td>{doc.tipoDocumento}</td>
                 <td>{doc.proveedor?.label}</td>

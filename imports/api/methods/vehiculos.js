@@ -87,21 +87,3 @@ Meteor.methods({
     }
   },
 });
-
-/**
-  Grabar CATÁLOGO DE VEHICULOS. El grabar corre a cargo del store (BD CONSUMOS_PASSA)
-    exec [MP_CATALOGOS_VEHICULOS_GRABA] 
-    @CODIGO_VEHICULO=0, (0 si insertamos, el código si actualizamos)
-    @NOMBRE_VEHICULO='prueba', (textbox nombre)
-    @PLACA='123', (textbox placa)
-    @MODELO='2021', (textbox modelo)
-    @NUMERO_SERIE='', (textbox serie)
-    @POLIZA_SEGURO='', (textbox poliza)
-    @CODIGO_ENCARGADO=238, (cbo conductor)
-    @COD_ZONA='01', (plaza a la que está conectado el usuario)
-    @ESTATUS='A', (Letra A o B como cadena dependiendo si es Activo/Baja)
-    @ES_VEHICULO_OFICIAL='0', (siempre es 0 como cadena)
-    @CODIGO_VEHICULO_OFICIAL=0, (siempre es 0 como cadena)
-    @Accion='Insertar' (INSERTAR o ACTUALIZAR como cadena según corresponda)
-
- */

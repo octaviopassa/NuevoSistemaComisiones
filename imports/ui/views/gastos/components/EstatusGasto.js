@@ -4,8 +4,6 @@ import { useGastosData } from "../store";
 export const EstatusGasto = () => {
   const { estatus, setEstatus } = useGastosData();
 
-  console.log(estatus);
-
   return (
     <div className="col-sm-3">
       <div className="card">
