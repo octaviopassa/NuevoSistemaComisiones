@@ -2,7 +2,7 @@ import conexiones from "../../utils/config";
 import axios from "axios";
 
 Meteor.methods({
-  "documentos.grabarArchivoXML": async (datos, accion = "Agregar") => {
+  "documentos.grabarArchivoXML": async (datos) => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
       conexiones.body_bdseleccionada.baseDatos = "expedientes";
@@ -10,14 +10,22 @@ Meteor.methods({
             exec [MP_XML_GRABA_ARCHIVO]
             @ID_GASTO_DETALLE=${datos.id_renglon},
             @NOMBRE_XML='${datos.nombre_xml}',
-            @ARCHIVO=${datos.archivo},
+            @ARCHIVO='${datos.archivo}',
             @COD_USU_AGREGO='${datos.cod_usu}',
-            @OPERACION='${accion}'
+            @OPERACION='Agregar'
           `;
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
       });
+
+      if (!response.data.data.esValido) {
+        return {
+          isValid: response.data.data.esValido,
+          data: null,
+          message: response.data.data.mensaje,
+        };
+      }
 
       return {
         isValid: response.data.isValid,
@@ -36,13 +44,21 @@ Meteor.methods({
               exec [MP_GASTOS_GRABA_ARCHIVO_NOTA]
               @ID_GASTO_DETALLE=${datos.id_renglon},
               @NOMBRE_ARCHIVO='${datos.nombre_pdf}',
-              @ARCHIVO=${datos.archivo},
+              @ARCHIVO='${datos.archivo}',
               @COD_USU_AGREGO='${datos.cod_usu}'
             `;
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
       });
+
+      if (!response.data.data.esValido) {
+        return {
+          isValid: response.data.data.esValido,
+          data: null,
+          message: response.data.data.mensaje,
+        };
+      }
 
       return {
         isValid: response.data.isValid,
@@ -71,9 +87,17 @@ Meteor.methods({
         data: conexiones.body_bdseleccionada,
       });
 
+      if (!response.data.data.esValido) {
+        return {
+          isValid: response.data.data.esValido,
+          data: null,
+          message: response.data.data.mensaje,
+        };
+      }
+
       return {
-        isValid: response.data.isValid,
-        data: JSON.parse(response.data.data.resultado),
+        isValid: response.data.data.esValido,
+        data: JSON.parse(response.data.data.resultado) || null,
         message: response.data.data.mensaje,
       };
     } catch (error) {
@@ -95,6 +119,14 @@ Meteor.methods({
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
       });
+
+      if (!response.data.data.esValido) {
+        return {
+          isValid: response.data.data.esValido,
+          data: null,
+          message: response.data.data.mensaje,
+        };
+      }
 
       return {
         isValid: response.data.isValid,
@@ -119,8 +151,170 @@ Meteor.methods({
         data: conexiones.body_bdseleccionada,
       });
 
+      if (!response.data.data.esValido) {
+        return {
+          isValid: response.data.data.esValido,
+          data: null,
+          message: response.data.data.mensaje,
+        };
+      }
+
       return {
         isValid: response.data.isValid,
+        data: JSON.parse(response.data.data.resultado),
+        message: response.data.data.mensaje,
+      };
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  "documentos.getResumen": async (folio) => {
+    try {
+      conexiones.body_bdseleccionada.tipo = "procedimiento";
+      conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
+      conexiones.body_bdseleccionada.query = `
+              EXEC MP_CONSULTA_WEB_REACT_OBTIENE_RESUMEN
+              @FOLIO_GASTO='${folio}'
+            `;
+
+      const response = await axios.get(conexiones.windows_api, {
+        data: conexiones.body_bdseleccionada,
+      });
+
+      if (!response.data.data.esValido) {
+        return {
+          isValid: response.data.data.esValido,
+          data: null,
+          message: response.data.data.mensaje,
+        };
+      }
+
+      return {
+        isValid: response.data.isValid,
+        data: JSON.parse(response.data.data.resultado),
+        message: response.data.data.mensaje,
+      };
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  "documentos.getGastoGlobal": async (data) => {
+    try {
+      conexiones.body_bdseleccionada.tipo = "procedimiento";
+      conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
+      conexiones.body_bdseleccionada.query = `
+              EXEC DBO.MP_CONSULTA_WEB_REACT_GASTOS_GLOBAL 
+              @FOLIO_GASTO='${data.folio}',
+              @PLAZA='${data.plaza}', 
+              @COD_USUARIO='${data.cod_usu}' 
+            `;
+
+      const response = await axios.get(conexiones.windows_api, {
+        data: conexiones.body_bdseleccionada,
+      });
+
+      if (!response.data.data.esValido) {
+        return {
+          isValid: response.data.data.esValido,
+          data: null,
+          message: response.data.data.mensaje,
+        };
+      }
+
+      return {
+        isValid: response.data.isValid,
+        data: JSON.parse(response.data.data.resultado),
+        message: response.data.data.mensaje,
+      };
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  "documentos.autorizarGasto": async (data) => {
+    try {
+      conexiones.body_bdseleccionada.tipo = "procedimiento";
+      conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
+      conexiones.body_bdseleccionada.query = `
+              exec MP_AUTORIZA_GASTO_GLOBAL 
+              @FOLIO_GASTO='${data.folio}',
+              @COD_USU='${data.cod_usu}' 
+            `;
+
+      const response = await axios.get(conexiones.windows_api, {
+        data: conexiones.body_bdseleccionada,
+      });
+
+      if (!response.data.data.esValido) {
+        return {
+          isValid: response.data.data.esValido,
+          data: null,
+          message: response.data.data.mensaje,
+        };
+      }
+
+      return {
+        isValid: response.data.data.esValido,
+        data: JSON.parse(response.data.data.resultado),
+        message: response.data.data.mensaje,
+      };
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  "documentos.desautorizarGasto": async (data) => {
+    try {
+      conexiones.body_bdseleccionada.tipo = "procedimiento";
+      conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
+      conexiones.body_bdseleccionada.query = `
+              exec MP_DESAUTORIZA_GASTO_GLOBAL 
+              @FOLIO_GASTO='${data.folio}'
+            `;
+
+      const response = await axios.get(conexiones.windows_api, {
+        data: conexiones.body_bdseleccionada,
+      });
+
+      if (!response.data.data.esValido) {
+        return {
+          isValid: response.data.data.esValido,
+          data: null,
+          message: response.data.data.mensaje,
+        };
+      }
+
+      return {
+        isValid: response.data.data.esValido,
+        data: JSON.parse(response.data.data.resultado),
+        message: response.data.data.mensaje,
+      };
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  "documentos.cancelarGasto": async (data) => {
+    try {
+      conexiones.body_bdseleccionada.tipo = "procedimiento";
+      conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
+      conexiones.body_bdseleccionada.query = `
+              exec MP_CANCELA_GASTO
+              @FOLIO_GASTO='${data.folio}', 
+              @COD_USU='${data.cod_usu}' 
+            `;
+
+      const response = await axios.get(conexiones.windows_api, {
+        data: conexiones.body_bdseleccionada,
+      });
+
+      if (!response.data.data.esValido) {
+        return {
+          isValid: response.data.data.esValido,
+          data: null,
+          message: response.data.data.mensaje,
+        };
+      }
+
+      return {
+        isValid: response.data.data.esValido,
         data: JSON.parse(response.data.data.resultado),
         message: response.data.data.mensaje,
       };

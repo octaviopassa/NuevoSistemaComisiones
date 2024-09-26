@@ -7,6 +7,7 @@ import {
   GastosService,
 } from "../../../../services";
 import toastr from "toastr";
+import { format } from "date-fns";
 
 export const GuardarButton = ({ setLoading }) => {
   const {
@@ -17,6 +18,8 @@ export const GuardarButton = ({ setLoading }) => {
     gastosDate,
     folio,
     estatus,
+    setEstatus,
+    setResumen,
   } = useGastosData();
   const { session } = useUserSession();
   const totalImportes = documentos.reduce(
@@ -52,7 +55,12 @@ export const GuardarButton = ({ setLoading }) => {
     //TODO: Usar estatos.estatus para dependiendo si es nuevo o grabado ver si se manda la accion de EDITAR o INSERTAR.
     e.preventDefault();
     try {
-      if (!plazaSeleccionada || !pagarASeleccionado || !gastosDate || documentos.length === 0) {
+      if (
+        !plazaSeleccionada ||
+        !pagarASeleccionado ||
+        !gastosDate ||
+        documentos.length === 0
+      ) {
         toastr.warning("Por favor, llene todos los campos requeridos.");
         return;
       }
@@ -195,70 +203,90 @@ export const GuardarButton = ({ setLoading }) => {
           }
 
           const pdfBytes = documento.pdfArchivo?.contenido
-            ? new Uint8Array(
-                atob(documento.pdfArchivo.contenido)
-                  .split("")
-                  .map((char) => char.charCodeAt(0))
+            ? Uint8Array.from(atob(documento.pdfArchivo.contenido), (char) =>
+                char.charCodeAt(0)
               )
             : null;
 
           const xmlBytes = xmlArchivo?.contenido
-            ? new Uint8Array(
-                atob(xmlArchivo.contenido)
-                  .split("")
-                  .map((char) => char.charCodeAt(0))
+            ? Uint8Array.from(atob(xmlArchivo.contenido), (char) =>
+                char.charCodeAt(0)
               )
             : null;
 
           // TODO: GRABAR PDF Y XML
-          if (tipoDocumento === "Factura") {
-            const xmlGrabo = await DocumentosService.grabarArchivoXML({
+          const xmlGrabo = await DocumentosService.grabarArchivoXML({
+            id_renglon: renglonId,
+            nombre_xml: xmlArchivo?.nombre || "",
+            archivo: xmlBytes,
+            cod_usu: session.profile.COD_USU,
+          });
+
+          if (!xmlGrabo.isValid) console.error(xmlGrabo);
+
+          const pdfGrabo = await DocumentosService.grabarArchivoPDF({
+            id_renglon: renglonId,
+            nombre_pdf: documento.pdfArchivo?.nombre || "",
+            archivo: pdfBytes,
+            cod_usu: session.profile.COD_USU,
+          });
+
+          if (!pdfGrabo.isValid) console.error(pdfGrabo);
+
+          // Checar archivos
+          const grabarDocGlobal = await DocumentosService.grabarArchivo({
+            folio: newFolio,
+            archivo_xml: xmlBytes,
+            archivo_pdf: pdfBytes,
+            cadena_xml: atob(xmlArchivo?.contenido || ""),
+            cod_usu: session.profile.COD_USU,
+          });
+
+          if (!grabarDocGlobal.isValid) console.error(grabarDocGlobal);
+
+          const grabadoArchivosGlobal =
+            await DocumentosService.grabarArchivoNota({
               id_renglon: renglonId,
               nombre_xml: xmlArchivo?.nombre || "",
-              archivo: xmlBytes,
-              cod_usu: session.profile.COD_USU,
-            });
-
-            if (!xmlGrabo.isValid) console.error(xmlGrabo);
-
-            const pdfGrabo = await DocumentosService.grabarArchivoPDF({
-              id_renglon: renglonId,
-              nombre_pdf: pdfArchivo?.nombre || "",
               archivo: pdfBytes,
               cod_usu: session.profile.COD_USU,
             });
 
-            if (!pdfGrabo.isValid) console.error(pdfGrabo);
-          } else if (tipoDocumento === "Nota") {
-            const grabarDocGlobal = await DocumentosService.grabarArchivo({
+          if (!grabadoArchivosGlobal.isValid)
+            console.error(grabadoArchivosGlobal);
+
+          const [resumenData, gastoGlobalData] = await Promise.all([
+            DocumentosService.getResumen(newFolio),
+            DocumentosService.getGastoGlobal({
               folio: newFolio,
-              archivo_xml: xmlBytes,
-              archivo_pdf: pdfBytes,
-              cadena_xml: xmlArchivo.contenido,
+              plaza: plazaSeleccionada,
               cod_usu: session.profile.COD_USU,
-            });
+            }),
+          ]);
 
-            if (!grabarDocGlobal.isValid) console.error(grabarDocGlobal);
+          console.log(resumenData, gastoGlobalData);
 
-            const grabadoArchivosGlobal =
-              await DocumentosService.grabarArchivoNota({
-                folio: newFolio,
-                nombre_xml: xmlArchivo?.nombre || "",
-                archivo: pdfBytes,
-                cod_usu: session.profile.COD_USU,
-              });
+          if (!resumenData.isValid) console.error(resumenData);
 
-            if (!grabadoArchivosGlobal.isValid)
-              console.error(grabadoArchivosGlobal);
-          }
+          setEstatus({
+            estatus: gastoGlobalData.data[0].NOM_ESTATUS,
+            grabo: `${gastoGlobalData.data[0].NOM_USU_GRABO} ${format(
+              new Date(gastoGlobalData.data[0].FECHA),
+              "dd/MM/yyyy"
+            )}`,
+            observaciones: gastoGlobalData.data[0].OBSERVACION,
+            propietario: !!gastoGlobalData.data[0].EsPropietario,
+          });
+          setResumen(resumenData.data);
         } catch (error) {
           console.log(error);
         }
       });
+
+      toastr.success(`${newFolio} grabado correctamente`);
+      setLoading(false);
     } catch (error) {
       console.log(error);
-    } finally {
-      setLoading(false);
     }
   };
 

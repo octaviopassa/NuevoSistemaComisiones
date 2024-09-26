@@ -27,8 +27,6 @@ import { useFetchData } from "../../../../hooks";
 import { useGastosData } from "../../store";
 import { format } from "date-fns";
 
-const GRABADO = false;
-
 export const TableGastos = ({ clientesVisible }) => {
   const [proveedorSeleccionado, setProveedorSeleccionado] = useState("");
   const [clienteSeleccionado, setClienteSeleccionado] = useState("");
@@ -54,7 +52,7 @@ export const TableGastos = ({ clientesVisible }) => {
     total: "0.00",
   });
 
-  const { setDocumentos, documentos } = useGastosData();
+  const { setDocumentos, documentos, estatus } = useGastosData();
   const { data: dataTipoGastos } = useFetchData(TipoGastosService.getAll);
   const tipoGastos = dataTipoGastos.map((tg) => ({
     value: tg.Codigo,
@@ -529,7 +527,7 @@ export const TableGastos = ({ clientesVisible }) => {
       importes: importesFinales,
       xmlArchivo: xmlArchivoFinal,
       pdfArchivo: pdfArchivoFinal,
-      documentoEstatus: "Activo",
+      descartado: false,
     };
 
     setDocumentos([...documentos, nuevoDocumento]);
@@ -771,7 +769,7 @@ export const TableGastos = ({ clientesVisible }) => {
               <th className="text-center">
                 <i className="fal fa-file"></i>
               </th>
-              {GRABADO ? (
+              {estatus.estatus !== "Nuevo" ? (
                 <th className="text-center">
                   <i className="fal fa-cog"></i>
                 </th>
@@ -782,10 +780,7 @@ export const TableGastos = ({ clientesVisible }) => {
           </thead>
           <tbody>
             {documentos.map((doc, i) => (
-              <tr
-                key={i}
-                className={doc.documentoEstatus ? "" : "table-danger"}
-              >
+              <tr key={i} className={!doc.descartado ? "" : "table-danger"}>
                 <td className="text-center">{i + 1}</td>
                 <td>{doc.tipoDocumento}</td>
                 <td>{doc.proveedor?.label}</td>
@@ -854,9 +849,6 @@ export const TableGastos = ({ clientesVisible }) => {
                       <br />
                       Subtotal: $
                       {parseFloat(doc.importes?.subtotal || 0).toFixed(2)}
-                      {/* <br />
-                      Impuesto: $
-                      {parseFloat(doc.importes?.impuesto || 0).toFixed(2)} */}
                       <br />
                       IVA_16: $
                       {parseFloat(doc.importes?.iva_16 || 0).toFixed(2)}
@@ -874,91 +866,125 @@ export const TableGastos = ({ clientesVisible }) => {
                   </span>
                 </td>
                 <td>
-                  {doc.tipoDocumento === "Factura" &&
-                    (doc.xmlArchivo ? (
-                      <div className="d-flex align-items-center justify-content-center">
-                        <FontAwesomeIcon
-                          icon={faDownload}
-                          style={{ marginRight: "8px", cursor: "pointer" }}
-                          onClick={() => handleXmlDownload(i)}
-                          title={doc.xmlArchivo.nombre}
-                        />
+                  {doc.tipoDocumento === "Factura" ||
+                    (estatus.estatus !== "CANCELADO" &&
+                      (doc.xmlArchivo ? (
+                        <div className="d-flex align-items-center justify-content-center">
+                          <FontAwesomeIcon
+                            icon={faDownload}
+                            style={{
+                              marginRight: "8px",
+                              cursor: estatus.estatus === "Nuevo" && "pointer",
+                            }}
+                            onClick={() => handleXmlDownload(i)}
+                            title={doc.xmlArchivo.nombre}
+                          />
+                          <label
+                            htmlFor={`xml-replace-${i}`}
+                            style={{
+                              cursor: estatus.estatus === "Nuevo" && "pointer",
+                            }}
+                            className="mt-2"
+                          >
+                            <FontAwesomeIcon icon={faRetweet} />
+                            <input
+                              id={`xml-replace-${i}`}
+                              type="file"
+                              accept=".xml"
+                              disabled={estatus.estatus !== "Nuevo"}
+                              style={{ display: "none" }}
+                              onChange={(e) => handleXmlUpload(e, i)}
+                            />
+                          </label>
+                        </div>
+                      ) : (
                         <label
-                          htmlFor={`xml-replace-${i}`}
-                          style={{ cursor: "pointer" }}
-                          className="mt-2"
+                          htmlFor={`xml-upload-${i}`}
+                          style={{
+                            cursor: estatus.estatus === "Nuevo" && "pointer",
+                          }}
                         >
-                          <FontAwesomeIcon icon={faRetweet} />
+                          <FontAwesomeIcon icon={faUpload} />
                           <input
-                            id={`xml-replace-${i}`}
+                            id={`xml-upload-${i}`}
                             type="file"
                             accept=".xml"
+                            disabled={estatus.estatus !== "Nuevo"}
                             style={{ display: "none" }}
                             onChange={(e) => handleXmlUpload(e, i)}
                           />
                         </label>
-                      </div>
-                    ) : (
-                      <label
-                        htmlFor={`xml-upload-${i}`}
-                        style={{ cursor: "pointer" }}
-                      >
-                        <FontAwesomeIcon icon={faUpload} />
-                        <input
-                          id={`xml-upload-${i}`}
-                          type="file"
-                          accept=".xml"
-                          style={{ display: "none" }}
-                          onChange={(e) => handleXmlUpload(e, i)}
-                        />
-                      </label>
-                    ))}
+                      )))}
                 </td>
                 <td className="text-center">
-                  {doc.tipoDocumento === "Factura" &&
-                    (doc.pdfArchivo ? (
-                      <div className="d-flex align-items-center justify-content-center">
-                        <FontAwesomeIcon
-                          icon={faDownload}
-                          style={{ marginRight: "8px", cursor: "pointer" }}
-                          onClick={() => handleFileDownload(i)}
-                          title={doc.pdfArchivo.nombre}
-                        />
+                  {doc.tipoDocumento === "Factura" ||
+                    (estatus.estatus !== "CANCELADO" &&
+                      (doc.pdfArchivo ? (
+                        <div className="d-flex align-items-center justify-content-center">
+                          <FontAwesomeIcon
+                            icon={faDownload}
+                            style={{
+                              marginRight: "8px",
+                              cursor: estatus.estatus === "Nuevo" && "pointer",
+                            }}
+                            onClick={() => handleFileDownload(i)}
+                            title={doc.pdfArchivo.nombre}
+                          />
+                          <label
+                            htmlFor={`pdf-replace-${i}`}
+                            style={{
+                              cursor: estatus.estatus === "Nuevo" && "pointer",
+                            }}
+                            className="mt-2"
+                          >
+                            <FontAwesomeIcon icon={faRetweet} />
+                            <input
+                              id={`pdf-replace-${i}`}
+                              type="file"
+                              disabled={estatus.estatus !== "Nuevo"}
+                              accept=".pdf,.jpg,.jpeg,.png,image/jpeg,image/png"
+                              style={{ display: "none" }}
+                              onChange={(e) => handleFileUpload(e, i)}
+                            />
+                          </label>
+                        </div>
+                      ) : (
                         <label
-                          htmlFor={`pdf-replace-${i}`}
-                          style={{ cursor: "pointer" }}
-                          className="mt-2"
+                          htmlFor={`pdf-upload-${i}`}
+                          style={{
+                            cursor: estatus.estatus === "Nuevo" && "pointer",
+                          }}
                         >
-                          <FontAwesomeIcon icon={faRetweet} />
+                          <FontAwesomeIcon icon={faUpload} />
                           <input
-                            id={`pdf-replace-${i}`}
+                            id={`pdf-upload-${i}`}
                             type="file"
+                            disabled={estatus.estatus !== "Nuevo"}
                             accept=".pdf,.jpg,.jpeg,.png,image/jpeg,image/png"
                             style={{ display: "none" }}
                             onChange={(e) => handleFileUpload(e, i)}
                           />
                         </label>
-                      </div>
-                    ) : (
-                      <label
-                        htmlFor={`pdf-upload-${i}`}
-                        style={{ cursor: "pointer" }}
-                      >
-                        <FontAwesomeIcon icon={faUpload} />
-                        <input
-                          id={`pdf-upload-${i}`}
-                          type="file"
-                          accept=".pdf,.jpg,.jpeg,.png,image/jpeg,image/png"
-                          style={{ display: "none" }}
-                          onChange={(e) => handleFileUpload(e, i)}
-                        />
-                      </label>
-                    ))}
+                      )))}
                 </td>
-                {GRABADO ? (
+                {estatus.estatus !== "Nuevo" ? (
                   <td className="text-center">
-                    <i className="fal fa-trash-alt mr-2" onClick={() => {}}></i>
-                    <i className="fal fa-edit" onClick={() => {}}></i>
+                    {estatus.estatus === "GRABADO" && (
+                      <>
+                        <i
+                          className="fal fa-ban mr-2 text-danger cursor-pointer font-weight-bold"
+                          onClick={() => {}}
+                        ></i>
+                        <i
+                          className="fal fa-trash-alt mr-2 text-danger cursor-pointer font-weight-bold"
+                          onClick={() => {}}
+                        ></i>
+                        <i
+                          className="fal fa-edit mr-2 text-info cursor-pointer font-weight-bold"
+                          onClick={() => {}}
+                        ></i>
+                      </>
+                    )}
                   </td>
                 ) : (
                   <td className="text-center">

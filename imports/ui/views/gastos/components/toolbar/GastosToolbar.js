@@ -29,6 +29,7 @@ export const GastosToolbar = ({ setClientesVisible }) => {
     setGastosDate,
     folio,
     setFolio,
+    estatus,
   } = useGastosData();
 
   useEffect(() => {
@@ -250,6 +251,7 @@ export const GastosToolbar = ({ setClientesVisible }) => {
             <select
               className="custom-select"
               id="selectPagarA"
+              disabled={estatus.estatus === "AUTORIZADO" || estatus.estatus === "CANCELADO"}
               value={pagarASeleccionado}
               onChange={(e) => setPagarASeleccionado(e.target.value)}
             >

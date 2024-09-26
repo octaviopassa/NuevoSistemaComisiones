@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
+import { useGastosData } from "../../store";
 
 export const TableResumen = () => {
-  const [resumen, setResumen] = useState([]);
+  const { resumen } = useGastosData();
 
   return (
     <div className="row">
@@ -22,13 +23,13 @@ export const TableResumen = () => {
               <tbody>
                 {resumen.map((item, i) => (
                   <tr key={i}>
-                    <td>{item.tipoGasto}</td>
-                    <td className="text-right">${item.total.toFixed(2)}</td>
+                    <td>{item.NOMBRE_GASTO}</td>
+                    <td className="text-right">{item?.TOTAL}</td>
                     <td className="text-right">
-                      ${item.proSemanal.toFixed(2)}
+                      {item?.PROMEDIO_SEMANAL}
                     </td>
-                    <td className="text-right">{item.numSemanas}</td>
-                    <td className="text-right">${item.acumulado.toFixed(2)}</td>
+                    <td className="text-right">{item?.NUMERO_SEMANAS}</td>
+                    <td className="text-right">{item?.ACUMULADO}</td>
                   </tr>
                 ))}
               </tbody>

@@ -29,9 +29,16 @@ export const useGastosData = create(
       estatus: {
         estatus: "Nuevo",
         grabo: "",
+        aplico: "",
+        autorizo: "",
         observaciones: "",
+        propietario: false,
+        cancelado: "",
       },
       setEstatus: (nuevoEstatus) => set({ estatus: nuevoEstatus }),
+
+      resumen: [],
+      setResumen: (nuevoResumen) => set({ resumen: nuevoResumen }),
 
       resetData: () => {
         set({
@@ -44,8 +51,13 @@ export const useGastosData = create(
           estatus: {
             estatus: "Nuevo",
             grabo: "",
+            aplico: "",
+            autorizo: "",
             observaciones: "",
+            propietario: false,
+            cancelado: "",
           },
+          resumen: [],
         });
       },
     }),

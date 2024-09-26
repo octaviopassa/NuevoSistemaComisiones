@@ -2,13 +2,13 @@ import React from "react";
 import { useGastosData } from "../../store";
 import { useUserSession } from "../../../../store";
 import { DocumentosService } from "../../../../services";
-import { format } from "date-fns";
 import toastr from "toastr";
 
-export const AutorizarButton = ({ setLoading }) => {
+export const CancelarButton = ({ setLoading }) => {
   const { session } = useUserSession();
-  const { setEstatus, folio, estatus, plazaSeleccionada } = useGastosData();
-  const handleAutorizado = async () => {
+  const { estatus, setEstatus, folio, plazaSeleccionada } = useGastosData();
+
+  const handleCancelado = async () => {
     const data = {
       folio,
       cod_usu: session.profile.COD_USU,
@@ -16,10 +16,10 @@ export const AutorizarButton = ({ setLoading }) => {
 
     try {
       setLoading(true);
-      const autorizado = await DocumentosService.autorizarGasto(data);
+      const cancelado = await DocumentosService.cancelarGasto(data);
 
-      if (!autorizado.isValid) {
-        toastr.error(autorizado.message || "Error al autorizar el gasto");
+      if (!cancelado.isValid) {
+        toastr.error(cancelado.message || "Error al cancelar el gasto");
         return;
       }
 
@@ -30,13 +30,12 @@ export const AutorizarButton = ({ setLoading }) => {
 
       setEstatus({
         ...estatus,
-        estatus: "AUTORIZADO",
-        autorizo: `${gasto.data[0].NOM_USU_AUTORIZO} ${format(
-          new Date(gasto.data[0].FECHA_AUTORIZACION),
-          "dd/MM/yyyy"
+        estatus: "CANCELADO",
+        cancelo: `${gasto.data[0].NOM_USU_CANCELO} - ${format(
+          new Date(gasto.data[0].FECHA_CANCELACION)
         )}`,
       });
-      toastr.success("Se ha autorizado el gasto");
+      toastr.success("Se ha cancelado el gasto");
     } catch (error) {
       console.log(error, error?.message);
     } finally {
@@ -47,10 +46,10 @@ export const AutorizarButton = ({ setLoading }) => {
   return (
     <button
       type="button"
-      className="btn btn-info waves-effect waves-themed mr-2"
-      onClick={handleAutorizado}
+      className="btn btn-danger waves-effect waves-themed"
+      onClick={handleCancelado}
     >
-      <i className="fal fa-check"></i> Autorizar
+      <i className="fal fa-ban"></i> Cancelar
     </button>
   );
 };

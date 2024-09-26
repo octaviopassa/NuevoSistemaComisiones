@@ -20,4 +20,24 @@ DocumentosService.eliminarXML = async (id) => {
   return await Meteor.callSync("documentos.eliminarXML", id);
 };
 
+DocumentosService.getResumen = async (folio) => {
+  return await Meteor.callSync("documentos.getResumen", folio);
+};
+
+DocumentosService.getGastoGlobal = async (data) => {
+  return await Meteor.callSync("documentos.getGastoGlobal", data);
+};
+
+DocumentosService.autorizarGasto = async (data) => {
+  return await Meteor.callSync("documentos.autorizarGasto", data);
+};
+
+DocumentosService.desautorizarGasto = async (data) => {
+  return await Meteor.callSync("documentos.desautorizarGasto", data);
+};
+
+DocumentosService.cancelarGasto = async (data) => {
+  return await Meteor.callSync("documentos.cancelarGasto", data);
+};
+
 export { DocumentosService };

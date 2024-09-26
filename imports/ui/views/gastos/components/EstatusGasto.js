@@ -9,7 +9,18 @@ export const EstatusGasto = () => {
       <div className="card">
         <div className="card-body">
           <h5 className="card-title">Estatus: {estatus.estatus}</h5>
-          <small className="text-muted">Grabó: {estatus.grabo}</small>
+          <div className="d-flex flex-column">
+            <small className="text-muted">Grabó: {estatus.grabo}</small>
+            {estatus.aplico && (
+              <small className="text-muted">Aplico: {estatus.aplico}</small>
+            )}
+            {estatus.estatus === "AUTORIZADO" && (
+              <small className="text-muted">Autorizo: {estatus.autorizo}</small>
+            )}
+            {estatus.estatus === "CANCELADO" && (
+              <small className="text-muted">Canceló: {estatus.cancelo}</small>
+            )}
+          </div>
           <textarea
             className="form-control mt-3"
             id="observacionesTextarea"
@@ -18,7 +29,7 @@ export const EstatusGasto = () => {
             value={estatus.observaciones}
             maxLength="200"
             style={{ resize: "none" }}
-            disabled={estatus.estatus === "Nuevo"}
+            // disabled={estatus.estatus === "Nuevo"}
             onChange={(e) =>
               setEstatus({ ...estatus, observaciones: e.target.value })
             }
