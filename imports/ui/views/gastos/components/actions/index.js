@@ -3,5 +3,4 @@ export * from "./AutorizarButton";
 export * from "./CancelarButton";
 export * from "./ImprimirButton";
 export * from "./DesautorizarButton";
-export * from "./EditarButton";
 export * from "./NuevoButton";

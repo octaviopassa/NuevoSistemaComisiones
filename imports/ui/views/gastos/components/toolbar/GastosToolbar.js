@@ -251,7 +251,7 @@ export const GastosToolbar = ({ setClientesVisible }) => {
             <select
               className="custom-select"
               id="selectPagarA"
-              disabled={estatus.estatus === "AUTORIZADO" || estatus.estatus === "CANCELADO"}
+              disabled={estatus.estatus !== "Nuevo"}
               value={pagarASeleccionado}
               onChange={(e) => setPagarASeleccionado(e.target.value)}
             >

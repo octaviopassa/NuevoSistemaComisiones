@@ -12,6 +12,7 @@ import { format } from "date-fns";
 export const GuardarButton = ({ setLoading }) => {
   const {
     documentos,
+    setDocumentos,
     plazaSeleccionada,
     pagarASeleccionado,
     selectedIngeniero,
@@ -105,7 +106,7 @@ export const GuardarButton = ({ setLoading }) => {
 
       const newFolio = grabadoGlobal.data[0].Column1;
 
-      documentos.forEach(async (documento) => {
+      documentos.forEach(async (documento, index) => {
         try {
           const {
             tipoDocumento,
@@ -169,11 +170,17 @@ export const GuardarButton = ({ setLoading }) => {
             datosDocumento
           );
 
-          const renglonId = grabarRenglon.data[0].Column1;
-
           if (!grabarRenglon.isValid) {
             console.error(grabarRenglon);
           }
+
+          const renglonId = grabarRenglon.data[0].Column1;
+
+          // Agregar id: renglonId al documento
+          const updatedDocumentos = [...documentos];
+          updatedDocumentos[index] = { ...updatedDocumentos[index], renglonId };
+
+          setDocumentos(updatedDocumentos);
 
           // GRABAR COMBUSTIBLE SI ES COMBUSTIBLE
           if (tipoGasto.value === 1) {

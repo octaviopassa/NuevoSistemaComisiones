@@ -322,4 +322,76 @@ Meteor.methods({
       console.log(error);
     }
   },
+  "documentos.descartarDetalle": async (data) => {
+    try {
+      conexiones.body_bdseleccionada.tipo = "procedimiento";
+      conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
+      conexiones.body_bdseleccionada.query = `
+              exec MP_GASTOS_DESCARTA_GASTO_WEB 
+              @FOLIO_GASTO='${data.folio}',
+              @PLAZA='${data.plaza}', 
+              @ID_GASTO_DETALLE=${data.detalleId}, 
+              @COD_USU='${data.cod_usu}', 
+              @DESCARTADO='DESCARTADO' 
+            `;
+
+      const response = await axios.get(conexiones.windows_api, {
+        data: conexiones.body_bdseleccionada,
+      });
+
+      console.log(response.data);
+
+      if (!response.data.data.esValido) {
+        return {
+          isValid: response.data.data.esValido,
+          data: null,
+          message: response.data.data.mensaje,
+        };
+      }
+
+      return {
+        isValid: response.data.data.esValido,
+        data: JSON.parse(response.data.data.resultado),
+        message: response.data.data.mensaje,
+      };
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  "documentos.habilitarDetalleDescartado": async (data) => {
+    try {
+      conexiones.body_bdseleccionada.tipo = "procedimiento";
+      conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
+      conexiones.body_bdseleccionada.query = `
+              exec MP_GASTOS_DESCARTA_GASTO_WEB 
+              @FOLIO_GASTO='${data.folio}',
+              @PLAZA='${data.plaza}', 
+              @ID_GASTO_DETALLE=${data.detalleId}, 
+              @COD_USU='${data.cod_usu}', 
+              @DESCARTADO='' 
+            `;
+
+      const response = await axios.get(conexiones.windows_api, {
+        data: conexiones.body_bdseleccionada,
+      });
+
+      console.log(response.data);
+
+      if (!response.data.data.esValido) {
+        return {
+          isValid: response.data.data.esValido,
+          data: null,
+          message: response.data.data.mensaje,
+        };
+      }
+
+      return {
+        isValid: response.data.data.esValido,
+        data: JSON.parse(response.data.data.resultado),
+        message: response.data.data.mensaje,
+      };
+    } catch (error) {
+      console.log(error);
+    }
+  },
 });

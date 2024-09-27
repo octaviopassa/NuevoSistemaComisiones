@@ -13,6 +13,7 @@ import { UncontrolledTooltip } from "reactstrap";
 import toastr from "toastr";
 import {
   ClientesService,
+  DocumentosService,
   ProveedoresService,
   TipoGastosService,
 } from "../../../../services";
@@ -26,6 +27,7 @@ import {
 import { useFetchData } from "../../../../hooks";
 import { useGastosData } from "../../store";
 import { format } from "date-fns";
+import { useUserSession } from "../../../../store";
 
 export const TableGastos = ({ clientesVisible }) => {
   const [proveedorSeleccionado, setProveedorSeleccionado] = useState("");
@@ -52,7 +54,14 @@ export const TableGastos = ({ clientesVisible }) => {
     total: "0.00",
   });
 
-  const { setDocumentos, documentos, estatus } = useGastosData();
+  const { session } = useUserSession();
+  const {
+    setDocumentos,
+    documentos,
+    estatus,
+    folio: folioGlobal,
+    plazaSeleccionada,
+  } = useGastosData();
   const { data: dataTipoGastos } = useFetchData(TipoGastosService.getAll);
   const tipoGastos = dataTipoGastos.map((tg) => ({
     value: tg.Codigo,
@@ -572,6 +581,66 @@ export const TableGastos = ({ clientesVisible }) => {
     });
   };
 
+  const handleDescartar = async (documento) => {
+    const data = {
+      folio: folioGlobal,
+      plaza: plazaSeleccionada,
+      detalleId: documento.renglonId,
+      cod_usu: session.profile.COD_USU,
+    };
+
+    //TODO: Agregar modal de confirmación
+
+    try {
+      const descartado = await DocumentosService.descartarDetalle(data);
+
+      if (!descartado.isValid) {
+        toastr.error("No se pudo descartar el detalle");
+        return;
+      }
+
+      const index = documentos.findIndex(
+        (doc) => doc.renglonId === documento.renglonId
+      );
+      const newDocumentos = [...documentos];
+      newDocumentos[index] = { ...newDocumentos[index], descartado: true };
+      setDocumentos(newDocumentos);
+      toastr.success("Detalle descartado correctamente");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleHabilitar = async (documento) => {
+    const data = {
+      folio: folioGlobal,
+      plaza: plazaSeleccionada,
+      detalleId: documento.renglonId,
+      cod_usu: session.profile.COD_USU,
+    };
+    //TODO: Agregar modal de confirmación
+
+    try {
+      const habilitado = await DocumentosService.habilitarDetalle(data);
+      console.log("descartado", habilitado);
+
+      if (!habilitado.isValid) {
+        toastr.error("No se pudo descartar el gasto");
+        return;
+      }
+
+      const index = documentos.findIndex(
+        (doc) => doc.renglonId === documento.renglonId
+      );
+      const newDocumentos = [...documentos];
+      newDocumentos[index] = { ...newDocumentos[index], descartado: false };
+      setDocumentos(newDocumentos);
+      toastr.success("Detalle habilitado correctamente");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="row">
       <div className="col-sm-12">
@@ -585,6 +654,7 @@ export const TableGastos = ({ clientesVisible }) => {
                   onChange={handleTipoDocumentoChange}
                   placeholder="Tipo de documento"
                   styles={customStyles}
+                  isDisabled={estatus.estatus !== "Nuevo"}
                   value={tipoDocumento}
                 />
               </th>
@@ -595,6 +665,7 @@ export const TableGastos = ({ clientesVisible }) => {
                   onChange={handleSelectProveedor}
                   value={proveedorSeleccionado}
                   placeholder="Proveedor"
+                  isDisabled={estatus.estatus !== "Nuevo"}
                   styles={customStyles}
                 />
               </th>
@@ -606,6 +677,7 @@ export const TableGastos = ({ clientesVisible }) => {
                     onChange={handleSelectCliente}
                     value={clienteSeleccionado}
                     placeholder="Cliente"
+                    isDisabled={estatus.estatus !== "Nuevo"}
                     styles={customStyles}
                   />
                 </th>
@@ -614,6 +686,7 @@ export const TableGastos = ({ clientesVisible }) => {
                 <Select
                   options={tipoGastos}
                   onChange={handleTipoGastoChange}
+                  isDisabled={estatus.estatus !== "Nuevo"}
                   value={tipoGastoSeleccionado}
                   placeholder="Tipo de gasto"
                 />
@@ -623,6 +696,7 @@ export const TableGastos = ({ clientesVisible }) => {
                   className="form-control"
                   type="text"
                   value={concepto}
+                  disabled={estatus.estatus !== "Nuevo"}
                   onChange={(e) => setConcepto(e.target.value)}
                   placeholder="Concepto"
                 />
@@ -633,7 +707,9 @@ export const TableGastos = ({ clientesVisible }) => {
                     {tipoGastoSeleccionado.value === 1 ? (
                       <ModalButton
                         color=""
-                        buttonClasses="px-2 py-2 btn btn-sm btn-secondary d-flex align-items-center justify-content-center w-100"
+                        buttonClasses={`px-2 py-2 btn btn-sm btn-secondary d-flex align-items-center justify-content-center w-100 ${
+                          estatus.estatus !== "Nuevo" ? "disabled" : ""
+                        }`}
                         text={detalleGasto ? `Editar Gasto` : "Agregar Gasto"}
                         ModalComponent={ModalCombustible}
                         setDetalleGasto={setDetalleGasto}
@@ -645,6 +721,7 @@ export const TableGastos = ({ clientesVisible }) => {
                         loadOptions={clientesOptions}
                         onChange={handleSelectAtencionCliente}
                         placeholder="Seleccione cliente"
+                        isDisabled={estatus.estatus !== "Nuevo"}
                         value={atencionClienteSeleccionado}
                         styles={customStyles}
                       />
@@ -653,6 +730,7 @@ export const TableGastos = ({ clientesVisible }) => {
                         type="text"
                         className="form-control"
                         value={detalleGasto}
+                        disabled={estatus.estatus !== "Nuevo"}
                         onChange={(e) => setDetalleGasto(e.target.value)}
                         placeholder="Detalle del Gasto"
                       />
@@ -669,7 +747,9 @@ export const TableGastos = ({ clientesVisible }) => {
                         ? "Editar Importe"
                         : "Agregar Importe"
                     }
-                    buttonClasses="px-2 py-2 btn btn-sm btn-info d-flex align-items-center justify-content-center w-100"
+                    buttonClasses={`px-2 py-2 btn btn-sm btn-info d-flex align-items-center justify-content-center w-100 ${
+                      estatus.estatus !== "Nuevo" ? "disabled" : ""
+                    }`}
                     ModalComponent={ModalImportes}
                     importesData={importesData}
                     setImportesData={setImportesData}
@@ -695,6 +775,7 @@ export const TableGastos = ({ clientesVisible }) => {
                       id="xml-upload"
                       type="file"
                       accept=".xml"
+                      disabled={estatus.estatus !== "Nuevo"}
                       style={{ display: "none" }}
                       onChange={handleXmlUpload}
                     />
@@ -716,6 +797,7 @@ export const TableGastos = ({ clientesVisible }) => {
                     <input
                       id="pdf-upload"
                       type="file"
+                      disabled={estatus.estatus !== "Nuevo"}
                       accept=".pdf,.jpg,.jpeg,.png,image/jpeg,image/png"
                       style={{ display: "none" }}
                       onChange={handleFileUpload}
@@ -726,6 +808,9 @@ export const TableGastos = ({ clientesVisible }) => {
               <th>
                 <button
                   className="btn btn-primary btn-sm d-flex align-items-center py-2 px-3"
+                  disabled={
+                    importesData.total == 0 || estatus.estatus !== "Nuevo"
+                  }
                   onClick={agregarDocumento}
                 >
                   <i className="fal fa-plus mr-1"></i> Agregar
@@ -971,18 +1056,21 @@ export const TableGastos = ({ clientesVisible }) => {
                   <td className="text-center">
                     {estatus.estatus === "GRABADO" && (
                       <>
-                        <i
-                          className="fal fa-ban mr-2 text-danger cursor-pointer font-weight-bold"
-                          onClick={() => {}}
-                        ></i>
-                        <i
-                          className="fal fa-trash-alt mr-2 text-danger cursor-pointer font-weight-bold"
-                          onClick={() => {}}
-                        ></i>
-                        <i
+                        {doc.descartado ? (
+                          <i
+                            className="fal fa-check mr-2 text-success cursor-pointer font-weight-bold"
+                            onClick={() => handleHabilitar(doc)}
+                          ></i>
+                        ) : (
+                          <i
+                            className="fal fa-ban mr-2 text-danger cursor-pointer font-weight-bold"
+                            onClick={() => handleDescartar(doc)}
+                          ></i>
+                        )}
+                        {/* <i
                           className="fal fa-edit mr-2 text-info cursor-pointer font-weight-bold"
                           onClick={() => {}}
-                        ></i>
+                        ></i> */}
                       </>
                     )}
                   </td>

@@ -3,6 +3,7 @@ import { useGastosData } from "../../store";
 import { useUserSession } from "../../../../store";
 import { DocumentosService } from "../../../../services";
 import toastr from "toastr";
+import { format } from "date-fns";
 
 export const CancelarButton = ({ setLoading }) => {
   const { session } = useUserSession();
@@ -32,7 +33,7 @@ export const CancelarButton = ({ setLoading }) => {
         ...estatus,
         estatus: "CANCELADO",
         cancelo: `${gasto.data[0].NOM_USU_CANCELO} - ${format(
-          new Date(gasto.data[0].FECHA_CANCELACION)
+          new Date(gasto.data[0].FECHA_CANCELACION), "dd/MM/yyyy"
         )}`,
       });
       toastr.success("Se ha cancelado el gasto");

@@ -40,4 +40,12 @@ DocumentosService.cancelarGasto = async (data) => {
   return await Meteor.callSync("documentos.cancelarGasto", data);
 };
 
+DocumentosService.descartarDetalle = async (data) => {
+  return await Meteor.callSync("documentos.descartarDetalle", data);
+};
+
+DocumentosService.habilitarDetalle = async (data) => {
+  return await Meteor.callSync("documentos.habilitarDetalleDescartado", data);
+};
+
 export { DocumentosService };
