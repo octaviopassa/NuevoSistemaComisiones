@@ -28,6 +28,10 @@ DocumentosService.getGastoGlobal = async (data) => {
   return await Meteor.callSync("documentos.getGastoGlobal", data);
 };
 
+DocumentosService.getGastosDetalle = async (folio) => {
+  return await Meteor.callSync("documentos.getGastosDetalle", folio);
+};
+
 DocumentosService.autorizarGasto = async (data) => {
   return await Meteor.callSync("documentos.autorizarGasto", data);
 };

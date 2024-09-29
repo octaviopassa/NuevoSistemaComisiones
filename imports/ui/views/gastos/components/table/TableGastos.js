@@ -26,7 +26,7 @@ import {
 } from "../modals";
 import { useFetchData } from "../../../../hooks";
 import { useGastosData } from "../../store";
-import { format } from "date-fns";
+import { format, parse } from "date-fns";
 import { useUserSession } from "../../../../store";
 
 export const TableGastos = ({ clientesVisible }) => {
@@ -808,9 +808,7 @@ export const TableGastos = ({ clientesVisible }) => {
               <th>
                 <button
                   className="btn btn-primary btn-sm d-flex align-items-center py-2 px-3"
-                  disabled={
-                    importesData.total == 0 || estatus.estatus !== "Nuevo"
-                  }
+                  disabled={estatus.estatus !== "Nuevo"}
                   onClick={agregarDocumento}
                 >
                   <i className="fal fa-plus mr-1"></i> Agregar
@@ -914,8 +912,9 @@ export const TableGastos = ({ clientesVisible }) => {
                 <td>
                   <span>
                     <strong>Fecha: </strong>{" "}
-                    {format(new Date(doc.importes?.fecha), "dd/MM/yyyy") ||
-                      "N/A"}
+                    {isNaN(new Date(doc.importes?.fecha))
+                      ? doc.importes?.fecha || "N/A"
+                      : format(new Date(doc.importes?.fecha), "dd/MM/yyyy")}
                   </span>
                   <br />
                   <span>

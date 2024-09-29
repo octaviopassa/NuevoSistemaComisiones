@@ -52,6 +52,8 @@ export const GuardarButton = ({ setLoading }) => {
     }
   );
 
+  console.log(documentos)
+
   const handleGrabado = async (e) => {
     //TODO: Usar estatos.estatus para dependiendo si es nuevo o grabado ver si se manda la accion de EDITAR o INSERTAR.
     e.preventDefault();
@@ -160,8 +162,8 @@ export const GuardarButton = ({ setLoading }) => {
             total: parseFloat(total),
             ish: parseFloat(ish),
             tua: parseFloat(tua),
-            cadena_xml: xmlArchivo.contenido || "",
-            uuid: xmlArchivo.uuid || "",
+            cadena_xml: xmlArchivo?.contenido || "",
+            uuid: xmlArchivo?.uuid || "",
             tua_desglosado,
             cliente: tipoGasto.value === 17 ? documento.detalleGasto.label : "",
           };
@@ -186,7 +188,6 @@ export const GuardarButton = ({ setLoading }) => {
           if (tipoGasto.value === 1) {
             const { detalleGasto } = documento;
             const datosGasolina = {
-              idVale: detalleGasto.idVale || 0,
               folio,
               fecha,
               vehiculo: detalleGasto.vehiculo.value,
@@ -216,7 +217,7 @@ export const GuardarButton = ({ setLoading }) => {
             : null;
 
           const xmlBytes = xmlArchivo?.contenido
-            ? Uint8Array.from(atob(xmlArchivo.contenido), (char) =>
+            ? Uint8Array.from(atob(xmlArchivo?.contenido), (char) =>
                 char.charCodeAt(0)
               )
             : null;

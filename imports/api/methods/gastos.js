@@ -156,7 +156,7 @@ Meteor.methods({
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
       conexiones.body_bdseleccionada.query = `
         exec [MP_CONSUMOS_VALE_COMBUSTIBLE_GRABA] 
-        @IDVALE=${datos.idVale || 0},
+        @IDVALE=0,
         @FOLIO='${datos.folio}',
         @FECHA='${datos.fecha}',
         @CODIGO_VEHICULO='${datos.vehiculo}',
@@ -164,17 +164,25 @@ Meteor.methods({
         @IMPORTE=${datos.importe},
         @LITROS=${datos.litros},
         @KM=${datos.km},
-        @TIPO_COMBUSTIBLE='${datos.combustible}',
+        @TIPO_COMBUSTIBLE=${datos.combustible},
         @CODIGO_USUARIO_GRABO='${datos.cod_usu}',
         @CODIGO_GASOLINERA=${datos.gasolinera},
         @COD_PLAZA='${datos.plaza}',
         @FOLIO_GASTO='${datos.folioGasto}',
-        @ACCION='${datos.idVale ? "ACTUALIZAR" : "INSERTAR"}'
+        @ACCION='INSERTAR'
       `;
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
       });
+
+      if (!response.data.data.esValido) {
+        return {
+          isValid: response.data.data.esValido,
+          data: null,
+          message: response.data.data.mensaje,
+        };
+      }
 
       return {
         isValid: response.data.isValid,

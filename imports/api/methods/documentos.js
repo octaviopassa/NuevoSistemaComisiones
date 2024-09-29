@@ -168,12 +168,44 @@ Meteor.methods({
       console.log(error);
     }
   },
-  "documentos.getResumen": async (folio) => {
+  "documentos.getGastoGlobal": async (data) => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
       conexiones.body_bdseleccionada.query = `
-              EXEC MP_CONSULTA_WEB_REACT_OBTIENE_RESUMEN
+              EXEC DBO.MP_CONSULTA_WEB_REACT_GASTOS_GLOBAL 
+              @FOLIO_GASTO='${data.folio}',
+              @PLAZA='${data.plaza}', 
+              @COD_USUARIO='${data.cod_usu}' 
+            `;
+
+      const response = await axios.get(conexiones.windows_api, {
+        data: conexiones.body_bdseleccionada,
+      });
+
+      if (!response.data.data.esValido) {
+        return {
+          isValid: response.data.data.esValido,
+          data: null,
+          message: response.data.data.mensaje,
+        };
+      }
+
+      return {
+        isValid: response.data.isValid,
+        data: JSON.parse(response.data.data.resultado),
+        message: response.data.data.mensaje,
+      };
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  "documentos.getGastosDetalle": async (folio) => {
+    try {
+      conexiones.body_bdseleccionada.tipo = "procedimiento";
+      conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
+      conexiones.body_bdseleccionada.query = `
+              EXEC DBO.MP_CONSULTA_WEB_REACT_GASTOS_DETALLE 
               @FOLIO_GASTO='${folio}'
             `;
 
@@ -198,15 +230,13 @@ Meteor.methods({
       console.log(error);
     }
   },
-  "documentos.getGastoGlobal": async (data) => {
+  "documentos.getResumen": async (folio) => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
       conexiones.body_bdseleccionada.query = `
-              EXEC DBO.MP_CONSULTA_WEB_REACT_GASTOS_GLOBAL 
-              @FOLIO_GASTO='${data.folio}',
-              @PLAZA='${data.plaza}', 
-              @COD_USUARIO='${data.cod_usu}' 
+              EXEC MP_CONSULTA_WEB_REACT_OBTIENE_RESUMEN
+              @FOLIO_GASTO='${folio}'
             `;
 
       const response = await axios.get(conexiones.windows_api, {

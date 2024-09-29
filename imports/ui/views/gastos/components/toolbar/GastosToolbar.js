@@ -9,11 +9,11 @@ import { ModalButton } from "../modals";
 import { useGastosData } from "../../store";
 import { useUserSession } from "../../../../store";
 import { ModalCuentas } from "../modals/ModalCuentas";
+import { GastosFolioInput } from "./GastosFolioInput";
 
 export const GastosToolbar = ({ setClientesVisible }) => {
   const [plazas, setPlazas] = useState([]);
   const [pagarA, setPagarA] = useState([]);
-  const [isCheckedSucursal, setIsCheckedSucursal] = useState(true);
   const [ingenieros, setIngenieros] = useState([]);
   const [reloadData, setReloadData] = useState(false);
 
@@ -30,6 +30,8 @@ export const GastosToolbar = ({ setClientesVisible }) => {
     folio,
     setFolio,
     estatus,
+    isCheckedSucursal,
+    toggleCheckedSucursal,
   } = useGastosData();
 
   useEffect(() => {
@@ -39,7 +41,7 @@ export const GastosToolbar = ({ setClientesVisible }) => {
   useEffect(() => {
     if (plazaSeleccionada) getFolioIgenieros();
   }, [plazaSeleccionada]);
-
+  
   const cargaInicial = async () => {
     try {
       const [obtenerPlazas, pagarAQuien, cliVisibles] = await Promise.all([
@@ -90,16 +92,12 @@ export const GastosToolbar = ({ setClientesVisible }) => {
   };
 
   const handleChecks = async () => {
-    setIsCheckedSucursal(!isCheckedSucursal);
+    toggleCheckedSucursal();
 
     // Si cuando esta en sucursal esta en true entonces cuando este en sucursal quiero eliminar al selectedIngeniero
     if (isCheckedSucursal) {
       setSelectedIngeniero("");
     }
-  };
-
-  const handleSelectPlaza = async (e) => {
-    setPlazaSeleccionada(e.target.value);
   };
 
   return (
@@ -195,7 +193,7 @@ export const GastosToolbar = ({ setClientesVisible }) => {
               className="custom-select"
               id="selectPlaza"
               value={plazaSeleccionada}
-              onChange={handleSelectPlaza}
+              onChange={(e) => setPlazaSeleccionada(e.target.value)}
             >
               <option value="">Seleccione...</option>
               {plazas.map((plaza) => (
@@ -209,38 +207,8 @@ export const GastosToolbar = ({ setClientesVisible }) => {
       </div>
 
       <div className="row mb-3">
-        <div className="col-sm-3">
-          <div className="input-group">
-            <div className="input-group-prepend">
-              <span className="input-group-text">Folio:</span>
-            </div>
-            <input
-              type="text"
-              id="inputFolio"
-              className="form-control"
-              placeholder="GC-002809"
-              aria-label="Folio"
-              aria-describedby="inputFolio"
-              value={folio}
-              disabled
-              onChange={(e) => setFolio(e.target.value)}
-            />
-            <div className="input-group-append">
-              <button
-                className="btn btn-outline-info waves-effect waves-themed"
-                type="button"
-              >
-                <i className="fal fa-arrow-left"></i>
-              </button>
-              <button
-                className="btn btn-outline-info waves-effect waves-themed"
-                type="button"
-              >
-                <i className="fal fa-arrow-right"></i>
-              </button>
-            </div>
-          </div>
-        </div>
+        <GastosFolioInput />
+
         <div className="col-sm-5">
           <div className="input-group">
             <div className="input-group-prepend">

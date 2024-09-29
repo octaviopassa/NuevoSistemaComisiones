@@ -8,6 +8,12 @@ export const useGastosData = create(
       setPlazaSeleccionada: (nuevaPlaza) =>
         set({ plazaSeleccionada: nuevaPlaza }),
 
+      isCheckedSucursal: true,
+      toggleCheckedSucursal: () =>
+        set((state) => ({
+          isCheckedSucursal: !state.isCheckedSucursal,
+        })),
+
       documentos: [],
       setDocumentos: (nuevosDocumentos) =>
         set({ documentos: nuevosDocumentos }),
@@ -23,7 +29,7 @@ export const useGastosData = create(
       gastosDate: "",
       setGastosDate: (nuevaFecha) => set({ gastosDate: nuevaFecha }),
 
-      folio: "",
+      folio: "GC-000010",
       setFolio: (nuevoFolio) => set({ folio: nuevoFolio }),
 
       estatus: {
@@ -34,6 +40,7 @@ export const useGastosData = create(
         observaciones: "",
         propietario: false,
         cancelado: "",
+        oldFolio: false,
       },
       setEstatus: (nuevoEstatus) => set({ estatus: nuevoEstatus }),
 
@@ -43,6 +50,7 @@ export const useGastosData = create(
       resetData: () => {
         set({
           plazaSeleccionada: "",
+          isCheckedSucursal: true,
           documentos: [],
           pagarASeleccionado: "",
           selectedIngeniero: "",
@@ -56,9 +64,14 @@ export const useGastosData = create(
             observaciones: "",
             propietario: false,
             cancelado: "",
+            oldFolio: false,
           },
           resumen: [],
         });
+      },
+
+      setMultiple: (nuevosDatos) => {
+        set(nuevosDatos);
       },
     }),
     {
