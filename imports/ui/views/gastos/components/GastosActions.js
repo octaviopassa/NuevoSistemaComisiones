@@ -11,28 +11,29 @@ import {
 import { useGastosData } from "../store";
 
 export const GastosActions = () => {
-  const { estatus } = useGastosData();
+  const { estatus: estatusGastos } = useGastosData();
   const [loading, setLoading] = useState(false);
+
+  const { estatus, propietario } = estatusGastos;
 
   return (
     <div className="row mt-3 text-center">
       <div className="col-sm-12">
         <NuevoButton />
 
-        {estatus.estatus === "Nuevo" && (
-          <GuardarButton setLoading={setLoading} />
-        )}
-        {estatus.estatus !== "Nuevo" && <ImprimirButton />}
+        {estatus === "Nuevo" && <GuardarButton setLoading={setLoading} />}
 
-        {estatus.estatus === "GRABADO" && (
-          <AutorizarButton setLoading={setLoading} />
-        )}
-        {estatus.estatus === "AUTORIZADO" && (
+        {estatus !== "Nuevo" && <ImprimirButton />}
+
+        {estatus === "GRABADO" && <AutorizarButton setLoading={setLoading} />}
+
+        {estatus === "AUTORIZADO" && (
           <DesautorizarButton setLoading={setLoading} />
         )}
-        {estatus.estatus !== "Nuevo" &&
-          estatus.estatus !== "CANCELADO" &&
-          estatus.propietario && <CancelarButton setLoading={setLoading} />}
+
+        {estatus !== "Nuevo" && estatus !== "CANCELADO" && propietario && (
+          <CancelarButton setLoading={setLoading} />
+        )}
       </div>
 
       <ModalLoading

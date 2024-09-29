@@ -52,7 +52,7 @@ export const GuardarButton = ({ setLoading }) => {
     }
   );
 
-  console.log(documentos)
+  console.log(documentos);
 
   const handleGrabado = async (e) => {
     //TODO: Usar estatos.estatus para dependiendo si es nuevo o grabado ver si se manda la accion de EDITAR o INSERTAR.
@@ -193,8 +193,8 @@ export const GuardarButton = ({ setLoading }) => {
               vehiculo: detalleGasto.vehiculo.value,
               conductor: detalleGasto.conductor.value,
               importe: parseFloat(total),
-              litros: detalleGasto.litros,
-              km: detalleGasto.km,
+              litros: parseInt(detalleGasto.litros),
+              km: parseInt(detalleGasto.kilometraje),
               combustible: detalleGasto.combustible.value,
               cod_usu: session.profile.COD_USU,
               gasolinera: detalleGasto.gasolinera.value,

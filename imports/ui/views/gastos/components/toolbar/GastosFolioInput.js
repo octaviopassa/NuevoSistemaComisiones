@@ -86,7 +86,18 @@ export const GastosFolioInput = () => {
           concepto: doc.CONCEPTO,
           descartado: !!doc.DESCARTADO,
           detalleGasto:
-            doc.CODIGO_GASTO === 17 ? { label: doc?.CLIENTE || "" } : "",
+            doc.CODIGO_GASTO === 17
+              ? { label: doc?.CLIENTE || "" }
+              : doc.CODIGO_GASTO === 1
+              ? {
+                  combustible: { label: doc.NOM_TIPO_COMBUSTIBLE },
+                  conductor: { label: doc.NOM_USUARIO_VEHICULO },
+                  litros: doc.LITROS,
+                  kilometraje: doc.KM,
+                  vehiculo: { label: doc.NOMBRE_VEHICULO_PLACAS },
+                  gasolinera: { label: doc.NOMBRE_GASOLINERA },
+                }
+              : "N/A",
           importes: {
             fecha: doc.FECHA,
             folio: doc.FOLIO_PROVEEDOR,

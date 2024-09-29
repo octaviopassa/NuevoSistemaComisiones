@@ -865,11 +865,11 @@ export const TableGastos = ({ clientesVisible }) => {
             {documentos.map((doc, i) => (
               <tr key={i} className={!doc.descartado ? "" : "table-danger"}>
                 <td className="text-center">{i + 1}</td>
-                <td>{doc.tipoDocumento}</td>
-                <td>{doc.proveedor?.label}</td>
-                <td>{doc.cliente?.label}</td>
-                <td>{doc.tipoGasto?.label}</td>
-                <td>{doc.concepto}</td>
+                <td>{doc?.tipoDocumento}</td>
+                <td>{doc?.proveedor?.label}</td>
+                <td>{doc?.cliente?.label}</td>
+                <td>{doc?.tipoGasto?.label}</td>
+                <td>{doc?.concepto}</td>
                 <td>
                   {doc.tipoGasto.label === "GASOLINA" ? (
                     <span className="">
@@ -906,7 +906,7 @@ export const TableGastos = ({ clientesVisible }) => {
                       {doc.detalleGasto.label}
                     </>
                   ) : (
-                    doc.detalleGasto
+                    <>{doc.detalleGasto}</>
                   )}
                 </td>
                 <td>
