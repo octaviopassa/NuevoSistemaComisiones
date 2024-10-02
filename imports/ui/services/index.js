@@ -13,3 +13,4 @@ export * from './user';
 export * from './usuarios';
 export * from './vehiculos';
 export * from './documentos';
+export * from './reportes';

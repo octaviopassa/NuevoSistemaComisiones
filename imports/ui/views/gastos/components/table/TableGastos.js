@@ -26,7 +26,7 @@ import {
 } from "../modals";
 import { useFetchData } from "../../../../hooks";
 import { useGastosData } from "../../store";
-import { format, parse } from "date-fns";
+import { format } from "date-fns";
 import { useUserSession } from "../../../../store";
 
 export const TableGastos = ({ clientesVisible }) => {
@@ -501,6 +501,7 @@ export const TableGastos = ({ clientesVisible }) => {
         tua: parseFloat(importesData.tua) || 0,
         ret: parseFloat(importesData.ret) || 0,
         fecha: importesData.fecha,
+        folio: importesData.folio,
         total: parseFloat(importesData.total) || 0,
       };
     } else {
@@ -591,6 +592,11 @@ export const TableGastos = ({ clientesVisible }) => {
 
     //TODO: Agregar modal de confirmación
 
+    if (!data.detalleId) {
+      toastr.error("Por favor, seleccione un documento");
+      return;
+    }
+
     try {
       const descartado = await DocumentosService.descartarDetalle(data);
 
@@ -654,7 +660,9 @@ export const TableGastos = ({ clientesVisible }) => {
                   onChange={handleTipoDocumentoChange}
                   placeholder="Tipo de documento"
                   styles={customStyles}
-                  isDisabled={estatus.estatus !== "Nuevo"}
+                  isDisabled={
+                    estatus.estatus !== "Nuevo" && estatus.estatus !== "GRABADO"
+                  }
                   value={tipoDocumento}
                 />
               </th>
@@ -665,7 +673,9 @@ export const TableGastos = ({ clientesVisible }) => {
                   onChange={handleSelectProveedor}
                   value={proveedorSeleccionado}
                   placeholder="Proveedor"
-                  isDisabled={estatus.estatus !== "Nuevo"}
+                  isDisabled={
+                    estatus.estatus !== "Nuevo" && estatus.estatus !== "GRABADO"
+                  }
                   styles={customStyles}
                 />
               </th>
@@ -677,7 +687,10 @@ export const TableGastos = ({ clientesVisible }) => {
                     onChange={handleSelectCliente}
                     value={clienteSeleccionado}
                     placeholder="Cliente"
-                    isDisabled={estatus.estatus !== "Nuevo"}
+                    isDisabled={
+                      estatus.estatus !== "Nuevo" &&
+                      estatus.estatus !== "GRABADO"
+                    }
                     styles={customStyles}
                   />
                 </th>
@@ -686,7 +699,9 @@ export const TableGastos = ({ clientesVisible }) => {
                 <Select
                   options={tipoGastos}
                   onChange={handleTipoGastoChange}
-                  isDisabled={estatus.estatus !== "Nuevo"}
+                  isDisabled={
+                    estatus.estatus !== "Nuevo" && estatus.estatus !== "GRABADO"
+                  }
                   value={tipoGastoSeleccionado}
                   placeholder="Tipo de gasto"
                 />
@@ -696,7 +711,9 @@ export const TableGastos = ({ clientesVisible }) => {
                   className="form-control"
                   type="text"
                   value={concepto}
-                  disabled={estatus.estatus !== "Nuevo"}
+                  disabled={
+                    estatus.estatus !== "Nuevo" && estatus.estatus !== "GRABADO"
+                  }
                   onChange={(e) => setConcepto(e.target.value)}
                   placeholder="Concepto"
                 />
@@ -708,32 +725,31 @@ export const TableGastos = ({ clientesVisible }) => {
                       <ModalButton
                         color=""
                         buttonClasses={`px-2 py-2 btn btn-sm btn-secondary d-flex align-items-center justify-content-center w-100 ${
-                          estatus.estatus !== "Nuevo" ? "disabled" : ""
+                          estatus.estatus !== "Nuevo" &&
+                          estatus.estatus !== "GRABADO"
+                            ? "disabled"
+                            : ""
                         }`}
                         text={detalleGasto ? `Editar Gasto` : "Agregar Gasto"}
                         ModalComponent={ModalCombustible}
                         setDetalleGasto={setDetalleGasto}
                         detalleGasto={detalleGasto}
                       />
-                    ) : tipoGastoSeleccionado.value === 17 ? (
-                      <AsyncSelect
-                        id="atencionCliente"
-                        loadOptions={clientesOptions}
-                        onChange={handleSelectAtencionCliente}
-                        placeholder="Seleccione cliente"
-                        isDisabled={estatus.estatus !== "Nuevo"}
-                        value={atencionClienteSeleccionado}
-                        styles={customStyles}
-                      />
                     ) : (
-                      <input
-                        type="text"
-                        className="form-control"
-                        value={detalleGasto}
-                        disabled={estatus.estatus !== "Nuevo"}
-                        onChange={(e) => setDetalleGasto(e.target.value)}
-                        placeholder="Detalle del Gasto"
-                      />
+                      tipoGastoSeleccionado.value === 17 && (
+                        <AsyncSelect
+                          id="atencionCliente"
+                          loadOptions={clientesOptions}
+                          onChange={handleSelectAtencionCliente}
+                          placeholder="Seleccione cliente"
+                          isDisabled={
+                            estatus.estatus !== "Nuevo" &&
+                            estatus.estatus !== "GRABADO"
+                          }
+                          value={atencionClienteSeleccionado}
+                          styles={customStyles}
+                        />
+                      )
                     )}
                   </>
                 )}
@@ -748,7 +764,10 @@ export const TableGastos = ({ clientesVisible }) => {
                         : "Agregar Importe"
                     }
                     buttonClasses={`px-2 py-2 btn btn-sm btn-info d-flex align-items-center justify-content-center w-100 ${
-                      estatus.estatus !== "Nuevo" ? "disabled" : ""
+                      estatus.estatus !== "Nuevo" &&
+                      estatus.estatus !== "GRABADO"
+                        ? "disabled"
+                        : ""
                     }`}
                     ModalComponent={ModalImportes}
                     importesData={importesData}
@@ -775,7 +794,10 @@ export const TableGastos = ({ clientesVisible }) => {
                       id="xml-upload"
                       type="file"
                       accept=".xml"
-                      disabled={estatus.estatus !== "Nuevo"}
+                      disabled={
+                        estatus.estatus !== "Nuevo" &&
+                        estatus.estatus !== "GRABADO"
+                      }
                       style={{ display: "none" }}
                       onChange={handleXmlUpload}
                     />
@@ -797,7 +819,10 @@ export const TableGastos = ({ clientesVisible }) => {
                     <input
                       id="pdf-upload"
                       type="file"
-                      disabled={estatus.estatus !== "Nuevo"}
+                      disabled={
+                        estatus.estatus !== "Nuevo" &&
+                        estatus.estatus !== "GRABADO"
+                      }
                       accept=".pdf,.jpg,.jpeg,.png,image/jpeg,image/png"
                       style={{ display: "none" }}
                       onChange={handleFileUpload}
@@ -808,7 +833,9 @@ export const TableGastos = ({ clientesVisible }) => {
               <th>
                 <button
                   className="btn btn-primary btn-sm d-flex align-items-center py-2 px-3"
-                  disabled={estatus.estatus !== "Nuevo"}
+                  disabled={
+                    estatus.estatus !== "Nuevo" && estatus.estatus !== "GRABADO"
+                  }
                   onClick={agregarDocumento}
                 >
                   <i className="fal fa-plus mr-1"></i> Agregar
@@ -852,13 +879,9 @@ export const TableGastos = ({ clientesVisible }) => {
               <th className="text-center">
                 <i className="fal fa-file"></i>
               </th>
-              {estatus.estatus !== "Nuevo" ? (
-                <th className="text-center">
-                  <i className="fal fa-cog"></i>
-                </th>
-              ) : (
-                <th className="text-center">Acciones</th>
-              )}
+              <th className="text-center">
+                <i className="fal fa-cog"></i>
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -866,7 +889,40 @@ export const TableGastos = ({ clientesVisible }) => {
               <tr key={i} className={!doc.descartado ? "" : "table-danger"}>
                 <td className="text-center">{i + 1}</td>
                 <td>{doc?.tipoDocumento}</td>
+                {/* <td>
+                  <Select
+                    className=""
+                    disabled
+                    onChange={(e) => {
+                      const newDocumentos = [...documentos];
+                      newDocumentos[i].tipoDocumento = e.value;
+                      setDocumentos(newDocumentos);
+                    }}
+                    value={tipoDocumentoOptions.find(
+                      (option) => option.label === doc?.tipoDocumento
+                    )}
+                    options={tipoDocumentoOptions}
+                  />
+                </td> */}
                 <td>{doc?.proveedor?.label}</td>
+                {/* <td>
+                  <AsyncSelect
+                    id="proveedor"
+                    loadOptions={proveedoresOptions}
+                    onChange={(e) => {
+                      const newDocumentos = [...documentos];
+                      newDocumentos[i].proveedor = e;
+                      setDocumentos(newDocumentos);
+                    }}
+                    value={doc?.proveedor}
+                    placeholder="Proveedor"
+                    isDisabled={
+                      estatus.estatus !== "Nuevo" &&
+                      estatus.estatus !== "GRABADO"
+                    }
+                    styles={customStyles}
+                  />
+                </td> */}
                 <td>{doc?.cliente?.label}</td>
                 <td>{doc?.tipoGasto?.label}</td>
                 <td>{doc?.concepto}</td>
@@ -950,23 +1006,24 @@ export const TableGastos = ({ clientesVisible }) => {
                   </span>
                 </td>
                 <td>
-                  {doc.tipoDocumento === "Factura" ||
-                    (estatus.estatus !== "CANCELADO" &&
-                      (doc.xmlArchivo ? (
-                        <div className="d-flex align-items-center justify-content-center">
-                          <FontAwesomeIcon
-                            icon={faDownload}
-                            style={{
-                              marginRight: "8px",
-                              cursor: estatus.estatus === "Nuevo" && "pointer",
-                            }}
-                            onClick={() => handleXmlDownload(i)}
-                            title={doc.xmlArchivo.nombre}
-                          />
+                  {doc.tipoDocumento === "Factura" &&
+                    estatus.estatus !== "CANCELADO" &&
+                    (doc.xmlArchivo ? (
+                      <div className="d-flex align-items-center justify-content-center">
+                        <FontAwesomeIcon
+                          icon={faDownload}
+                          style={{
+                            marginRight: "8px",
+                            cursor: "pointer",
+                          }}
+                          onClick={() => handleXmlDownload(i)}
+                          title={doc.xmlArchivo.nombre}
+                        />
+                        {estatus.estatus === "Nuevo" && (
                           <label
                             htmlFor={`xml-replace-${i}`}
                             style={{
-                              cursor: estatus.estatus === "Nuevo" && "pointer",
+                              cursor: "pointer",
                             }}
                             className="mt-2"
                           >
@@ -980,40 +1037,42 @@ export const TableGastos = ({ clientesVisible }) => {
                               onChange={(e) => handleXmlUpload(e, i)}
                             />
                           </label>
-                        </div>
-                      ) : (
-                        <label
-                          htmlFor={`xml-upload-${i}`}
-                          style={{
-                            cursor: estatus.estatus === "Nuevo" && "pointer",
-                          }}
-                        >
-                          <FontAwesomeIcon icon={faUpload} />
-                          <input
-                            id={`xml-upload-${i}`}
-                            type="file"
-                            accept=".xml"
-                            disabled={estatus.estatus !== "Nuevo"}
-                            style={{ display: "none" }}
-                            onChange={(e) => handleXmlUpload(e, i)}
-                          />
-                        </label>
-                      )))}
+                        )}
+                      </div>
+                    ) : (
+                      <label
+                        htmlFor={`xml-upload-${i}`}
+                        style={{
+                          cursor: "pointer",
+                        }}
+                      >
+                        <FontAwesomeIcon icon={faUpload} />
+                        <input
+                          id={`xml-upload-${i}`}
+                          type="file"
+                          accept=".xml"
+                          disabled={estatus.estatus !== "Nuevo"}
+                          style={{ display: "none" }}
+                          onChange={(e) => handleXmlUpload(e, i)}
+                        />
+                      </label>
+                    ))}
                 </td>
                 <td className="text-center">
-                  {doc.tipoDocumento === "Factura" ||
-                    (estatus.estatus !== "CANCELADO" &&
-                      (doc.pdfArchivo ? (
-                        <div className="d-flex align-items-center justify-content-center">
-                          <FontAwesomeIcon
-                            icon={faDownload}
-                            style={{
-                              marginRight: "8px",
-                              cursor: estatus.estatus === "Nuevo" && "pointer",
-                            }}
-                            onClick={() => handleFileDownload(i)}
-                            title={doc.pdfArchivo.nombre}
-                          />
+                  {doc.tipoDocumento === "Factura" &&
+                    estatus.estatus !== "CANCELADO" &&
+                    (doc.pdfArchivo ? (
+                      <div className="d-flex align-items-center justify-content-center">
+                        <FontAwesomeIcon
+                          icon={faDownload}
+                          style={{
+                            marginRight: "8px",
+                            cursor: estatus.estatus === "Nuevo" && "pointer",
+                          }}
+                          onClick={() => handleFileDownload(i)}
+                          title={doc.pdfArchivo.nombre}
+                        />
+                        {estatus.estatus === "Nuevo" && (
                           <label
                             htmlFor={`pdf-replace-${i}`}
                             style={{
@@ -1031,27 +1090,29 @@ export const TableGastos = ({ clientesVisible }) => {
                               onChange={(e) => handleFileUpload(e, i)}
                             />
                           </label>
-                        </div>
-                      ) : (
-                        <label
-                          htmlFor={`pdf-upload-${i}`}
-                          style={{
-                            cursor: estatus.estatus === "Nuevo" && "pointer",
-                          }}
-                        >
-                          <FontAwesomeIcon icon={faUpload} />
-                          <input
-                            id={`pdf-upload-${i}`}
-                            type="file"
-                            disabled={estatus.estatus !== "Nuevo"}
-                            accept=".pdf,.jpg,.jpeg,.png,image/jpeg,image/png"
-                            style={{ display: "none" }}
-                            onChange={(e) => handleFileUpload(e, i)}
-                          />
-                        </label>
-                      )))}
+                        )}
+                      </div>
+                    ) : (
+                      <label
+                        htmlFor={`pdf-upload-${i}`}
+                        style={{
+                          cursor: estatus.estatus === "Nuevo" && "pointer",
+                        }}
+                      >
+                        <FontAwesomeIcon icon={faUpload} />
+                        <input
+                          id={`pdf-upload-${i}`}
+                          type="file"
+                          disabled={estatus.estatus !== "Nuevo"}
+                          accept=".pdf,.jpg,.jpeg,.png,image/jpeg,image/png"
+                          style={{ display: "none" }}
+                          onChange={(e) => handleFileUpload(e, i)}
+                        />
+                      </label>
+                    ))}
                 </td>
-                {estatus.estatus !== "Nuevo" ? (
+                {(estatus.estatus === "Nuevo" ||
+                  estatus.estatus === "GRABADO") && (
                   <td className="text-center">
                     {estatus.estatus === "GRABADO" && (
                       <>
@@ -1066,21 +1127,12 @@ export const TableGastos = ({ clientesVisible }) => {
                             onClick={() => handleDescartar(doc)}
                           ></i>
                         )}
-                        {/* <i
-                          className="fal fa-edit mr-2 text-info cursor-pointer font-weight-bold"
-                          onClick={() => {}}
-                        ></i> */}
                       </>
                     )}
-                  </td>
-                ) : (
-                  <td className="text-center">
-                    <button
-                      className="btn btn-danger btn-sm"
+                    <i
+                      className="fal fa-trash-alt text-danger cursor-pointer font-weight-bold"
                       onClick={() => eliminarDocumento(i)}
-                    >
-                      <i className="fal fa-trash-alt"></i> Eliminar
-                    </button>
+                    ></i>
                   </td>
                 )}
               </tr>

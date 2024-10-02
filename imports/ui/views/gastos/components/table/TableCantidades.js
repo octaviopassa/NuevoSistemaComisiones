@@ -6,7 +6,11 @@ export const TableCantidades = () => {
 
   const totalImportes = documentos.reduce(
     (sumaTotales, documento) => {
-      const importes = documento.importes;
+      const { importes, descartado } = documento;
+
+      if (descartado) {
+        return sumaTotales;
+      }
 
       sumaTotales.subtotal += parseFloat(importes.subtotal || 0);
       sumaTotales.total += parseFloat(importes.total || 0);
@@ -36,7 +40,10 @@ export const TableCantidades = () => {
   const totalByType = documentos.reduce(
     (suma, documento) => {
       const total = parseFloat(documento.importes.total) || 0;
-  
+      if (documento.descartado) {
+        return suma;
+      }
+
       if (documento.tipoDocumento === "Factura") {
         suma.facturas.total += total;
         suma.facturas.count += 1;
@@ -44,12 +51,12 @@ export const TableCantidades = () => {
         suma.notas.total += total;
         suma.notas.count += 1;
       }
-  
+
       return suma;
     },
     {
       facturas: { total: 0, count: 0 },
-      notas: { total: 0, count: 0 }
+      notas: { total: 0, count: 0 },
     }
   );
 
@@ -154,13 +161,17 @@ export const TableCantidades = () => {
                 <tr>
                   <td className="text-left">Importe:</td>
                   <td className="text-right">
-                    <span className="badge badge-primary">${totalByType.facturas.total.toFixed(2)}</span>
+                    <span className="badge badge-primary">
+                      ${totalByType.facturas.total.toFixed(2)}
+                    </span>
                   </td>
                 </tr>
                 <tr>
                   <td className="text-left">Cantidad:</td>
                   <td className="text-right">
-                    <span className="badge badge-primary">{totalByType.facturas.count}</span>
+                    <span className="badge badge-primary">
+                      {totalByType.facturas.count}
+                    </span>
                   </td>
                 </tr>
                 <tr>
@@ -170,13 +181,17 @@ export const TableCantidades = () => {
                 <tr>
                   <td className="text-left">Importe:</td>
                   <td className="text-right">
-                    <span className="badge badge-primary">${totalByType.notas.total.toFixed(2)}</span>
+                    <span className="badge badge-primary">
+                      ${totalByType.notas.total.toFixed(2)}
+                    </span>
                   </td>
                 </tr>
                 <tr>
                   <td className="text-left">Cantidad:</td>
                   <td className="text-right">
-                    <span className="badge badge-primary">{totalByType.notas.count}</span>
+                    <span className="badge badge-primary">
+                      {totalByType.notas.count}
+                    </span>
                   </td>
                 </tr>
               </tbody>

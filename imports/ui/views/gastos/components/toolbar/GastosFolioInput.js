@@ -77,11 +77,11 @@ export const GastosFolioInput = () => {
       const gastos = gastosData.data[0];
       const detalle = detalleData.data;
       const resumen = resumenData.data;
-      console.log(detalle);
+      console.log(gastos);
       //TODO: Hacer peticiones para obtener los codigos de cliente, proveedor, tipo de gasto
       const newDocumentos = detalle.map((doc) => {
         return {
-          renglonId: "",
+          renglonId: doc.RENGLON_ID,
           cliente: { label: "", value: "" },
           concepto: doc.CONCEPTO,
           descartado: !!doc.DESCARTADO,
@@ -97,7 +97,7 @@ export const GastosFolioInput = () => {
                   vehiculo: { label: doc.NOMBRE_VEHICULO_PLACAS },
                   gasolinera: { label: doc.NOMBRE_GASOLINERA },
                 }
-              : "N/A",
+              : " ",
           importes: {
             fecha: doc.FECHA,
             folio: doc.FOLIO_PROVEEDOR,
@@ -131,6 +131,7 @@ export const GastosFolioInput = () => {
         pagarASeleccionado: gastos.PAGAR_A,
         selectedIngeniero: gastos.ORIGEN === "I" ? gastos.INGENIERO : "",
         folio: gastos.FOLIO_GASTO,
+        gastosDate: format(new Date(gastos.FECHA), "yyyy-MM-dd"),
         estatus: {
           estatus: gastos.NOM_ESTATUS,
           grabo: `${gastos.NOM_USU_GRABO} ${format(

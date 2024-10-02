@@ -51,6 +51,7 @@ import "../../api/methods/clientes";
 import "../../api/methods/cuentas";
 import "../../api/methods/gastos";
 import "../../api/methods/documentos";
+import "../../api/methods/reportes";
 
 import "./startup";
 import "./initialLoad";
