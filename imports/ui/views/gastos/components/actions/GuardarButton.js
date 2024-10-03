@@ -281,6 +281,7 @@ export const GuardarButton = ({ setLoading }) => {
           if (!resumenData.isValid) console.error(resumenData);
 
           setEstatus({
+            ...estatus,
             estatus: gastoGlobalData.data[0].NOM_ESTATUS,
             grabo: `${gastoGlobalData.data[0].NOM_USU_GRABO} ${format(
               new Date(gastoGlobalData.data[0].FECHA),
