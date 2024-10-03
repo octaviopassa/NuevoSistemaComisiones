@@ -52,8 +52,6 @@ export const GuardarButton = ({ setLoading }) => {
     }
   );
 
-  console.log(documentos);
-
   const handleGrabado = async (e) => {
     e.preventDefault();
     try {
@@ -275,8 +273,6 @@ export const GuardarButton = ({ setLoading }) => {
               cod_usu: session.profile.COD_USU,
             }),
           ]);
-
-          console.log(resumenData, gastoGlobalData);
 
           if (!resumenData.isValid) console.error(resumenData);
 

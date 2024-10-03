@@ -30,8 +30,6 @@ export const ModalImportes = ({
       [name]: value,
     };
 
-    console.log(updatedData);
-
     const impuestos = [
       Number(updatedData.iva_16) || 0,
       Number(updatedData.iva_8) || 0,

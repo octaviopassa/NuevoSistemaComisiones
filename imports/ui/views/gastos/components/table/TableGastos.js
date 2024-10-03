@@ -645,7 +645,6 @@ export const TableGastos = ({ clientesVisible }) => {
 
     try {
       const habilitado = await DocumentosService.habilitarDetalle(data);
-      console.log("descartado", habilitado);
 
       if (!habilitado.isValid) {
         toastr.error("No se pudo descartar el gasto");
