@@ -77,8 +77,7 @@ export const GastosFolioInput = () => {
       const gastos = gastosData.data[0];
       const detalle = detalleData.data;
       const resumen = resumenData.data;
-      console.log(gastos);
-      //TODO: Hacer peticiones para obtener los codigos de cliente, proveedor, tipo de gasto
+      
       const newDocumentos = detalle.map((doc) => {
         return {
           renglonId: doc.RENGLON_ID,
@@ -120,7 +119,7 @@ export const GastosFolioInput = () => {
         };
       });
 
-      if (newDocumentos.length === 0) {
+      if (!gastos) {
         toastr.error("No se encontraron registros para el folio");
         return;
       }

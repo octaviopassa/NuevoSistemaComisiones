@@ -21,7 +21,9 @@ export const GastosActions = () => {
       <div className="col-sm-12">
         <NuevoButton />
 
-        {estatus === "Nuevo" && <GuardarButton setLoading={setLoading} />}
+        {estatus === "Nuevo" || estatus === "GRABADO" && (
+          <GuardarButton setLoading={setLoading} />
+        )}
 
         {estatus !== "Nuevo" && <ImprimirButton />}
 

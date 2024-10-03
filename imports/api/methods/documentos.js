@@ -112,7 +112,7 @@ Meteor.methods({
               exec [MP_GASTOS_GRABA_ARCHIVO_NOTA]
               @ID_GASTO_DETALLE=${datos.id_renglon},
               @NOMBRE_ARCHIVO='${datos.nombre_xml}',
-              @ARCHIVO=${datos.archivo},
+              @ARCHIVO='${datos.archivo}',
               @COD_USU_AGREGO='${datos.cod_usu}'
             `;
 

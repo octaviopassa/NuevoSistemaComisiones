@@ -55,60 +55,64 @@ export const GuardarButton = ({ setLoading }) => {
   console.log(documentos);
 
   const handleGrabado = async (e) => {
-    //TODO: Usar estatos.estatus para dependiendo si es nuevo o grabado ver si se manda la accion de EDITAR o INSERTAR.
     e.preventDefault();
     try {
-      if (
-        !plazaSeleccionada ||
-        !pagarASeleccionado ||
-        !gastosDate ||
-        documentos.length === 0
-      ) {
+      if (documentos.length === 0) {
+        toastr.error("No hay documentos para registrar");
+        return;
+      }
+      if (!plazaSeleccionada || !pagarASeleccionado || !gastosDate) {
         toastr.warning("Por favor, llene todos los campos requeridos.");
         return;
       }
       setLoading(true);
+      let newFolio = folio;
 
-      const [rfc] = await EmpresasService.getRFC(session.profile.baseDatos);
+      if (estatus.estatus === "Nuevo") {
+        const [rfc] = await EmpresasService.getRFC(session.profile.baseDatos);
 
-      const dataGastoGlobal = {
-        plaza: plazaSeleccionada,
-        pagarA: pagarASeleccionado,
-        fecha: gastosDate,
-        origen: selectedIngeniero === "" ? "S" : "I",
-        ingeniero: selectedIngeniero || "0",
-        gastosDate,
-        folio,
-        observaciones: estatus.observaciones,
-        cod_usu: session.profile.COD_USU,
-        retencion: totalImportes.ret,
-        iva: totalImportes.iva_16 + totalImportes.iva_8,
-        rfc: rfc.rfc,
-        ...totalImportes,
-      };
+        const dataGastoGlobal = {
+          plaza: plazaSeleccionada,
+          pagarA: pagarASeleccionado,
+          fecha: gastosDate,
+          origen: selectedIngeniero === "" ? "S" : "I",
+          ingeniero: selectedIngeniero || "0",
+          gastosDate,
+          folio,
+          observaciones: estatus.observaciones,
+          cod_usu: session.profile.COD_USU,
+          retencion: totalImportes.ret,
+          iva: totalImportes.iva_16 + totalImportes.iva_8,
+          rfc: rfc.rfc,
+          ...totalImportes,
+        };
 
-      const { observaciones, ...dataToValidate } = dataGastoGlobal;
+        const { observaciones, ...dataToValidate } = dataGastoGlobal;
 
-      const areFieldsValid = Object.values(dataToValidate).every(
-        (value) => value !== "" && value !== null && value !== undefined
-      );
+        const areFieldsValid = Object.values(dataToValidate).every(
+          (value) => value !== "" && value !== null && value !== undefined
+        );
 
-      if (!areFieldsValid) {
-        toastr.warning("Por favor, llene todos los campos requeridos.");
-        return;
+        if (!areFieldsValid) {
+          toastr.warning("Por favor, llene todos los campos requeridos.");
+          return;
+        }
+
+        const grabadoGlobal = await GastosService.grabar(dataGastoGlobal);
+
+        if (!grabadoGlobal.isValid) {
+          toastr.warning("No se pudo realizar el grabado.");
+          console.error(grabadoGlobal);
+          return;
+        }
+
+        newFolio = grabadoGlobal.data[0].Column1;
       }
-
-      const grabadoGlobal = await GastosService.grabar(dataGastoGlobal);
-
-      if (!grabadoGlobal.isValid) {
-        toastr.warning("No se pudo realizar el grabado.");
-        console.error(grabadoGlobal);
-        return;
-      }
-
-      const newFolio = grabadoGlobal.data[0].Column1;
 
       documentos.forEach(async (documento, index) => {
+        if (documento.renglonId) {
+          return;
+        }
         try {
           const {
             tipoDocumento,

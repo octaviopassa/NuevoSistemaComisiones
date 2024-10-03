@@ -28,6 +28,8 @@ import { useFetchData } from "../../../../hooks";
 import { useGastosData } from "../../store";
 import { format } from "date-fns";
 import { useUserSession } from "../../../../store";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 
 export const TableGastos = ({ clientesVisible }) => {
   const [proveedorSeleccionado, setProveedorSeleccionado] = useState("");
@@ -53,7 +55,7 @@ export const TableGastos = ({ clientesVisible }) => {
     ret: "0.00",
     total: "0.00",
   });
-
+  const MySwal = withReactContent(Swal);
   const { session } = useUserSession();
   const {
     setDocumentos,
@@ -548,10 +550,28 @@ export const TableGastos = ({ clientesVisible }) => {
     toastr.success("Documento agregado con éxito");
   };
 
-  const eliminarDocumento = (index) => {
+  const eliminarDocumento = async (index) => {
     if (!documentos.length) {
       toastr.warning("No hay documentos para eliminar");
       return;
+    }
+
+    if (documentos[index].renglonId) {
+      const result = await MySwal.fire({
+        title: "¿Deseas eliminar este documento?",
+        confirmButtonText: "Confirmar",
+        showCancelButton: true,
+        text: `Si eliminas el documento se perderán todos sus datos. ¿Deseas continuar?`,
+        cancelButtonText: "Cancelar",
+        reverseButtons: true,
+        icon: "warning",
+      });
+
+      if (!result.isConfirmed) {
+        return;
+      }
+
+      await DocumentosService.eliminarXML(documentos[index].renglonId);
     }
 
     setDocumentos(documentos.filter((_, i) => i !== index));
@@ -590,8 +610,6 @@ export const TableGastos = ({ clientesVisible }) => {
       cod_usu: session.profile.COD_USU,
     };
 
-    //TODO: Agregar modal de confirmación
-
     if (!data.detalleId) {
       toastr.error("Por favor, seleccione un documento");
       return;
@@ -624,7 +642,6 @@ export const TableGastos = ({ clientesVisible }) => {
       detalleId: documento.renglonId,
       cod_usu: session.profile.COD_USU,
     };
-    //TODO: Agregar modal de confirmación
 
     try {
       const habilitado = await DocumentosService.habilitarDetalle(data);
@@ -889,40 +906,7 @@ export const TableGastos = ({ clientesVisible }) => {
               <tr key={i} className={!doc.descartado ? "" : "table-danger"}>
                 <td className="text-center">{i + 1}</td>
                 <td>{doc?.tipoDocumento}</td>
-                {/* <td>
-                  <Select
-                    className=""
-                    disabled
-                    onChange={(e) => {
-                      const newDocumentos = [...documentos];
-                      newDocumentos[i].tipoDocumento = e.value;
-                      setDocumentos(newDocumentos);
-                    }}
-                    value={tipoDocumentoOptions.find(
-                      (option) => option.label === doc?.tipoDocumento
-                    )}
-                    options={tipoDocumentoOptions}
-                  />
-                </td> */}
                 <td>{doc?.proveedor?.label}</td>
-                {/* <td>
-                  <AsyncSelect
-                    id="proveedor"
-                    loadOptions={proveedoresOptions}
-                    onChange={(e) => {
-                      const newDocumentos = [...documentos];
-                      newDocumentos[i].proveedor = e;
-                      setDocumentos(newDocumentos);
-                    }}
-                    value={doc?.proveedor}
-                    placeholder="Proveedor"
-                    isDisabled={
-                      estatus.estatus !== "Nuevo" &&
-                      estatus.estatus !== "GRABADO"
-                    }
-                    styles={customStyles}
-                  />
-                </td> */}
                 <td>{doc?.cliente?.label}</td>
                 <td>{doc?.tipoGasto?.label}</td>
                 <td>{doc?.concepto}</td>
