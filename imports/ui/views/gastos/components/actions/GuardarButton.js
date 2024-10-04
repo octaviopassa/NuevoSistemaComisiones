@@ -285,6 +285,7 @@ export const GuardarButton = ({ setLoading }) => {
             )}`,
             observaciones: gastoGlobalData.data[0].OBSERVACION,
             propietario: !!gastoGlobalData.data[0].EsPropietario,
+            oldFolio: true,
           });
           setResumen(resumenData.data);
         } catch (error) {

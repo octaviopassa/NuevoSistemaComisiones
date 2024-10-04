@@ -210,14 +210,11 @@ Meteor.methods({
       conexiones.body_bdseleccionada.tipo = "procedimiento";
       conexiones.body_bdseleccionada.baseDatos = data.BASE_DATOS;
 
-      conexiones.body_bdseleccionada.query =
-        "EXEC MP_WEB_LOGIN " +
-        " @NOMBRE_USUARIO  = '" +
-        data.params.nombre_usuario +
-        "'," +
-        " @CONTRASENIA = '" +
-        data.params.contrasenia +
-        "'";
+      conexiones.body_bdseleccionada.query = `
+        EXEC MP_WEB_LOGIN  
+          @NOMBRE_USUARIO='${data.params.nombre_usuario}', 
+          @CONTRASENIA = '${data.params.contrasenia}'
+      `;
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
@@ -256,7 +253,7 @@ Meteor.methods({
         // Generar un token de inicio de sesión para el usuario
         const stampedLoginToken = Accounts._generateStampedLoginToken();
         Accounts._insertLoginToken(existingUser._id, stampedLoginToken);
-        
+
         return {
           success: true,
           data: {
@@ -267,7 +264,7 @@ Meteor.methods({
         };
       } else {
         console.log(response.data);
-       
+
         return {
           success: false,
           message: response.data.data.mensaje,

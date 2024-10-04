@@ -41,7 +41,7 @@ export const GastosToolbar = ({ setClientesVisible }) => {
   useEffect(() => {
     if (plazaSeleccionada) getFolioIgenieros();
   }, [plazaSeleccionada]);
-  
+
   const cargaInicial = async () => {
     try {
       const [obtenerPlazas, pagarAQuien, cliVisibles] = await Promise.all([
@@ -93,8 +93,6 @@ export const GastosToolbar = ({ setClientesVisible }) => {
 
   const handleChecks = async () => {
     toggleCheckedSucursal();
-
-    // Si cuando esta en sucursal esta en true entonces cuando este en sucursal quiero eliminar al selectedIngeniero
     if (isCheckedSucursal) {
       setSelectedIngeniero("");
     }
@@ -113,6 +111,7 @@ export const GastosToolbar = ({ setClientesVisible }) => {
               name="gastosDe"
               checked={isCheckedSucursal}
               onChange={handleChecks}
+              disabled={estatus.estatus !== "Nuevo"}
             />
             <label
               className="custom-control-label"
@@ -130,6 +129,7 @@ export const GastosToolbar = ({ setClientesVisible }) => {
               name="gastosDe"
               checked={!isCheckedSucursal}
               onChange={handleChecks}
+              disabled={estatus.estatus !== "Nuevo"}
             />
             <label
               className="custom-control-label"
@@ -153,6 +153,7 @@ export const GastosToolbar = ({ setClientesVisible }) => {
                 id="selectIngeniero"
                 value={selectedIngeniero}
                 onChange={(e) => setSelectedIngeniero(e.target.value)}
+                disabled={estatus.estatus !== "Nuevo"}
               >
                 <option value="">Seleccione...</option>
                 {ingenieros.map((ingeniero) => (
@@ -177,6 +178,7 @@ export const GastosToolbar = ({ setClientesVisible }) => {
               type="date"
               name="date"
               id="selectFecha"
+              disabled={estatus.estatus !== "Nuevo"}
               value={gastosDate}
               onChange={(e) => setGastosDate(e.target.value)}
             />
@@ -193,6 +195,7 @@ export const GastosToolbar = ({ setClientesVisible }) => {
               className="custom-select"
               id="selectPlaza"
               value={plazaSeleccionada}
+              disabled={estatus.estatus !== "Nuevo"}
               onChange={(e) => setPlazaSeleccionada(e.target.value)}
             >
               <option value="">Seleccione...</option>

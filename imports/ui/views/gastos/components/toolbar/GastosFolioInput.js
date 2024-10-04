@@ -77,7 +77,7 @@ export const GastosFolioInput = () => {
       const gastos = gastosData.data[0];
       const detalle = detalleData.data;
       const resumen = resumenData.data;
-      
+
       const newDocumentos = detalle.map((doc) => {
         return {
           renglonId: doc.RENGLON_ID,
@@ -128,7 +128,7 @@ export const GastosFolioInput = () => {
         plazaSeleccionada: gastos.PLAZA,
         isCheckedSucursal: gastos.ORIGEN === "S",
         pagarASeleccionado: gastos.PAGAR_A,
-        selectedIngeniero: gastos.ORIGEN === "I" ? gastos.INGENIERO : "",
+        selectedIngeniero: gastos.ORIGEN === "I" ? gastos.CODIGO_VENDEDOR : "",
         folio: gastos.FOLIO_GASTO,
         gastosDate: format(new Date(gastos.FECHA), "yyyy-MM-dd"),
         estatus: {
