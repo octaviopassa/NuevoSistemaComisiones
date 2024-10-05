@@ -14,6 +14,7 @@ import toastr from "toastr";
 import {
   ClientesService,
   DocumentosService,
+  EmpresasService,
   ProveedoresService,
   TipoGastosService,
 } from "../../../../services";
@@ -29,10 +30,10 @@ import { format } from "date-fns";
 import { useUserSession } from "../../../../store";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
+import { extraerRFC } from "../../../../../utils/utils";
 
 export const TableGastos = () => {
   const [proveedorSeleccionado, setProveedorSeleccionado] = useState("");
-  // const [clienteSeleccionado, setClienteSeleccionado] = useState("");
   const [tipoGastoSeleccionado, setTipoGastoSeleccionado] = useState("");
   const [concepto, setConcepto] = useState("");
   const [detalleGasto, setDetalleGasto] = useState("");
@@ -106,113 +107,183 @@ export const TableGastos = () => {
     return [];
   };
 
-  const handleXmlUpload = (event, index) => {
+  const handleXmlUpload = async (event, index) => {
     const file = event.target.files[0];
-    if (file && file.name.endsWith(".xml")) {
-      const fileName = file.name;
-      const reader = new FileReader();
+    try {
+      if (file && file.name.endsWith(".xml")) {
+        const fileName = file.name;
+        const reader = new FileReader();
 
-      reader.onload = (e) => {
-        const arrayBuffer = e.target.result;
-        const byteArray = new Uint8Array(arrayBuffer);
-        const base64String = btoa(String.fromCharCode.apply(null, byteArray));
-        const xmlContent = new TextDecoder().decode(arrayBuffer);
-        const xmlDoc = new DOMParser().parseFromString(xmlContent, "text/xml");
-        const comprobante = xmlDoc.getElementsByTagName("cfdi:Comprobante")[0];
-
-        if (!comprobante) {
-          toastr.error("El archivo XML no contiene un nodo 'cfdi:Comprobante'");
-          return;
-        }
-
-        const metodo = comprobante.getAttribute("MetodoPago");
-
-        if (metodo !== "PUE") {
-          toastr.error("XML de tipo invalido");
-          return;
-        }
-
-        const datos = {
-          fecha: comprobante.getAttribute("Fecha") || "",
-          folio: comprobante.getAttribute("Folio") || "",
-          subtotal: comprobante.getAttribute("SubTotal") || "0",
-          total: comprobante.getAttribute("Total") || "0",
-          impuesto: "0",
-          iva_16: "0",
-          iva_8: "0",
-          ieps: "0",
-          ish: "0",
-          tua: "0",
-          ret: "0",
-        };
-        let uuid;
-
-        const impuestosList = Array.from(
-          comprobante.getElementsByTagName("cfdi:Impuestos") || []
-        );
-
-        impuestosList.forEach((impuestos) => {
-          const totalImpuestosTrasladados = impuestos.getAttribute(
-            "TotalImpuestosTrasladados"
+        reader.onload = async (e) => {
+          const arrayBuffer = e.target.result;
+          const byteArray = new Uint8Array(arrayBuffer);
+          const base64String = btoa(String.fromCharCode.apply(null, byteArray));
+          const xmlContent = new TextDecoder().decode(arrayBuffer);
+          const xmlDoc = new DOMParser().parseFromString(
+            xmlContent,
+            "text/xml"
           );
 
-          if (totalImpuestosTrasladados) {
-            // datos.impuesto = totalImpuestosTrasladados;
+          let uuid;
+          const comprobante =
+            xmlDoc.getElementsByTagName("cfdi:Comprobante")[0];
+          const metodo = comprobante.getAttribute("MetodoPago");
+          const tipo = comprobante.getAttribute("TipoDeComprobante");
+          const rfcReceptor = comprobante
+            .getElementsByTagName("cfdi:Receptor")[0]
+            .getAttribute("Rfc");
+          const rfcEmisor = comprobante
+            .getElementsByTagName("cfdi:Emisor")[0]
+            .getAttribute("Rfc");
 
-            const traslados = impuestos.getElementsByTagName("cfdi:Traslado");
-
-            for (let traslado of traslados) {
-              const impuesto = traslado.getAttribute("Impuesto");
-              const tasa = traslado.getAttribute("TasaOCuota");
-              const importe = traslado.getAttribute("Importe") || "0";
-
-              if (impuesto === "002") {
-                if (tasa === "0.160000") {
-                  datos.iva_16 = (
-                    parseFloat(datos.iva_16) + parseFloat(importe)
-                  ).toFixed(2);
-                } else if (tasa === "0.080000") {
-                  datos.iva_8 = (
-                    parseFloat(datos.iva_8) + parseFloat(importe)
-                  ).toFixed(2);
-                }
-              } else if (impuesto === "003") {
-                // IEPS
-                datos.ieps = (
-                  parseFloat(datos.ieps) + parseFloat(importe)
-                ).toFixed(2);
-              }
-            }
+          if (rfcEmisor !== extraerRFC(proveedorSeleccionado.label)) {
+            toastr.error(
+              "El RFC del emisor no coincide con el RFC del proveedor seleccionado o no has seleccionado un proveedor"
+            );
+            event.target.files = null;
+            return;
           }
 
-          const totalImpuestosRetenidos = impuestos.getAttribute(
-            "TotalImpuestosRetenidos"
-          );
+          const complemento =
+            xmlDoc.getElementsByTagName("cfdi:Complemento")[0] || null;
 
-          if (totalImpuestosRetenidos) {
-            datos.ret = totalImpuestosRetenidos;
+          if (!complemento) {
+            toastr.error("El archivo XML no contiene un complemento");
+            event.target.files = null;
+            return;
           }
-        });
 
-        const complemento = xmlDoc.getElementsByTagName("cfdi:Complemento")[0];
-        if (complemento) {
           const timbreFiscal = complemento.getElementsByTagName(
             "tfd:TimbreFiscalDigital"
           )[0];
 
           if (timbreFiscal) {
             const uuidFiscal = timbreFiscal.getAttribute("UUID");
+            const existingDocument = documentos.some(
+              (doc) => doc.xmlArchivo.uuid === uuidFiscal
+            );
 
-            if (uuidFiscal) {
-              uuid = uuidFiscal;
-            } else {
-              toastr.warning("XML de tipo invalido");
+            const existingInDatabase = await DocumentosService.validarXml(
+              uuidFiscal
+            );
+
+            if (!existingInDatabase.isValid) {
+              toastr.warning(existingInDatabase.message);
+              event.target.files = null;
               return;
             }
+
+            if (existingDocument) {
+              toastr.warning(
+                "XML de timbre ya existe dentro de los documentos"
+              );
+              event.target.files = null;
+              return;
+            }
+
+            if (!uuidFiscal) {
+              toastr.warning("XML de timbre invalido");
+              event.target.files = null;
+              return;
+            }
+
+            uuid = uuidFiscal;
           } else {
             toastr.warning("XML de tipo invalido");
+            event.target.files = null;
             return;
           }
+
+          const [empresaRfc] = await EmpresasService.getRFC(
+            session.profile.baseDatos
+          );
+
+          if (tipo !== "I") {
+            toastr.error("XML de tipo invalido, debe ser de tipo Ingreso");
+            event.target.files = null;
+            return;
+          }
+
+          if (rfcReceptor !== empresaRfc.rfc) {
+            toastr.error(
+              "El RFC del receptor no coincide con el RFC de la empresa con la que has iniciado sesión"
+            );
+            event.target.files = null;
+            return;
+          }
+
+          if (!comprobante) {
+            toastr.error(
+              "El archivo XML no contiene un nodo 'cfdi:Comprobante'"
+            );
+            event.target.files = null;
+            return;
+          }
+
+          if (metodo !== "PUE") {
+            toastr.error("XML de tipo invalido");
+            event.target.files = null;
+            return;
+          }
+
+          const datos = {
+            fecha: comprobante.getAttribute("Fecha") || "",
+            folio: comprobante.getAttribute("Folio") || "",
+            subtotal: comprobante.getAttribute("SubTotal") || "0",
+            total: comprobante.getAttribute("Total") || "0",
+            impuesto: "0",
+            iva_16: "0",
+            iva_8: "0",
+            ieps: "0",
+            ish: "0",
+            tua: "0",
+            ret: "0",
+          };
+          const impuestosList = Array.from(
+            comprobante.getElementsByTagName("cfdi:Impuestos") || []
+          );
+
+          impuestosList.forEach((impuestos) => {
+            const totalImpuestosTrasladados = impuestos.getAttribute(
+              "TotalImpuestosTrasladados"
+            );
+
+            if (totalImpuestosTrasladados) {
+              const traslados = impuestos.getElementsByTagName("cfdi:Traslado");
+
+              for (let traslado of traslados) {
+                const impuesto = traslado.getAttribute("Impuesto");
+                const tasa = traslado.getAttribute("TasaOCuota");
+                const importe = traslado.getAttribute("Importe") || "0";
+
+                if (impuesto === "002") {
+                  if (tasa === "0.160000") {
+                    datos.iva_16 = (
+                      parseFloat(datos.iva_16) + parseFloat(importe)
+                    ).toFixed(2);
+                  } else if (tasa === "0.080000") {
+                    datos.iva_8 = (
+                      parseFloat(datos.iva_8) + parseFloat(importe)
+                    ).toFixed(2);
+                  }
+                } else if (impuesto === "003") {
+                  // IEPS
+                  datos.ieps = (
+                    parseFloat(datos.ieps) + parseFloat(importe)
+                  ).toFixed(2);
+                }
+              }
+            }
+
+            const totalImpuestosRetenidos = impuestos.getAttribute(
+              "TotalImpuestosRetenidos"
+            );
+
+            if (totalImpuestosRetenidos) {
+              datos.ret = totalImpuestosRetenidos;
+            }
+          });
+
           const impuestosLocales = complemento.getElementsByTagName(
             "implocal:ImpuestosLocales"
           )[0];
@@ -255,57 +326,60 @@ export const TableGastos = () => {
               }
             }
           }
-        }
 
-        // suma total de todos los impuestos de todo tipo
-        datos.impuesto = parseFloat(
-          datos.ieps +
-            datos.iva_16 +
-            datos.iva_8 +
-            datos.ish +
-            datos.tua +
-            datos.ret
-        ).toFixed(2);
+          datos.impuesto = parseFloat(
+            datos.ieps +
+              datos.iva_16 +
+              datos.iva_8 +
+              datos.ish +
+              datos.tua +
+              datos.ret
+          ).toFixed(2);
 
-        for (let key in datos) {
-          if (key !== "fecha" && key !== "folio") {
-            const valor = parseFloat(datos[key]);
-            datos[key] = isNaN(valor) ? "0.00" : valor.toFixed(2);
+          for (let key in datos) {
+            if (key !== "fecha" && key !== "folio") {
+              const valor = parseFloat(datos[key]);
+              datos[key] = isNaN(valor) ? "0.00" : valor.toFixed(2);
+            }
           }
-        }
 
-        const xmlData = {
-          archivo: {
-            nombre: fileName,
-            contenido: base64String,
-            uuid,
-          },
-          importes: datos,
+          const xmlData = {
+            archivo: {
+              nombre: fileName,
+              contenido: base64String,
+              uuid,
+            },
+            importes: datos,
+          };
+
+          if (index !== undefined) {
+            setDocumentos(
+              documentos.map((doc, i) =>
+                i === index
+                  ? {
+                      ...doc,
+                      xmlArchivo: xmlData.archivo,
+                      importes: xmlData.importes,
+                    }
+                  : doc
+              )
+            );
+          } else {
+            setXmlTempData(xmlData);
+          }
+
+          toastr.success("Archivo XML cargado y analizado correctamente");
         };
 
-        if (index !== undefined) {
-          setDocumentos(
-            documentos.map((doc, i) =>
-              i === index
-                ? {
-                    ...doc,
-                    xmlArchivo: xmlData.archivo,
-                    importes: xmlData.importes,
-                  }
-                : doc
-            )
-          );
-        } else {
-          setXmlTempData(xmlData);
-        }
-
-        toastr.success("Archivo XML cargado y analizado correctamente");
-      };
-
-      reader.readAsArrayBuffer(file);
-    } else {
-      toastr.error("Por favor, seleccione un archivo XML válido");
-      event.target.value = null;
+        reader.readAsArrayBuffer(file);
+      } else {
+        toastr.error("Por favor, seleccione un archivo XML válido");
+        event.target.files = null;
+      }
+    } catch (error) {
+      console.log(error);
+      toastr.error("Ocurrio un error al cargar el archivo XML");
+      event.target.files = null;
     }
   };
 
@@ -475,17 +549,14 @@ export const TableGastos = () => {
     const clienteValidation =
       session.profile.WEB_REACT_CLIENTE_OBLIGATORIO ||
       tipoGastoSeleccionado === 17;
+
     if (
       !tipoDocumento ||
       !proveedorSeleccionado ||
       !tipoGastoSeleccionado ||
       !concepto ||
-      !wvalitacion
+      (clienteValidation && !atencionClienteSeleccionado)
     ) {
-      if (clienteValidation && !atencionClienteSeleccionado) {
-        toastr.warning("Por favor, llene todos los campos requeridos.");
-        return;
-      }
       toastr.warning("Por favor, llene todos los campos requeridos.");
       return;
     }
@@ -534,7 +605,6 @@ export const TableGastos = () => {
     const nuevoDocumento = {
       tipoDocumento: tipoDocumento.value,
       proveedor: proveedorSeleccionado,
-      // cliente: clienteSeleccionado,//COMENTADO
       tipoGasto: tipoGastoSeleccionado,
       concepto,
       detalleGasto,
@@ -583,7 +653,6 @@ export const TableGastos = () => {
   const limpiarCampos = () => {
     setTipoDocumento("");
     setProveedorSeleccionado(null);
-    // setClienteSeleccionado(null); //COMENTADO
     setTipoGastoSeleccionado(null);
     setConcepto("");
     setDetalleGasto("");
@@ -737,7 +806,7 @@ export const TableGastos = () => {
                 )}
               </th>
               <th className="text-center" style={{ minWidth: "105px" }}>
-                {(tipoGastoSeleccionado.value === 17 ||
+                {(tipoGastoSeleccionado?.value === 17 ||
                   session.profile.WEB_REACT_CLIENTE_OBLIGATORIO) && (
                   <AsyncSelect
                     id="atencionCliente"
@@ -781,6 +850,12 @@ export const TableGastos = () => {
                     <label
                       htmlFor="xml-upload"
                       className="btn btn-primary mb-0 d-flex align-items-center justify-content-center py-2 px-3"
+                      onClick={() => {
+                        if (!proveedorSeleccionado) {
+                          toastr.warning("Por favor, seleccione un proveedor");
+                          return;
+                        }
+                      }}
                     >
                       {xmlTempData ? (
                         <i className="fal fa-solid fa-repeat mr-1"></i>
@@ -794,8 +869,9 @@ export const TableGastos = () => {
                       type="file"
                       accept=".xml"
                       disabled={
-                        estatus.estatus !== "Nuevo" &&
-                        estatus.estatus !== "GRABADO"
+                        (estatus.estatus !== "Nuevo" &&
+                          estatus.estatus !== "GRABADO") ||
+                        !proveedorSeleccionado
                       }
                       style={{ display: "none" }}
                       onChange={handleXmlUpload}

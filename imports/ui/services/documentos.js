@@ -52,4 +52,8 @@ DocumentosService.habilitarDetalle = async (data) => {
   return await Meteor.callSync("documentos.habilitarDetalleDescartado", data);
 };
 
+DocumentosService.validarXml = async (uuid) => {
+  return await Meteor.callSync("documentos.validarXml", uuid);
+};
+
 export { DocumentosService };

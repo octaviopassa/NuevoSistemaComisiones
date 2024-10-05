@@ -69,3 +69,9 @@ export const estatusPago = (estatus) => {
 
   return [claseNombre, estatusNombre];
 };
+
+export function extraerRFC(cadena) {
+  const regex = /\(([^)]+)\)/; // Expresión regular para encontrar texto entre paréntesis
+  const resultado = regex.exec(cadena);
+  return resultado ? resultado[1] : false; // Devuelve el RFC si se encuentra, o null si no
+}

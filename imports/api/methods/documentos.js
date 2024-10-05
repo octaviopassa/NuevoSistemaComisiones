@@ -424,4 +424,68 @@ Meteor.methods({
       console.log(error);
     }
   },
+  "documentos.validarXml": async (uuid) => {
+    conexiones.body_bdseleccionada.tipo = "procedimiento";
+    conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
+
+    const queryGlobal = `
+      MP_VALIDA_XML_EXISTE_UUID_EXPEDIENTES 
+      @UUID='${uuid}'
+    `;
+
+    const queryResumen = `
+      MP_VALIDA_XML_EXISTE_UUID
+      @UUID='${uuid}'
+    `;
+
+    try {
+      const [responseExpedientes, responseExiste] = await Promise.all([
+        axios.get(conexiones.windows_api, {
+          data: {
+            ...conexiones.body_bdseleccionada,
+            query: queryGlobal,
+          },
+        }),
+        axios.get(conexiones.windows_api, {
+          data: {
+            ...conexiones.body_bdseleccionada,
+            query: queryResumen,
+          },
+        }),
+      ]);
+
+      if (
+        !responseExpedientes.data.data.esValido ||
+        !responseExiste.data.data.esValido
+      ) {
+        return {
+          isValid:
+            responseExpedientes.data.data.esValido &&
+            responseExiste.data.data.esValido,
+          data: null,
+          message: `${responseExpedientes.data.data.mensaje} 
+           ${responseExiste.data.data.mensaje}`,
+        };
+      }
+
+      const existeExpedientes = JSON.parse(
+        responseExpedientes.data.data.resultado
+      );
+      const existe = JSON.parse(responseExiste.data.data.resultado);
+
+      return {
+        isValid:
+          responseExpedientes.data.data.esValido &&
+          responseExiste.data.data.esValido,
+        data: {
+          existeExpedientes,
+          existe,
+        },
+        message: `${responseExpedientes.data.data.mensaje} 
+         ${responseExiste.data.data.mensaje}`,
+      };
+    } catch (error) {
+      console.log(error);
+    }
+  },
 });
