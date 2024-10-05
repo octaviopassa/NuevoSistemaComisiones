@@ -13,12 +13,10 @@ Meteor.methods({
   },
   "plazas.getAll": async (datos) => {
     conexiones.body_bdseleccionada.tipo = "procedimiento";
-    conexiones.body_bdseleccionada.query =
-      "EXEC MP_WEB_LOGIN_PAZAS_USUARIO " +
-      " @Cod_Usu  = '" +
-      datos.cod_usu +
-      "'," +
-      " @EsLogin = 0";
+    conexiones.body_bdseleccionada.query = `
+        EXEC MP_WEB_REACT_LOGIN_PAZAS_USUARIO
+        @Cod_Usu='${datos.cod_usu}'
+      `;
     conexiones.body_bdseleccionada.baseDatos = datos.baseDatos;
     const response = await axios.get(conexiones.windows_api, {
       data: conexiones.body_bdseleccionada,
@@ -62,7 +60,7 @@ Meteor.methods({
   "empresas.getRFC": async (database) => {
     try {
       conexiones.body_bdseleccionada.tipo = "consulta";
-      conexiones.body_bdseleccionada.query = "SELECT rfc FROM facpars;"
+      conexiones.body_bdseleccionada.query = "SELECT rfc FROM facpars;";
       conexiones.body_bdseleccionada.baseDatos = database;
 
       const response = await axios.get(conexiones.windows_api, {
@@ -73,5 +71,5 @@ Meteor.methods({
     } catch (e) {
       console.log(e);
     }
-  }
+  },
 });

@@ -3,7 +3,6 @@ import {
   PlazasService,
   IngenierosService,
   GastosService,
-  ClientesService,
 } from "../../../../services";
 import { ModalButton } from "../modals";
 import { useGastosData } from "../../store";
@@ -11,7 +10,7 @@ import { useUserSession } from "../../../../store";
 import { ModalCuentas } from "../modals/ModalCuentas";
 import { GastosFolioInput } from "./GastosFolioInput";
 
-export const GastosToolbar = ({ setClientesVisible }) => {
+export const GastosToolbar = () => {
   const [plazas, setPlazas] = useState([]);
   const [pagarA, setPagarA] = useState([]);
   const [ingenieros, setIngenieros] = useState([]);
@@ -44,7 +43,7 @@ export const GastosToolbar = ({ setClientesVisible }) => {
 
   const cargaInicial = async () => {
     try {
-      const [obtenerPlazas, pagarAQuien, cliVisibles] = await Promise.all([
+      const [obtenerPlazas, pagarAQuien] = await Promise.all([
         PlazasService.getAll({
           cod_usu: user.profile.COD_USU,
           baseDatos: user.profile.baseDatos,
@@ -53,12 +52,14 @@ export const GastosToolbar = ({ setClientesVisible }) => {
           cod_usu: user.profile.COD_USU,
           baseDatos: user.profile.baseDatos,
         }),
-        ClientesService.clientesVisible({ baseDatos: user.profile.baseDatos }),
       ]);
 
-      setPlazas(obtenerPlazas);
+      setPlazas(
+        obtenerPlazas.map((plaza) => {
+          return { Codigo: plaza.CODIGO, Nombre: plaza.NOMBRE };
+        })
+      );
       setPagarA(pagarAQuien);
-      setClientesVisible(cliVisibles);
     } catch (error) {
       console.error("Error durante la carga inicial", error);
     }

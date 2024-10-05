@@ -231,15 +231,15 @@ Meteor.methods({
         });
 
         if (!existingUser) {
-          console.log("entre aquí");
-          // Crear un nuevo usuario
           const userId = Accounts.createUser({
             username: data.params.nombre_usuario,
             password: data.params.contrasenia,
             profile: {
+              ...userData,
               baseDatos: data.BASE_DATOS,
               estatus: true,
-              ...userData,
+              WEB_REACT_CLIENTE_OBLIGATORIO:
+                userData.WEB_REACT_CLIENTE_OBLIGATORIO === "1",
             },
           });
 

@@ -167,7 +167,11 @@ export const GuardarButton = ({ setLoading }) => {
             cadena_xml: xmlArchivo?.contenido || "",
             uuid: xmlArchivo?.uuid || "",
             tua_desglosado,
-            cliente: tipoGasto.value === 17 ? documento.detalleGasto.label : "",
+            cliente:
+              tipoGasto.value === 17 ||
+              session.profile.WEB_REACT_CLIENTE_OBLIGATORIO
+                ? documento.detalleGasto.label
+                : "",
           };
 
           const grabarRenglon = await GastosService.grabarRenglon(

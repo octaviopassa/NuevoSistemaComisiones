@@ -20,7 +20,6 @@ import {
 import {
   ModalCatalogoProveedores,
   ModalButton,
-  ModalCatalogoClientes,
   ModalImportes,
   ModalCombustible,
 } from "../modals";
@@ -31,9 +30,9 @@ import { useUserSession } from "../../../../store";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 
-export const TableGastos = ({ clientesVisible }) => {
+export const TableGastos = () => {
   const [proveedorSeleccionado, setProveedorSeleccionado] = useState("");
-  const [clienteSeleccionado, setClienteSeleccionado] = useState("");
+  // const [clienteSeleccionado, setClienteSeleccionado] = useState("");
   const [tipoGastoSeleccionado, setTipoGastoSeleccionado] = useState("");
   const [concepto, setConcepto] = useState("");
   const [detalleGasto, setDetalleGasto] = useState("");
@@ -109,7 +108,6 @@ export const TableGastos = ({ clientesVisible }) => {
 
   const handleXmlUpload = (event, index) => {
     const file = event.target.files[0];
-
     if (file && file.name.endsWith(".xml")) {
       const fileName = file.name;
       const reader = new FileReader();
@@ -429,10 +427,6 @@ export const TableGastos = ({ clientesVisible }) => {
     setProveedorSeleccionado(selectedOption);
   };
 
-  const handleSelectCliente = (selectedOption) => {
-    setClienteSeleccionado(selectedOption);
-  };
-
   const handleSelectAtencionCliente = (selectedOption) => {
     setAtencionClienteSeleccionado(selectedOption);
     setDetalleGasto(selectedOption);
@@ -478,12 +472,20 @@ export const TableGastos = ({ clientesVisible }) => {
   };
 
   const agregarDocumento = () => {
+    const clienteValidation =
+      session.profile.WEB_REACT_CLIENTE_OBLIGATORIO ||
+      tipoGastoSeleccionado === 17;
     if (
       !tipoDocumento ||
       !proveedorSeleccionado ||
       !tipoGastoSeleccionado ||
-      !concepto
+      !concepto ||
+      !wvalitacion
     ) {
+      if (clienteValidation && !atencionClienteSeleccionado) {
+        toastr.warning("Por favor, llene todos los campos requeridos.");
+        return;
+      }
       toastr.warning("Por favor, llene todos los campos requeridos.");
       return;
     }
@@ -532,7 +534,7 @@ export const TableGastos = ({ clientesVisible }) => {
     const nuevoDocumento = {
       tipoDocumento: tipoDocumento.value,
       proveedor: proveedorSeleccionado,
-      cliente: clienteSeleccionado,
+      // cliente: clienteSeleccionado,//COMENTADO
       tipoGasto: tipoGastoSeleccionado,
       concepto,
       detalleGasto,
@@ -581,7 +583,7 @@ export const TableGastos = ({ clientesVisible }) => {
   const limpiarCampos = () => {
     setTipoDocumento("");
     setProveedorSeleccionado(null);
-    setClienteSeleccionado(null);
+    // setClienteSeleccionado(null); //COMENTADO
     setTipoGastoSeleccionado(null);
     setConcepto("");
     setDetalleGasto("");
@@ -670,12 +672,11 @@ export const TableGastos = ({ clientesVisible }) => {
           <thead>
             <tr>
               <th className="text-center"></th>
-              <th className="text-center">
+              <th className="text-center" style={{ maxWidth: "100px" }}>
                 <Select
                   options={tipoDocumentoOptions}
                   onChange={handleTipoDocumentoChange}
                   placeholder="Tipo de documento"
-                  styles={customStyles}
                   isDisabled={
                     estatus.estatus !== "Nuevo" && estatus.estatus !== "GRABADO"
                   }
@@ -695,22 +696,6 @@ export const TableGastos = ({ clientesVisible }) => {
                   styles={customStyles}
                 />
               </th>
-              {clientesVisible == 1 && (
-                <th className="text-center">
-                  <AsyncSelect
-                    id="cliente"
-                    loadOptions={clientesOptions}
-                    onChange={handleSelectCliente}
-                    value={clienteSeleccionado}
-                    placeholder="Cliente"
-                    isDisabled={
-                      estatus.estatus !== "Nuevo" &&
-                      estatus.estatus !== "GRABADO"
-                    }
-                    styles={customStyles}
-                  />
-                </th>
-              )}
               <th className="text-center">
                 <Select
                   options={tipoGastos}
@@ -735,39 +720,37 @@ export const TableGastos = ({ clientesVisible }) => {
                 />
               </th>
               <th className="text-center" style={{ minWidth: "105px" }}>
-                {tipoGastoSeleccionado && (
-                  <>
-                    {tipoGastoSeleccionado.value === 1 ? (
-                      <ModalButton
-                        color=""
-                        buttonClasses={`px-2 py-2 btn btn-sm btn-secondary d-flex align-items-center justify-content-center w-100 ${
-                          estatus.estatus !== "Nuevo" &&
-                          estatus.estatus !== "GRABADO"
-                            ? "disabled"
-                            : ""
-                        }`}
-                        text={detalleGasto ? `Editar Gasto` : "Agregar Gasto"}
-                        ModalComponent={ModalCombustible}
-                        setDetalleGasto={setDetalleGasto}
-                        detalleGasto={detalleGasto}
-                      />
-                    ) : (
-                      tipoGastoSeleccionado.value === 17 && (
-                        <AsyncSelect
-                          id="atencionCliente"
-                          loadOptions={clientesOptions}
-                          onChange={handleSelectAtencionCliente}
-                          placeholder="Seleccione cliente"
-                          isDisabled={
-                            estatus.estatus !== "Nuevo" &&
-                            estatus.estatus !== "GRABADO"
-                          }
-                          value={atencionClienteSeleccionado}
-                          styles={customStyles}
-                        />
-                      )
-                    )}
-                  </>
+                {tipoGastoSeleccionado?.value === 1 && (
+                  <ModalButton
+                    color=""
+                    buttonClasses={`px-2 py-2 btn btn-sm btn-secondary d-flex align-items-center justify-content-center w-100 ${
+                      estatus.estatus !== "Nuevo" &&
+                      estatus.estatus !== "GRABADO"
+                        ? "disabled"
+                        : ""
+                    }`}
+                    text={detalleGasto ? `Editar Gasto` : "Agregar Gasto"}
+                    ModalComponent={ModalCombustible}
+                    setDetalleGasto={setDetalleGasto}
+                    detalleGasto={detalleGasto}
+                  />
+                )}
+              </th>
+              <th className="text-center" style={{ minWidth: "105px" }}>
+                {(tipoGastoSeleccionado.value === 17 ||
+                  session.profile.WEB_REACT_CLIENTE_OBLIGATORIO) && (
+                  <AsyncSelect
+                    id="atencionCliente"
+                    loadOptions={clientesOptions}
+                    onChange={handleSelectAtencionCliente}
+                    placeholder="Seleccione cliente"
+                    isDisabled={
+                      estatus.estatus !== "Nuevo" &&
+                      estatus.estatus !== "GRABADO"
+                    }
+                    value={atencionClienteSeleccionado}
+                    styles={customStyles}
+                  />
                 )}
               </th>
               <th className="text-center" style={{ minWidth: "105px" }}>
@@ -792,12 +775,12 @@ export const TableGastos = ({ clientesVisible }) => {
                 )}
               </th>
 
-              <th className="text-center">
+              <th className="text-center" style={{ maxWidth: "80px" }}>
                 {tipoDocumento.value == "Factura" && (
                   <>
                     <label
                       htmlFor="xml-upload"
-                      className="btn btn-primary mb-0 d-flex align-items-center py-2 px-3"
+                      className="btn btn-primary mb-0 d-flex align-items-center justify-content-center py-2 px-3"
                     >
                       {xmlTempData ? (
                         <i className="fal fa-solid fa-repeat mr-1"></i>
@@ -820,11 +803,11 @@ export const TableGastos = ({ clientesVisible }) => {
                   </>
                 )}
               </th>
-              <th className="text-center">
+              <th className="text-center" style={{ maxWidth: "80px" }}>
                 {tipoDocumento.value == "Factura" && (
                   <label
                     htmlFor="pdf-upload"
-                    className="btn btn-primary mb-0 d-flex align-items-center py-2 px-3"
+                    className="btn btn-primary mb-0 d-flex align-items-center justify-content-center py-2 px-3"
                   >
                     {pdfTempData ? (
                       <i className="fal fa-solid fa-repeat mr-1"></i>
@@ -846,7 +829,7 @@ export const TableGastos = ({ clientesVisible }) => {
                   </label>
                 )}
               </th>
-              <th>
+              <th className="text-center" style={{ maxWidth: "80px" }}>
                 <button
                   className="btn btn-primary btn-sm d-flex align-items-center py-2 px-3"
                   disabled={
@@ -868,18 +851,10 @@ export const TableGastos = ({ clientesVisible }) => {
                   ModalComponent={ModalCatalogoProveedores}
                 />
               </th>
-              {clientesVisible == 1 && (
-                <th className="text-center">
-                  Cliente
-                  <ModalButton
-                    icon={faGear}
-                    ModalComponent={ModalCatalogoClientes}
-                  />
-                </th>
-              )}
               <th className="text-center">Tipo de gasto</th>
               <th className="text-center">Concepto</th>
               <th className="text-center">Detalle</th>
+              <th className="text-center">Cliente</th>
               <th
                 className="text-center"
                 style={{
@@ -906,11 +881,10 @@ export const TableGastos = ({ clientesVisible }) => {
                 <td className="text-center">{i + 1}</td>
                 <td>{doc?.tipoDocumento}</td>
                 <td>{doc?.proveedor?.label}</td>
-                <td>{doc?.cliente?.label}</td>
                 <td>{doc?.tipoGasto?.label}</td>
                 <td>{doc?.concepto}</td>
                 <td>
-                  {doc.tipoGasto.label === "GASOLINA" ? (
+                  {doc.tipoGasto.label === "GASOLINA" && (
                     <span className="">
                       {doc.tipoGasto.label}
                       <FontAwesomeIcon
@@ -938,14 +912,16 @@ export const TableGastos = ({ clientesVisible }) => {
                         Vehiculo: {doc.detalleGasto.vehiculo.label}
                       </UncontrolledTooltip>
                     </span>
-                  ) : doc.tipoGasto.label === "ATENCION A CLIENTES" ? (
+                  )}
+                </td>
+                <td>
+                  {(doc.tipoGasto.label === "ATENCION A CLIENTES" ||
+                    session.profile.WEB_REACT_CLIENTE_OBLIGATORIO) && (
                     <>
                       <strong>Cliente: </strong>
                       <br />
                       {doc.detalleGasto.label}
                     </>
-                  ) : (
-                    <>{doc.detalleGasto}</>
                   )}
                 </td>
                 <td>
