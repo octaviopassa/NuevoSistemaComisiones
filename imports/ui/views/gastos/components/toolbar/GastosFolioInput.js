@@ -79,6 +79,7 @@ export const GastosFolioInput = () => {
       const resumen = resumenData.data;
 
       const newDocumentos = detalle.map((doc) => {
+        console.log(doc);
         return {
           renglonId: doc.RENGLON_ID,
           cliente: { label: "", value: "" },
@@ -108,14 +109,19 @@ export const GastosFolioInput = () => {
             total: doc.TOTAL,
             tua: doc.TUA,
           },
-          pdfArchivo: "",
+          pdfArchivo: doc.ARCHIVO_PDF
+            ? { contenido: doc.ARCHIVO_PDF, nombre: doc.NOMBRE_ARCHIVO_PDF }
+            : "",
           proveedor: {
             label: doc.NOMBRE_PROVEEDOR_RFC,
             value: doc.CODIGO_PROVEEDOR,
           },
           tipoDocumento: doc.Nom_Tipo_Documento,
           tipoGasto: { label: doc.NOMBRE_GASTO, value: doc.CODIGO_GASTO },
-          xmlArchivo: { contenido: "", nombre: "", uuid: "" },
+          //validar si el base64 viene vacío
+          xmlArchivo: doc.ARCHIVO_XML
+            ? { contenido: doc.ARCHIVO_XML, nombre: `${doc.RENGLON_ID}.xml` }
+            : "",
         };
       });
 

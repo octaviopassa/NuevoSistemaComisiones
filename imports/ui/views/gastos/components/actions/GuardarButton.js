@@ -216,23 +216,11 @@ export const GuardarButton = ({ setLoading }) => {
             }
           }
 
-          const pdfBytes = documento.pdfArchivo?.contenido
-            ? Uint8Array.from(atob(documento.pdfArchivo.contenido), (char) =>
-                char.charCodeAt(0)
-              )
-            : null;
-
-          const xmlBytes = xmlArchivo?.contenido
-            ? Uint8Array.from(atob(xmlArchivo?.contenido), (char) =>
-                char.charCodeAt(0)
-              )
-            : null;
-
           // TODO: GRABAR PDF Y XML
           const xmlGrabo = await DocumentosService.grabarArchivoXML({
             id_renglon: renglonId,
             nombre_xml: xmlArchivo?.nombre || "",
-            archivo: xmlBytes,
+            archivo: xmlArchivo?.contenido || "",
             cod_usu: session.profile.COD_USU,
           });
 
@@ -241,7 +229,7 @@ export const GuardarButton = ({ setLoading }) => {
           const pdfGrabo = await DocumentosService.grabarArchivoPDF({
             id_renglon: renglonId,
             nombre_pdf: documento.pdfArchivo?.nombre || "",
-            archivo: pdfBytes,
+            archivo: documento.pdfArchivo?.contenido || "",
             cod_usu: session.profile.COD_USU,
           });
 
@@ -250,9 +238,9 @@ export const GuardarButton = ({ setLoading }) => {
           // Checar archivos
           const grabarDocGlobal = await DocumentosService.grabarArchivo({
             folio: newFolio,
-            archivo_xml: xmlBytes,
-            archivo_pdf: pdfBytes,
-            cadena_xml: atob(xmlArchivo?.contenido || ""),
+            archivo_xml: xmlArchivo?.contenido || "",
+            archivo_pdf: documento.pdfArchivo?.contenido || "",
+            cadena_xml: xmlArchivo?.contenido,
             cod_usu: session.profile.COD_USU,
           });
 
@@ -261,8 +249,9 @@ export const GuardarButton = ({ setLoading }) => {
           const grabadoArchivosGlobal =
             await DocumentosService.grabarArchivoNota({
               id_renglon: renglonId,
-              nombre_xml: xmlArchivo?.nombre || "",
-              archivo: pdfBytes,
+              nombre_xml:
+                documento.pdfArchivo?.nombre || xmlArchivo?.nombre || "",
+              archivo: documento.pdfArchivo?.contenido || "",
               cod_usu: session.profile.COD_USU,
             });
 

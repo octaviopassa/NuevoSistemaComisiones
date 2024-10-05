@@ -453,6 +453,7 @@ export const TableGastos = () => {
         byteNumbers[i] = byteCharacters.charCodeAt(i);
       }
       const byteArray = new Uint8Array(byteNumbers);
+      console.log(byteArray);
       const blob = new Blob([byteArray], { type: "application/xml" });
 
       // Crear URL del objeto y descargar
@@ -880,30 +881,28 @@ export const TableGastos = () => {
                 )}
               </th>
               <th className="text-center" style={{ maxWidth: "80px" }}>
-                {tipoDocumento.value == "Factura" && (
-                  <label
-                    htmlFor="pdf-upload"
-                    className="btn btn-primary mb-0 d-flex align-items-center justify-content-center py-2 px-3"
-                  >
-                    {pdfTempData ? (
-                      <i className="fal fa-solid fa-repeat mr-1"></i>
-                    ) : (
-                      <i className="fal fa-file-pdf mr-1"></i>
-                    )}
-                    <span>PDF/IMG</span>
-                    <input
-                      id="pdf-upload"
-                      type="file"
-                      disabled={
-                        estatus.estatus !== "Nuevo" &&
-                        estatus.estatus !== "GRABADO"
-                      }
-                      accept=".pdf,.jpg,.jpeg,.png,image/jpeg,image/png"
-                      style={{ display: "none" }}
-                      onChange={handleFileUpload}
-                    />
-                  </label>
-                )}
+                <label
+                  htmlFor="pdf-upload"
+                  className="btn btn-primary mb-0 d-flex align-items-center justify-content-center py-2 px-3"
+                >
+                  {pdfTempData ? (
+                    <i className="fal fa-solid fa-repeat mr-1"></i>
+                  ) : (
+                    <i className="fal fa-file-pdf mr-1"></i>
+                  )}
+                  <span>PDF/IMG</span>
+                  <input
+                    id="pdf-upload"
+                    type="file"
+                    disabled={
+                      estatus.estatus !== "Nuevo" &&
+                      estatus.estatus !== "GRABADO"
+                    }
+                    accept=".pdf,.jpg,.jpeg,.png,image/jpeg,image/png"
+                    style={{ display: "none" }}
+                    onChange={handleFileUpload}
+                  />
+                </label>
               </th>
               <th className="text-center" style={{ maxWidth: "80px" }}>
                 <button
@@ -1094,57 +1093,38 @@ export const TableGastos = () => {
                     ))}
                 </td>
                 <td className="text-center">
-                  {doc.tipoDocumento === "Factura" &&
-                    estatus.estatus !== "CANCELADO" &&
-                    (doc.pdfArchivo ? (
-                      <div className="d-flex align-items-center justify-content-center">
-                        <FontAwesomeIcon
-                          icon={faDownload}
-                          style={{
-                            marginRight: "8px",
-                            cursor: estatus.estatus === "Nuevo" && "pointer",
-                          }}
-                          onClick={() => handleFileDownload(i)}
-                          title={doc.pdfArchivo.nombre}
-                        />
-                        {estatus.estatus === "Nuevo" && (
-                          <label
-                            htmlFor={`pdf-replace-${i}`}
-                            style={{
-                              cursor: estatus.estatus === "Nuevo" && "pointer",
-                            }}
-                            className="mt-2"
-                          >
-                            <FontAwesomeIcon icon={faRetweet} />
-                            <input
-                              id={`pdf-replace-${i}`}
-                              type="file"
-                              disabled={estatus.estatus !== "Nuevo"}
-                              accept=".pdf,.jpg,.jpeg,.png,image/jpeg,image/png"
-                              style={{ display: "none" }}
-                              onChange={(e) => handleFileUpload(e, i)}
-                            />
-                          </label>
-                        )}
-                      </div>
-                    ) : (
-                      <label
-                        htmlFor={`pdf-upload-${i}`}
+                  {estatus.estatus !== "CANCELADO" && doc.pdfArchivo && (
+                    <div className="d-flex align-items-center justify-content-center">
+                      <FontAwesomeIcon
+                        icon={faDownload}
                         style={{
+                          marginRight: "8px",
                           cursor: estatus.estatus === "Nuevo" && "pointer",
                         }}
-                      >
-                        <FontAwesomeIcon icon={faUpload} />
-                        <input
-                          id={`pdf-upload-${i}`}
-                          type="file"
-                          disabled={estatus.estatus !== "Nuevo"}
-                          accept=".pdf,.jpg,.jpeg,.png,image/jpeg,image/png"
-                          style={{ display: "none" }}
-                          onChange={(e) => handleFileUpload(e, i)}
-                        />
-                      </label>
-                    ))}
+                        onClick={() => handleFileDownload(i)}
+                        title={doc.pdfArchivo.nombre}
+                      />
+                      {estatus.estatus === "Nuevo" && (
+                        <label
+                          htmlFor={`pdf-replace-${i}`}
+                          style={{
+                            cursor: estatus.estatus === "Nuevo" && "pointer",
+                          }}
+                          className="mt-2"
+                        >
+                          <FontAwesomeIcon icon={faRetweet} />
+                          <input
+                            id={`pdf-replace-${i}`}
+                            type="file"
+                            disabled={estatus.estatus !== "Nuevo"}
+                            accept=".pdf,.jpg,.jpeg,.png,image/jpeg,image/png"
+                            style={{ display: "none" }}
+                            onChange={(e) => handleFileUpload(e, i)}
+                          />
+                        </label>
+                      )}
+                    </div>
+                  )}
                 </td>
                 {(estatus.estatus === "Nuevo" ||
                   estatus.estatus === "GRABADO") && (

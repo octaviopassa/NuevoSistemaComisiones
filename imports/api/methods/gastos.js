@@ -141,6 +141,8 @@ Meteor.methods({
         data: conexiones.body_bdseleccionada,
       });
 
+      console.log(response.data);
+
       return {
         isValid: response.data.isValid,
         data: JSON.parse(response.data.data.resultado),
