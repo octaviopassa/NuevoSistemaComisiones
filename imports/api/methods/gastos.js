@@ -106,6 +106,9 @@ Meteor.methods({
   },
   "gastos.grabarRenglon": async (datos) => {
     try {
+      const cadena_xml = datos.cadena_xml
+        ? Buffer.from(datos.cadena_xml, "base64").toString("utf-8")
+        : "";
       conexiones.body_bdseleccionada.tipo = "procedimiento";
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
       conexiones.body_bdseleccionada.query = `
@@ -129,7 +132,7 @@ Meteor.methods({
         @ID_MANTENIMIENTO_GLOBAL=0,
         @RECIBIDO='0',
         @ISH=${datos.ish},
-        @CADENA_XML='${datos.cadena_xml}',
+        @CADENA_XML='${cadena_xml}',
         @UUID='${datos.uuid}',
         @TUA=${datos.tua},
         @TIENE_TUA_DESGLOSADO='${datos.tua_desglosado}',
@@ -140,8 +143,6 @@ Meteor.methods({
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
       });
-
-      console.log(response.data);
 
       return {
         isValid: response.data.isValid,

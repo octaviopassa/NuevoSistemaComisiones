@@ -1095,15 +1095,18 @@ export const TableGastos = () => {
                 <td className="text-center">
                   {estatus.estatus !== "CANCELADO" && doc.pdfArchivo && (
                     <div className="d-flex align-items-center justify-content-center">
-                      <FontAwesomeIcon
-                        icon={faDownload}
-                        style={{
-                          marginRight: "8px",
-                          cursor: estatus.estatus === "Nuevo" && "pointer",
-                        }}
-                        onClick={() => handleFileDownload(i)}
-                        title={doc.pdfArchivo.nombre}
-                      />
+                      {doc.pdfArchivo.contenido !== "bnVsbA==" && (
+                        <FontAwesomeIcon
+                          icon={faDownload}
+                          style={{
+                            marginRight: "8px",
+                            cursor: estatus.estatus === "Nuevo" && "pointer",
+                          }}
+                          onClick={() => handleFileDownload(i)}
+                          title={doc.pdfArchivo.nombre}
+                        />
+                      )}
+
                       {estatus.estatus === "Nuevo" && (
                         <label
                           htmlFor={`pdf-replace-${i}`}

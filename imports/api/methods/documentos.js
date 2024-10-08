@@ -1,18 +1,22 @@
 import conexiones from "../../utils/config";
 import axios from "axios";
 
-//TODO: Revisar este metodo
 const convertToVarBinary = (base64) => {
-  return base64;
+  if (!base64) return null;
+  const buffer = Buffer.from(base64, "base64");
+
+  // Verificar el tamaño del buffer
+  console.log(`Tamaño del buffer: ${buffer.length} bytes`);
+
+  return buffer;
 };
 
 Meteor.methods({
   "documentos.grabarArchivoXML": async (datos) => {
     try {
+      const buffer = convertToVarBinary(datos.archivo);
       conexiones.body_bdseleccionada.tipo = "procedimiento";
       conexiones.body_bdseleccionada.baseDatos = "expedientes";
-
-      const buffer = convertToVarBinary(datos.archivo);
       conexiones.body_bdseleccionada.query = `
             exec [MP_XML_GRABA_ARCHIVO]
             @ID_GASTO_DETALLE=${datos.id_renglon},
@@ -45,10 +49,9 @@ Meteor.methods({
   },
   "documentos.grabarArchivoPDF": async (datos) => {
     try {
+      const buffer = convertToVarBinary(datos.archivo);
       conexiones.body_bdseleccionada.tipo = "procedimiento";
       conexiones.body_bdseleccionada.baseDatos = "expedientes";
-
-      const buffer = convertToVarBinary(datos.archivo);
       conexiones.body_bdseleccionada.query = `
               exec [MP_GASTOS_GRABA_ARCHIVO_NOTA]
               @ID_GASTO_DETALLE=${datos.id_renglon},
@@ -80,16 +83,19 @@ Meteor.methods({
   },
   "documentos.grabarArchivo": async (datos) => {
     try {
-      conexiones.body_bdseleccionada.tipo = "procedimiento";
-      conexiones.body_bdseleccionada.baseDatos = "expedientes";
       const xml = convertToVarBinary(datos.archivo_xml);
       const pdf = convertToVarBinary(datos.archivo_pdf);
+      const cadena_xml = datos.cadena_xml
+        ? Buffer.from(datos.cadena_xml, "base64").toString("utf-8")
+        : "";
+      conexiones.body_bdseleccionada.tipo = "procedimiento";
+      conexiones.body_bdseleccionada.baseDatos = "expedientes";
       conexiones.body_bdseleccionada.query = `
             exec dbo.MP_GASTOS_SUBIR_XML_PDF
             @FOLIO_GASTO='${datos.folio}',
             @ARCHIVO_XML='${xml}',
             @ARCHIVO_PDF='${pdf}',
-            @CADENA_XML='${datos.cadena_xml}',
+            @CADENA_XML='${cadena_xml}',
             @COD_USU_VALIDACION='${datos.cod_usu}',
             @IDORIGEN_GRUPO=6
           `;
@@ -117,9 +123,9 @@ Meteor.methods({
   },
   "documentos.grabarArchivoNota": async (datos) => {
     try {
+      const buffer = convertToVarBinary(datos.archivo);
       conexiones.body_bdseleccionada.tipo = "procedimiento";
       conexiones.body_bdseleccionada.baseDatos = "expedientes";
-      const buffer = convertToVarBinary(datos.archivo);
       conexiones.body_bdseleccionada.query = `
               exec [MP_GASTOS_GRABA_ARCHIVO_NOTA]
               @ID_GASTO_DETALLE=${datos.id_renglon},

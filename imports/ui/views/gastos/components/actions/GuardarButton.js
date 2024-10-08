@@ -215,7 +215,6 @@ export const GuardarButton = ({ setLoading }) => {
               console.error(grabarGastoCombustible);
             }
           }
-
           // TODO: GRABAR PDF Y XML
           const xmlGrabo = await DocumentosService.grabarArchivoXML({
             id_renglon: renglonId,
@@ -228,18 +227,18 @@ export const GuardarButton = ({ setLoading }) => {
 
           const pdfGrabo = await DocumentosService.grabarArchivoPDF({
             id_renglon: renglonId,
-            nombre_pdf: documento.pdfArchivo?.nombre || "",
-            archivo: documento.pdfArchivo?.contenido || "",
+            nombre_pdf: documento?.pdfArchivo?.nombre || "",
+            archivo: documento?.pdfArchivo?.contenido,
             cod_usu: session.profile.COD_USU,
           });
 
-          if (!pdfGrabo.isValid) console.error(pdfGrabo);
+          if (!pdfGrabo?.isValid) console.error(pdfGrabo);
 
           // Checar archivos
           const grabarDocGlobal = await DocumentosService.grabarArchivo({
             folio: newFolio,
             archivo_xml: xmlArchivo?.contenido || "",
-            archivo_pdf: documento.pdfArchivo?.contenido || "",
+            archivo_pdf: documento?.pdfArchivo?.contenido || "",
             cadena_xml: xmlArchivo?.contenido,
             cod_usu: session.profile.COD_USU,
           });
@@ -250,8 +249,8 @@ export const GuardarButton = ({ setLoading }) => {
             await DocumentosService.grabarArchivoNota({
               id_renglon: renglonId,
               nombre_xml:
-                documento.pdfArchivo?.nombre || xmlArchivo?.nombre || "",
-              archivo: documento.pdfArchivo?.contenido || "",
+                documento?.pdfArchivo?.nombre || xmlArchivo?.nombre || "",
+              archivo: documento?.pdfArchivo?.contenido,
               cod_usu: session.profile.COD_USU,
             });
 
