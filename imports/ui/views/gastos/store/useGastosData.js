@@ -49,7 +49,7 @@ export const useGastosData = create(
 
       resetData: () => {
         set({
-          plazaSeleccionada: "",
+          // plazaSeleccionada: "",
           isCheckedSucursal: true,
           documentos: [],
           pagarASeleccionado: "",

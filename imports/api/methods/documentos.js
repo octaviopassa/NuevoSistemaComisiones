@@ -1,34 +1,54 @@
 import conexiones from "../../utils/config";
 import axios from "axios";
 
-const convertToVarBinary = (base64) => {
-  if (!base64) return null;
-  const buffer = Buffer.from(base64, "base64");
-
-  // Verificar el tamaño del buffer
-  console.log(`Tamaño del buffer: ${buffer.length} bytes`);
-
-  return buffer;
-};
-
 Meteor.methods({
   "documentos.grabarArchivoXML": async (datos) => {
     try {
-      const buffer = convertToVarBinary(datos.archivo);
-      conexiones.body_bdseleccionada.tipo = "procedimiento";
+      conexiones.body_bdseleccionada.tipo = "procedimientoAlmacenado";
       conexiones.body_bdseleccionada.baseDatos = "expedientes";
-      conexiones.body_bdseleccionada.query = `
-            exec [MP_XML_GRABA_ARCHIVO]
-            @ID_GASTO_DETALLE=${datos.id_renglon},
-            @NOMBRE_XML='${datos.nombre_xml}',
-            @ARCHIVO='${buffer}',
-            @COD_USU_AGREGO='${datos.cod_usu}',
-            @OPERACION='Agregar'
-          `;
-
-      const response = await axios.get(conexiones.windows_api, {
-        data: conexiones.body_bdseleccionada,
-      });
+      conexiones.body_bdseleccionada.query = `dbo.MP_XML_GRABA_ARCHIVO`;
+      conexiones.body_bdseleccionada.parametros = [
+        {
+          parametro: "@ID_GASTO_DETALLE",
+          valor: `${datos.id_renglon}`,
+          tipo: "entero",
+          direccion: "entrada",
+        },
+        {
+          parametro: "@NOMBRE_XML",
+          valor: datos.nombre_xml,
+          tipo: "cadena",
+          direccion: "entrada",
+        },
+        {
+          parametro: "@ARCHIVO",
+          valor: datos.archivo || "",
+          tipo: datos.archivo ? "base64" : "cadena",
+          direccion: "entrada",
+        },
+        {
+          parametro: "@COD_USU_AGREGO",
+          valor: datos.cod_usu,
+          tipo: "cadena",
+          direccion: "entrada",
+        },
+        {
+          parametro: "@OPERACION",
+          valor: "Agregar",
+          tipo: "cadena",
+          direccion: "entrada",
+        },
+      ];
+      console.log(conexiones.body_bdseleccionada);
+      const response = await axios.post(
+        conexiones.windows_api_post,
+        conexiones.body_bdseleccionada,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (!response.data.data.esValido) {
         return {
@@ -49,20 +69,47 @@ Meteor.methods({
   },
   "documentos.grabarArchivoPDF": async (datos) => {
     try {
-      const buffer = convertToVarBinary(datos.archivo);
-      conexiones.body_bdseleccionada.tipo = "procedimiento";
+      conexiones.body_bdseleccionada.tipo = "procedimientoAlmacenado";
       conexiones.body_bdseleccionada.baseDatos = "expedientes";
-      conexiones.body_bdseleccionada.query = `
-              exec [MP_GASTOS_GRABA_ARCHIVO_NOTA]
-              @ID_GASTO_DETALLE=${datos.id_renglon},
-              @NOMBRE_ARCHIVO='${datos.nombre_pdf}',
-              @ARCHIVO='${buffer}',
-              @COD_USU_AGREGO='${datos.cod_usu}'
-            `;
+      conexiones.body_bdseleccionada.query = `MP_GASTOS_GRABA_ARCHIVO_NOTA`;
+      conexiones.body_bdseleccionada.parametros = [
+        {
+          parametro: "@ID_GASTO_DETALLE",
+          valor: `${datos.id_renglon}`,
+          tipo: "entero",
+          direccion: "entrada",
+        },
+        {
+          parametro: "@NOMBRE_ARCHIVO",
+          valor: datos.nombre_pdf,
+          tipo: "cadena",
+          direccion: "entrada",
+        },
+        {
+          parametro: "@ARCHIVO",
+          valor: datos.archivo || "",
+          tipo: datos.archivo ? "base64" : "cadena",
+          direccion: "entrada",
+        },
+        {
+          parametro: "@COD_USU_AGREGO",
+          valor: datos.cod_usu,
+          tipo: "cadena",
+          direccion: "entrada",
+        },
+      ];
+      console.log(conexiones.body_bdseleccionada);
+      const response = await axios.post(
+        conexiones.windows_api_post,
+        conexiones.body_bdseleccionada,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-      const response = await axios.get(conexiones.windows_api, {
-        data: conexiones.body_bdseleccionada,
-      });
+      console.log(response);
 
       if (!response.data.data.esValido) {
         return {
@@ -83,26 +130,60 @@ Meteor.methods({
   },
   "documentos.grabarArchivo": async (datos) => {
     try {
-      const xml = convertToVarBinary(datos.archivo_xml);
-      const pdf = convertToVarBinary(datos.archivo_pdf);
       const cadena_xml = datos.cadena_xml
         ? Buffer.from(datos.cadena_xml, "base64").toString("utf-8")
         : "";
-      conexiones.body_bdseleccionada.tipo = "procedimiento";
+      conexiones.body_bdseleccionada.tipo = "procedimientoAlmacenado";
       conexiones.body_bdseleccionada.baseDatos = "expedientes";
-      conexiones.body_bdseleccionada.query = `
-            exec dbo.MP_GASTOS_SUBIR_XML_PDF
-            @FOLIO_GASTO='${datos.folio}',
-            @ARCHIVO_XML='${xml}',
-            @ARCHIVO_PDF='${pdf}',
-            @CADENA_XML='${cadena_xml}',
-            @COD_USU_VALIDACION='${datos.cod_usu}',
-            @IDORIGEN_GRUPO=6
-          `;
-
-      const response = await axios.get(conexiones.windows_api, {
-        data: conexiones.body_bdseleccionada,
-      });
+      conexiones.body_bdseleccionada.query = `dbo.MP_GASTOS_SUBIR_XML_PDF`;
+      conexiones.body_bdseleccionada.parametros = [
+        {
+          parametro: "@FOLIO_GASTO",
+          valor: datos.folio,
+          tipo: "cadena",
+          direccion: "entrada",
+        },
+        {
+          parametro: "@ARCHIVO_XML",
+          valor: datos.archivo_xml || "",
+          tipo: datos.archivo_xml ? "base64" : "cadena",
+          direccion: "entrada",
+        },
+        {
+          parametro: "@ARCHIVO_PDF",
+          valor: datos.archivo_pdf || "",
+          tipo: datos.archivo_pdf ? "base64" : "cadena",
+          direccion: "entrada",
+        },
+        {
+          parametro: "@CADENA_XML",
+          valor: cadena_xml,
+          tipo: "cadena",
+          direccion: "entrada",
+        },
+        {
+          parametro: "@COD_USU_VALIDACION",
+          valor: datos.cod_usu,
+          tipo: "cadena",
+          direccion: "entrada",
+        },
+        {
+          parametro: "@IDORIGEN_GRUPO",
+          valor: "6",
+          tipo: "entero",
+          direccion: "entrada",
+        },
+      ];
+      console.log(conexiones.body_bdseleccionada);
+      const response = await axios.post(
+        conexiones.windows_api_post,
+        conexiones.body_bdseleccionada,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (!response.data.data.esValido) {
         return {
@@ -123,20 +204,45 @@ Meteor.methods({
   },
   "documentos.grabarArchivoNota": async (datos) => {
     try {
-      const buffer = convertToVarBinary(datos.archivo);
-      conexiones.body_bdseleccionada.tipo = "procedimiento";
+      conexiones.body_bdseleccionada.tipo = "procedimientoAlmacenado";
       conexiones.body_bdseleccionada.baseDatos = "expedientes";
-      conexiones.body_bdseleccionada.query = `
-              exec [MP_GASTOS_GRABA_ARCHIVO_NOTA]
-              @ID_GASTO_DETALLE=${datos.id_renglon},
-              @NOMBRE_ARCHIVO='${datos.nombre_xml}',
-              @ARCHIVO='${buffer}',
-              @COD_USU_AGREGO='${datos.cod_usu}'
-            `;
-
-      const response = await axios.get(conexiones.windows_api, {
-        data: conexiones.body_bdseleccionada,
-      });
+      conexiones.body_bdseleccionada.query = `dbo.MP_GASTOS_GRABA_ARCHIVO_NOTA`;
+      conexiones.body_bdseleccionada.parametros = [
+        {
+          parametro: "@ID_GASTO_DETALLE",
+          valor: `${datos.id_renglon}`,
+          tipo: "entero",
+          direccion: "entrada",
+        },
+        {
+          parametro: "@NOMBRE_ARCHIVO",
+          valor: datos.nombre_xml,
+          tipo: "cadena",
+          direccion: "entrada",
+        },
+        {
+          parametro: "@ARCHIVO",
+          valor: datos.archivo || "",
+          tipo: datos.archivo ? "base64" : "cadena",
+          direccion: "entrada",
+        },
+        {
+          parametro: "@COD_USU_AGREGO",
+          valor: datos.cod_usu,
+          tipo: "cadena",
+          direccion: "entrada",
+        },
+      ];
+      console.log(conexiones.body_bdseleccionada);
+      const response = await axios.post(
+        conexiones.windows_api_post,
+        conexiones.body_bdseleccionada,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (!response.data.data.esValido) {
         return {

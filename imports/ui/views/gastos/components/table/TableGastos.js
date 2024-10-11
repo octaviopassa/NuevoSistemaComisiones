@@ -30,7 +30,7 @@ import { format } from "date-fns";
 import { useUserSession } from "../../../../store";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
-import { extraerRFC } from "../../../../../utils/utils";
+import { extraerRFC, validarMesYAnio } from "../../../../../utils/utils";
 
 export const TableGastos = () => {
   const [proveedorSeleccionado, setProveedorSeleccionado] = useState("");
@@ -63,9 +63,10 @@ export const TableGastos = () => {
     estatus,
     folio: folioGlobal,
     plazaSeleccionada,
+    gastosDate,
   } = useGastosData();
   const { data: dataTipoGastos } = useFetchData(TipoGastosService.getAll);
-  const tipoGastos = dataTipoGastos.map((tg) => ({
+  const tipoGastos = dataTipoGastos?.map((tg) => ({
     value: tg.Codigo,
     label: tg.Nombre,
   }));
@@ -135,7 +136,21 @@ export const TableGastos = () => {
           const rfcEmisor = comprobante
             .getElementsByTagName("cfdi:Emisor")[0]
             .getAttribute("Rfc");
+          const fecha = comprobante.getAttribute("Fecha") || "";
 
+          //TODO: Refactorizar IF's por funciones de validación
+          if (
+            session.profile.baseDatos === "IANSA" ||
+            session.profile.baseDatos === "Smartcarb"
+          ) {
+            if (validarMesYAnio(fecha, gastosDate)) {
+              toastr.error(
+                "La fecha del archivo XML no coincide con el mes y año actual"
+              );
+              event.target.files = null;
+              return;
+            }
+          }
           if (rfcEmisor !== extraerRFC(proveedorSeleccionado.label)) {
             toastr.error(
               "El RFC del emisor no coincide con el RFC del proveedor seleccionado o no has seleccionado un proveedor"
@@ -160,7 +175,7 @@ export const TableGastos = () => {
           if (timbreFiscal) {
             const uuidFiscal = timbreFiscal.getAttribute("UUID");
             const existingDocument = documentos.some(
-              (doc) => doc.xmlArchivo.uuid === uuidFiscal
+              (doc) => doc?.xmlArchivo?.uuid === uuidFiscal
             );
 
             const existingInDatabase = await DocumentosService.validarXml(
@@ -227,7 +242,7 @@ export const TableGastos = () => {
           }
 
           const datos = {
-            fecha: comprobante.getAttribute("Fecha") || "",
+            fecha,
             folio: comprobante.getAttribute("Folio") || "",
             subtotal: comprobante.getAttribute("SubTotal") || "0",
             total: comprobante.getAttribute("Total") || "0",
@@ -372,6 +387,8 @@ export const TableGastos = () => {
         };
 
         reader.readAsArrayBuffer(file);
+
+        event.target.files = null;
       } else {
         toastr.error("Por favor, seleccione un archivo XML válido");
         event.target.files = null;
@@ -386,6 +403,8 @@ export const TableGastos = () => {
   const handleFileUpload = (event, index) => {
     try {
       const file = event.target.files[0];
+      const fileName = file.name;
+      const reader = new FileReader();
       const validFileTypes = [
         "application/pdf",
         "image/png",
@@ -413,12 +432,10 @@ export const TableGastos = () => {
         );
         return;
       }
-
-      const fileName = file.name;
-      const reader = new FileReader();
-
-      reader.onload = (e) => {
-        const base64String = e.target.result.split(",")[1];
+      reader.onload = async (e) => {
+        const arrayBuffer = e.target.result;
+        const byteArray = new Uint8Array(arrayBuffer);
+        const base64String = btoa(String.fromCharCode.apply(null, byteArray));
         const pdfData = {
           nombre: fileName,
           contenido: base64String,
@@ -436,7 +453,8 @@ export const TableGastos = () => {
         toastr.success("Archivo cargado correctamente");
       };
 
-      reader.readAsDataURL(file);
+      reader.readAsArrayBuffer(file);
+      // reader.readAsDataURL(file);
     } catch (error) {
       console.error("Archivo inválido seleccionado");
       toastr.error("Por favor, seleccione un archivo PDF válido");
@@ -473,25 +491,41 @@ export const TableGastos = () => {
 
   const handleFileDownload = (index) => {
     const doc = documentos[index];
-    if (doc.pdfArchivo) {
-      // Convertir la cadena base64 a un Blob
-      const byteCharacters = atob(doc.pdfArchivo.contenido);
-      const byteNumbers = new Array(byteCharacters.length);
-      for (let i = 0; i < byteCharacters.length; i++) {
-        byteNumbers[i] = byteCharacters.charCodeAt(i);
-      }
-      const byteArray = new Uint8Array(byteNumbers);
-      const blob = new Blob([byteArray], { type: "application/pdf" });
+    if (doc.pdfArchivo && doc.pdfArchivo.contenido) {
+      try {
+        // Limpiar y convertir la cadena base64
+        const cleanedBase64 = doc.pdfArchivo.contenido.replace(
+          /[^A-Za-z0-9+/=]/g,
+          ""
+        ); // Limpiar base64
+        const byteCharacters = atob(cleanedBase64); // Decodificar base64
+        const byteNumbers = new Array(byteCharacters.length);
 
-      // Crear URL del objeto y descargar
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = doc.pdfArchivo.nombre || "documento.pdf";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+        // Convertir caracteres a códigos
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+
+        const byteArray = new Uint8Array(byteNumbers); // Crear Uint8Array
+
+        // Crear un Blob a partir del byteArray
+        const blob = new Blob([byteArray], { type: "application/pdf" });
+
+        // Crear URL del objeto y descargar
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = doc.pdfArchivo.nombre || "documento.pdf"; // Nombre del archivo
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url); // Limpiar la URL del objeto
+      } catch (error) {
+        console.error("Error al convertir el archivo PDF:", error);
+        toastr.error(
+          "Error al descargar el archivo PDF. Por favor, inténtalo de nuevo."
+        );
+      }
     } else {
       console.error("No se encontró archivo PDF para este documento");
       toastr.error("No hay archivo PDF disponible para descargar");
@@ -852,7 +886,7 @@ export const TableGastos = () => {
                       htmlFor="xml-upload"
                       className="btn btn-primary mb-0 d-flex align-items-center justify-content-center py-2 px-3"
                       onClick={() => {
-                        if (!proveedorSeleccionado) {
+                        if (!proveedorSeleccionado || !gastosDate) {
                           toastr.warning("Por favor, seleccione un proveedor");
                           return;
                         }
@@ -872,7 +906,8 @@ export const TableGastos = () => {
                       disabled={
                         (estatus.estatus !== "Nuevo" &&
                           estatus.estatus !== "GRABADO") ||
-                        !proveedorSeleccionado
+                        !proveedorSeleccionado ||
+                        !gastosDate
                       }
                       style={{ display: "none" }}
                       onChange={handleXmlUpload}
@@ -1107,11 +1142,13 @@ export const TableGastos = () => {
                         />
                       )}
 
-                      {estatus.estatus === "Nuevo" && (
+                      {(estatus.estatus === "Nuevo" || !doc.renglonId) && (
                         <label
                           htmlFor={`pdf-replace-${i}`}
                           style={{
-                            cursor: estatus.estatus === "Nuevo" && "pointer",
+                            cursor:
+                              (estatus.estatus === "Nuevo" || !doc.renglonId) &&
+                              "pointer",
                           }}
                           className="mt-2"
                         >
@@ -1119,7 +1156,9 @@ export const TableGastos = () => {
                           <input
                             id={`pdf-replace-${i}`}
                             type="file"
-                            disabled={estatus.estatus !== "Nuevo"}
+                            // disabled={
+                            //   estatus.estatus !== "Nuevo" || doc.renglonId
+                            // }
                             accept=".pdf,.jpg,.jpeg,.png,image/jpeg,image/png"
                             style={{ display: "none" }}
                             onChange={(e) => handleFileUpload(e, i)}
@@ -1132,7 +1171,7 @@ export const TableGastos = () => {
                 {(estatus.estatus === "Nuevo" ||
                   estatus.estatus === "GRABADO") && (
                   <td className="text-center">
-                    {estatus.estatus === "GRABADO" && (
+                    {estatus.estatus === "GRABADO" && doc.renglonId && (
                       <>
                         {doc.descartado ? (
                           <i

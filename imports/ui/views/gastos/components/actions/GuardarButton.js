@@ -54,6 +54,7 @@ export const GuardarButton = ({ setLoading }) => {
 
   const handleGrabado = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       if (documentos.length === 0) {
         toastr.error("No hay documentos para registrar");
@@ -63,7 +64,6 @@ export const GuardarButton = ({ setLoading }) => {
         toastr.warning("Por favor, llene todos los campos requeridos.");
         return;
       }
-      setLoading(true);
       let newFolio = folio;
 
       if (estatus.estatus === "Nuevo") {
@@ -215,6 +215,8 @@ export const GuardarButton = ({ setLoading }) => {
               console.error(grabarGastoCombustible);
             }
           }
+
+          console.log(documento.pdfArchivo);
           // TODO: GRABAR PDF Y XML
           const xmlGrabo = await DocumentosService.grabarArchivoXML({
             id_renglon: renglonId,
@@ -223,7 +225,7 @@ export const GuardarButton = ({ setLoading }) => {
             cod_usu: session.profile.COD_USU,
           });
 
-          if (!xmlGrabo.isValid) console.error(xmlGrabo);
+          if (!xmlGrabo?.isValid) console.error(xmlGrabo);
 
           const pdfGrabo = await DocumentosService.grabarArchivoPDF({
             id_renglon: renglonId,
@@ -243,18 +245,20 @@ export const GuardarButton = ({ setLoading }) => {
             cod_usu: session.profile.COD_USU,
           });
 
-          if (!grabarDocGlobal.isValid) console.error(grabarDocGlobal);
+          if (!grabarDocGlobal?.isValid) console.error(grabarDocGlobal);
 
           const grabadoArchivosGlobal =
             await DocumentosService.grabarArchivoNota({
               id_renglon: renglonId,
               nombre_xml:
-                documento?.pdfArchivo?.nombre || xmlArchivo?.nombre || "",
+                documento?.pdfArchivo?.nombre ||
+                xmlArchivo?.nombre ||
+                "documento.pdf",
               archivo: documento?.pdfArchivo?.contenido,
               cod_usu: session.profile.COD_USU,
             });
 
-          if (!grabadoArchivosGlobal.isValid)
+          if (!grabadoArchivosGlobal?.isValid)
             console.error(grabadoArchivosGlobal);
 
           const [resumenData, gastoGlobalData] = await Promise.all([
@@ -266,7 +270,7 @@ export const GuardarButton = ({ setLoading }) => {
             }),
           ]);
 
-          if (!resumenData.isValid) console.error(resumenData);
+          if (!resumenData?.isValid) console.error(resumenData);
 
           setEstatus({
             ...estatus,
@@ -286,10 +290,10 @@ export const GuardarButton = ({ setLoading }) => {
       });
 
       toastr.success(`${newFolio} grabado correctamente`);
-      setLoading(false);
     } catch (error) {
       console.log(error);
     }
+    setLoading(false);
   };
 
   return (

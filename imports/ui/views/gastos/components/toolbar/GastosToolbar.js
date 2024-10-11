@@ -55,7 +55,7 @@ export const GastosToolbar = () => {
       ]);
 
       setPlazas(
-        obtenerPlazas.map((plaza) => {
+        obtenerPlazas?.map((plaza) => {
           return { Codigo: plaza.CODIGO, Nombre: plaza.NOMBRE };
         })
       );

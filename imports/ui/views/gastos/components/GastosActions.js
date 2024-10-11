@@ -39,7 +39,7 @@ export const GastosActions = () => {
       </div>
 
       <ModalLoading
-        title="Cargando..."
+        title=""
         message="Por favor espere..."
         isOpen={loading}
         toggle={() => {}}
