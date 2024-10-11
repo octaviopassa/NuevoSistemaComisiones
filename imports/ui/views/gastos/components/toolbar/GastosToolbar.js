@@ -32,7 +32,6 @@ export const GastosToolbar = () => {
     isCheckedSucursal,
     toggleCheckedSucursal,
   } = useGastosData();
-
   useEffect(() => {
     cargaInicial();
   }, [user.profile.COD_USU, user.profile.baseDatos, reloadData]);
@@ -223,7 +222,9 @@ export const GastosToolbar = () => {
             <select
               className="custom-select"
               id="selectPagarA"
-              disabled={estatus.estatus !== "Nuevo"}
+              disabled={
+                estatus.estatus !== "Nuevo" && estatus.estatus !== "GRABADO"
+              }
               value={pagarASeleccionado}
               onChange={(e) => setPagarASeleccionado(e.target.value)}
             >

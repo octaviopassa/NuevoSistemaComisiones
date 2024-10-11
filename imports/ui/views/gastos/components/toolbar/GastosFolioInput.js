@@ -86,7 +86,8 @@ export const GastosFolioInput = () => {
           concepto: doc.CONCEPTO,
           descartado: !!doc.DESCARTADO,
           detalleGasto:
-            doc.CODIGO_GASTO === 17
+            doc.CODIGO_GASTO === 17 ||
+            session.profile.WEB_REACT_CLIENTE_OBLIGATORIO
               ? { label: doc?.CLIENTE || "" }
               : doc.CODIGO_GASTO === 1
               ? {

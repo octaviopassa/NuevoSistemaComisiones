@@ -1,3 +1,4 @@
+import { format } from "date-fns";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
@@ -26,7 +27,7 @@ export const useGastosData = create(
       setSelectedIngeniero: (nuevoIngeniero) =>
         set({ selectedIngeniero: nuevoIngeniero }),
 
-      gastosDate: "",
+      gastosDate: format(new Date(), "yyyy-MM-dd"),
       setGastosDate: (nuevaFecha) => set({ gastosDate: nuevaFecha }),
 
       folio: "GC-000010",
@@ -54,7 +55,7 @@ export const useGastosData = create(
           documentos: [],
           pagarASeleccionado: "",
           selectedIngeniero: "",
-          gastosDate: "",
+          gastosDate: format(new Date(), "yyyy-MM-dd"),
           folio: "",
           estatus: {
             estatus: "Nuevo",

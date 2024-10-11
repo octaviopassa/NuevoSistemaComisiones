@@ -471,7 +471,6 @@ export const TableGastos = () => {
         byteNumbers[i] = byteCharacters.charCodeAt(i);
       }
       const byteArray = new Uint8Array(byteNumbers);
-      console.log(byteArray);
       const blob = new Blob([byteArray], { type: "application/xml" });
 
       // Crear URL del objeto y descargar
@@ -689,6 +688,7 @@ export const TableGastos = () => {
     setTipoDocumento("");
     setProveedorSeleccionado(null);
     setTipoGastoSeleccionado(null);
+    setAtencionClienteSeleccionado(null);
     setConcepto("");
     setDetalleGasto("");
     setXmlTempData(null);

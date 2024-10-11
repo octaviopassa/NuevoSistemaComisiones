@@ -216,7 +216,6 @@ export const GuardarButton = ({ setLoading }) => {
             }
           }
 
-          console.log(documento.pdfArchivo);
           // TODO: GRABAR PDF Y XML
           const xmlGrabo = await DocumentosService.grabarArchivoXML({
             id_renglon: renglonId,
