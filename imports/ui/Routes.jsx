@@ -6,6 +6,7 @@ import Home from "./views/home/page.js";
 import Pages from "./views/pages/page";
 import Roles from "./views/roles/page";
 import Usuarios from "./views/usuarios/page.js";
+import GastosAdmin from "./views/gastosAdmin/page.js";
 
 export default function RoutesTree() {
   return (
@@ -17,6 +18,7 @@ export default function RoutesTree() {
           <Route path="pages" element={<Pages />} />
           <Route path="usuarios" element={<Usuarios />} />
           <Route path="gastos" element={<Gastos />} />
+          <Route path="gastos/administracion" element={<GastosAdmin />} />
         </Route>
       </Routes>
     </BrowserRouter>

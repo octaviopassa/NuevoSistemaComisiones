@@ -5,7 +5,7 @@ Meteor.methods({
   "proveedores.getAllWithName": async (datos) => {
     conexiones.body_bdseleccionada.tipo = "procedimiento";
     conexiones.body_bdseleccionada.query =
-      "Exec MP_Consulta_Proveedores_Nombre_RFC @Texto_Buscar ='" +
+      "Exec MP_Consulta_Clientes_Nombre_RFC @Texto_Buscar ='" +
       datos.search +
       "'";
     conexiones.body_bdseleccionada.baseDatos = "consumos_passa";

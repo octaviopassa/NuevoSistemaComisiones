@@ -2,9 +2,11 @@ import React from "react";
 import { useGastosData } from "../../store";
 import { DocumentosService } from "../../../../services";
 import toastr from "toastr";
+import { useUserSession } from "../../../../store";
 
 export const DesautorizarButton = ({ setLoading }) => {
   const { estatus, setEstatus, folio } = useGastosData();
+  const { session } = useUserSession();
 
   const handleDesautorizado = async () => {
     const data = {
@@ -32,6 +34,7 @@ export const DesautorizarButton = ({ setLoading }) => {
     <button
       type="button"
       className="btn btn-warning waves-effect waves-themed mr-2"
+      disabled={!session.profile.DESAUTORIZAR_GASTOS}
       onClick={handleDesautorizado}
     >
       <i className="fal fa-check"></i> Desautorizar

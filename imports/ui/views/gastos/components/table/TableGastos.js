@@ -23,6 +23,7 @@ import {
   ModalButton,
   ModalImportes,
   ModalCombustible,
+  ModalCatalogoClientes,
 } from "../modals";
 import { useFetchData } from "../../../../hooks";
 import { useGastosData } from "../../store";
@@ -964,7 +965,13 @@ export const TableGastos = () => {
               <th className="text-center">Tipo de gasto</th>
               <th className="text-center">Concepto</th>
               <th className="text-center">Detalle</th>
-              <th className="text-center">Cliente</th>
+              <th className="text-center">
+                Cliente
+                <ModalButton
+                  icon={faGear}
+                  ModalComponent={ModalCatalogoClientes}
+                />
+              </th>
               <th
                 className="text-center"
                 style={{

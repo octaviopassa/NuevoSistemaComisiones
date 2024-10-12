@@ -9,6 +9,7 @@ import {
   NuevoButton,
 } from "./actions";
 import { useGastosData } from "../store";
+import { ConsultarButton } from "./actions/ConsultarButton";
 
 export const GastosActions = () => {
   const { estatus: estatusGastos } = useGastosData();
@@ -18,7 +19,8 @@ export const GastosActions = () => {
 
   return (
     <div className="row mt-3 text-center">
-      <div className="col-sm-12">
+      <div className="d-flex flex-wrap justify-content-center">
+        <ConsultarButton />
         <NuevoButton />
 
         {(estatus === "Nuevo" || estatus === "GRABADO") && (
