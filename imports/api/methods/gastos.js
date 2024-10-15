@@ -203,7 +203,7 @@ Meteor.methods({
       conexiones.body_bdseleccionada.query = `
         exec MP_AUTORIZA_GASTO_GLOBAL
         @FOLIO_GASTO='${datos.folio}',
-        @COD_USU='${datos.cod_usu}',
+        @COD_USU='${datos.cod_usu}'
       `;
 
       const response = await axios.get(conexiones.windows_api, {
@@ -225,7 +225,7 @@ Meteor.methods({
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
       conexiones.body_bdseleccionada.query = `
         exec MP_DESAUTORIZA_GASTO_GLOBAL 
-        @FOLIO_GASTO='${datos.folio}',
+        @FOLIO_GASTO='${datos.folio}'
       `;
 
       const response = await axios.get(conexiones.windows_api, {
@@ -248,7 +248,7 @@ Meteor.methods({
       conexiones.body_bdseleccionada.query = `
         exec MP_CANCELA_GASTO
         @FOLIO_GASTO='${datos.folio}',
-        @COD_USU='${datos.cod_usu}',
+        @COD_USU='${datos.cod_usu}'
       `;
 
       const response = await axios.get(conexiones.windows_api, {
@@ -264,4 +264,50 @@ Meteor.methods({
       console.log(e);
     }
   },
+  "gastos.consultar": async (datos) => {
+    try {
+      conexiones.body_bdseleccionada.tipo = "procedimiento";
+      conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
+      conexiones.body_bdseleccionada.query = `
+        exec dbo.[MP_GASTOS_CONSULTAS] 
+        @PLAZA=N'${datos.plaza}',
+        @FECHA1=${datos.fechaInicio ? `'${datos.fechaInicio}'` : null},
+        @FECHA2=${datos.fechaFin ? `'${datos.fechaFin}'` : null},
+        @ESTATUS='${datos.estatus}',
+        @CODIGO_VENDEDOR='${datos.vendedor}',
+        @Cod_Usuario='${datos.cod_usu}'
+      `;
+
+      const response = await axios.get(conexiones.windows_api, {
+        data: conexiones.body_bdseleccionada,
+      });
+
+      if (!response.data.data.esValido) {
+        return {
+          isValid: response.data.data.esValido,
+          data: null,
+          message: response.data.data.mensaje,
+        };
+      }
+
+      return {
+        isValid: response.data.data.esValido,
+        data: JSON.parse(response.data.data.resultado),
+        message: response.data.data.mensaje,
+      };
+    } catch (e) {
+      console.log(e);
+    }
+  },
 });
+
+/**
+ * BD CONSUMOS_PASSA
+exec dbo.[MP_GASTOS_CONSULTAS] 
+@PLAZA=N'01',
+@FECHA1='2023-09-12 00:00:00',
+@FECHA2='2024-10-12 00:00:00',
+@ESTATUS='G',
+@CODIGO_VENDEDOR='0',
+@Cod_Usuario='0'
+ */

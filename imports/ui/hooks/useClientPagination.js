@@ -19,7 +19,7 @@ export const useClientPagination = (data, defaultItemsPerPage = 10) => {
   const paginatedData = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    return data.slice(startIndex, endIndex);
+    return data?.slice(startIndex, endIndex);
   }, [data, currentPage, itemsPerPage]);
 
   const getPaginationRange = () => {

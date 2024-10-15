@@ -20,5 +20,9 @@ GastosService.grabarGastoCombustible = async (datos) => {
   return await Meteor.callSync("gastos.grabarGastoCombustible", datos);
 };
 
+GastosService.consultar = async (datos) => {
+  return await Meteor.callSync("gastos.consultar", datos);
+};
+
 export { GastosService };
   

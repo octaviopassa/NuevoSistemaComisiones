@@ -1,19 +1,68 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { GastosAdminFilters, GastosAdminTable } from "./components";
 import { useClientPagination, useSearch } from "../../hooks";
 import { Input, InputGroup, InputGroupText } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import { GastosService } from "../../services";
+import { useUserSession } from "../../store";
+import toastr from "toastr";
+
+const initialFilters = {
+  estatus: "",
+  plaza: "",
+  vendedor: "",
+  fechaInicio: "",
+  fechaFin: "",
+};
 
 const GastosAdmin = () => {
   const [gastos, setGastos] = useState([]);
+  const [filters, setFilters] = useState(initialFilters);
+  const [loading, setLoading] = useState(false);
+  const { session } = useUserSession();
   const { searchText, setSearchText, filteredData } = useSearch(gastos || []);
   const { paginatedData, PaginationComponent, PaginationSelector } =
     useClientPagination(filteredData);
 
+  useEffect(() => {
+    getGastos();
+  }, [filters]);
+
+  const getGastos = async () => {
+    if (!filters.estatus || !filters.plaza) {
+      if (gastos.length > 0) {
+        toastr.warning("Estatus y Plaza son obligatorios");
+        setGastos([]);
+        return;
+      }
+      return;
+    }
+
+    const data = {
+      ...filters,
+      vendedor: filters.vendedor || "0",
+      fechaInicio: filters.fechaInicio || null,
+      fechaFin: filters.fechaFin || null,
+      cod_usu: session.profile.TIENE_ACCESO_VER_TODOS_GASTOS
+        ? "0"
+        : session.profile.COD_USU,
+    };
+    try {
+      setLoading(true);
+      const consultaResponse = await GastosService.consultar(data);
+
+      setGastos(consultaResponse.data);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="container-fluid px-4">
-      <GastosAdminFilters setGastos={setGastos} />
+      <GastosAdminFilters setFilters={setFilters} filters={filters} />
 
       <h4 className="m-0 d-flex align-items-center justify-content-left bg-primary p-3 text-white">
         Gastos
@@ -36,7 +85,11 @@ const GastosAdmin = () => {
             </InputGroup>
           </div>
         </div>
-        <GastosAdminTable gastos={paginatedData} />
+        <GastosAdminTable
+          gastos={paginatedData}
+          plazaSeleccionada={filters.plaza}
+          loading={loading}
+        />
 
         <div className="row mt-2">
           <div className="col-sm-6 col-12">

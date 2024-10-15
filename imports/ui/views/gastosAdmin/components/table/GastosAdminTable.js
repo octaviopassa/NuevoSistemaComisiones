@@ -6,13 +6,16 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
-import { Table } from "reactstrap";
+import { Spinner, Table } from "reactstrap";
+import { format } from "date-fns";
+import { useNavigate } from "react-router-dom";
 
 const theadClasses = "d-flex justify-content-between align-items-center";
 
 // TODO: Si se requiere a futuro separar la lógica del sort del componente y hacerlo un custom hook
-const GastosAdminTable = ({ gastos }) => {
+const GastosAdminTable = ({ gastos, plazaSeleccionada, loading }) => {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
+  const navigate = useNavigate();
 
   const handleSort = (key) => {
     let direction = "asc";
@@ -33,7 +36,6 @@ const GastosAdminTable = ({ gastos }) => {
     }
   };
 
-  // Ordenar los datos
   const sortData = (key, direction) => {
     gastos.sort((a, b) => {
       if (a[key] < b[key]) {
@@ -52,6 +54,10 @@ const GastosAdminTable = ({ gastos }) => {
       if (sortConfig.direction === "desc") return faSortDown;
     }
     return faSort;
+  };
+
+  const handleVerGasto = (folio) => {
+    navigate("/gastos", { state: { folio, plaza: plazaSeleccionada } });
   };
 
   return (
@@ -88,18 +94,67 @@ const GastosAdminTable = ({ gastos }) => {
               <FontAwesomeIcon cursor={"pointer"} icon={getIcon("total")} />
             </span>
           </th>
+          <th style={{ width: "20px" }}>Acciones</th>
         </tr>
       </thead>
       <tbody>
-        {gastos?.map((gasto) => (
-          <tr key={gasto._id}>
-            <td>{gasto.folio}</td>
-            <td>{gasto.fecha}</td>
-            <td>{gasto.plaza}</td>
-            <td>{gasto.registro}</td>
-            <td>{gasto.total}</td>
+        {loading ? (
+          <tr>
+            <td colSpan={6} className="text-center">
+              <Spinner
+                color="primary"
+                type="grow"
+                style={{
+                  height: "4rem",
+                  width: "4rem",
+                }}
+                className="my-4"
+              >
+                {" "}
+              </Spinner>
+            </td>
           </tr>
-        ))}
+        ) : (
+          gastos?.map((gasto) => (
+            <tr key={gasto._id}>
+              <td>{gasto.FOLIO_GASTO}</td>
+              <td>{format(new Date(gasto.FECHA), "dd/MM/yyyy")}</td>
+              <td>{`${gasto.PLAZA} - ${gasto.NOM_PLAZA}`}</td>
+              <td>
+                {gasto.Registró.match(/<b>Usuario:<\/b>\s*([A-Z_]+)/)?.[1]
+                  .split("_")
+                  .map(
+                    (word) =>
+                      word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+                  )
+                  .join(" ")}{" "}
+                {gasto.Registró.match(/<b>Vendedor: <\/b>(.*)/)?.[1] && (
+                  <>
+                    - <br />
+                    <b>Vendedor: </b>
+                    {gasto.Registró.match(/<b>Vendedor: <\/b>(.*)/)[1]
+                      .split(" ")
+                      .map(
+                        (word) =>
+                          word.charAt(0).toUpperCase() +
+                          word.slice(1).toLowerCase()
+                      )
+                      .join(" ")}
+                  </>
+                )}
+              </td>
+              <td>{gasto.TOTAL}</td>
+              <td>
+                <button
+                  className="btn btn-link"
+                  onClick={() => handleVerGasto(gasto.FOLIO_GASTO)}
+                >
+                  Ver
+                </button>
+              </td>
+            </tr>
+          ))
+        )}
       </tbody>
     </Table>
   );

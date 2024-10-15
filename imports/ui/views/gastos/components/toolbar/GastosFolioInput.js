@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useGastosData } from "../../store";
 import toastr from "toastr";
 import { useUserSession } from "../../../../store";
@@ -6,9 +6,11 @@ import { DocumentosService } from "../../../../services";
 import { format } from "date-fns";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
+import { useLocation } from "react-router-dom";
 
 export const GastosFolioInput = () => {
   const [loading, setLoading] = useState(false);
+  const history = useLocation()?.state;
   const { session } = useUserSession();
   const {
     folio,
@@ -19,6 +21,18 @@ export const GastosFolioInput = () => {
     estatus,
   } = useGastosData();
   const MySwal = withReactContent(Swal);
+
+  useEffect(() => {
+    if (history.folio && history.plaza) {
+      setMultiple({
+        folio: history.folio,
+        plazaSeleccionada: history.plaza,
+      });
+      handleFolioChange(history.folio);
+      history.folio = null;
+      history.plaza = null;
+    }
+  }, []);
 
   const handleFolioInputChange = (e) => {
     setFolio(e.target.value);
@@ -79,7 +93,6 @@ export const GastosFolioInput = () => {
       const resumen = resumenData.data;
 
       const newDocumentos = detalle.map((doc) => {
-        console.log(doc);
         return {
           renglonId: doc.RENGLON_ID,
           cliente: { label: "", value: "" },

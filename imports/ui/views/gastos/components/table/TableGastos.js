@@ -1016,17 +1016,17 @@ export const TableGastos = () => {
                       >
                         <strong>Detalles de importes:</strong>
                         <br />
-                        Conductor: {doc.detalleGasto.conductor.label}
+                        Conductor: {doc.detalleGasto.conductor?.label}
                         <br />
-                        Combustible: {doc.detalleGasto.combustible.label}
+                        Combustible: {doc.detalleGasto.combustible?.label}
                         <br />
-                        Gasolinera: {doc.detalleGasto.gasolinera.label}
+                        Gasolinera: {doc.detalleGasto.gasolinera?.label}
                         <br />
-                        Kilometraje: {doc.detalleGasto.kilometraje}
+                        Kilometraje: {doc.detalleGasto?.kilometraje}
                         <br />
-                        Litros: {doc.detalleGasto.litros}
+                        Litros: {doc.detalleGasto?.litros}
                         <br />
-                        Vehiculo: {doc.detalleGasto.vehiculo.label}
+                        Vehiculo: {doc.detalleGasto.vehiculo?.label}
                       </UncontrolledTooltip>
                     </span>
                   )}
@@ -1035,9 +1035,13 @@ export const TableGastos = () => {
                   {(doc.tipoGasto.label === "ATENCION A CLIENTES" ||
                     session.profile.WEB_REACT_CLIENTE_OBLIGATORIO) && (
                     <>
-                      <strong>Cliente: </strong>
-                      <br />
-                      {doc.detalleGasto.label}
+                      {doc.detalleGasto?.label && (
+                        <>
+                          <strong>Cliente: </strong>
+                          <br />
+                          {doc.detalleGasto.label}
+                        </>
+                      )}
                     </>
                   )}
                 </td>
