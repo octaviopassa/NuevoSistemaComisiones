@@ -2,10 +2,12 @@ import React from "react";
 import { useGastosData } from "../../store";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
+import { useLocation } from "react-router-dom";
 
 export const NuevoButton = () => {
   const { resetData, documentos, pagarASeleccionado, estatus } =
     useGastosData();
+  const history = useLocation()?.state;
   const MySwal = withReactContent(Swal);
   const isBlank =
     documentos.length === 0 ||
@@ -30,9 +32,13 @@ export const NuevoButton = () => {
       if (!result.isConfirmed) {
         return;
       }
+      history.folio = null;
+      history.plaza = null;
       resetData();
       window.scrollTo(0, 0);
     } else {
+      history.folio = null;
+      history.plaza = null;
       resetData();
       window.scrollTo(0, 0);
     }

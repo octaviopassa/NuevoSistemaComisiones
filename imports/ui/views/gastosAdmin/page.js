@@ -7,13 +7,14 @@ import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { GastosService } from "../../services";
 import { useUserSession } from "../../store";
 import toastr from "toastr";
+import { format, subMonths } from "date-fns";
 
 const initialFilters = {
   estatus: "",
   plaza: "",
   vendedor: "",
-  fechaInicio: "",
-  fechaFin: "",
+  fechaInicio: format(subMonths(new Date(), 1), "yyyy-MM-dd"),
+  fechaFin: format(new Date(), "yyyy-MM-dd"),
 };
 
 const GastosAdmin = () => {

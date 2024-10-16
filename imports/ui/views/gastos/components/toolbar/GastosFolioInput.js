@@ -23,14 +23,12 @@ export const GastosFolioInput = () => {
   const MySwal = withReactContent(Swal);
 
   useEffect(() => {
-    if (history.folio && history.plaza) {
+    if (history?.folio && history?.plaza) {
       setMultiple({
-        folio: history.folio,
         plazaSeleccionada: history.plaza,
+        folio: history.folio,
       });
       handleFolioChange(history.folio);
-      history.folio = null;
-      history.plaza = null;
     }
   }, []);
 
@@ -45,7 +43,7 @@ export const GastosFolioInput = () => {
   };
 
   const handleFolioChange = async (newFolio) => {
-    if (!plazaSeleccionada) {
+    if (!plazaSeleccionada && !history?.plaza) {
       toastr.error("Por favor, seleccione una plaza");
       return;
     }
@@ -202,6 +200,8 @@ export const GastosFolioInput = () => {
       .toString()
       .padStart(numericPart.length, "0")}`;
 
+    history.folio = null;
+    history.plaza = null;
     await handleFolioChange(newFolio);
   };
 

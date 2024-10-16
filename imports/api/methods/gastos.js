@@ -16,7 +16,7 @@ Meteor.methods({
       RFC,
       CURP
     FROM CONSUMOS_PASSA..CAT_CUENTAS_DESTINO 
-    WHERE ESTATUS= 'A' AND cod_usu='${datos.cod_usu}'
+    WHERE ESTATUS= 'A' ${datos.cod_usu ? `AND COD_USU='${datos.cod_usu}'` : ""}
     `;
     conexiones.body_bdseleccionada.baseDatos = datos.baseDatos;
 

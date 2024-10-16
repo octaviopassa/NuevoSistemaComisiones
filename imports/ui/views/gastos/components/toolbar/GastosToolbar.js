@@ -9,12 +9,14 @@ import { useGastosData } from "../../store";
 import { useUserSession } from "../../../../store";
 import { ModalCuentas } from "../modals/ModalCuentas";
 import { GastosFolioInput } from "./GastosFolioInput";
+import { useLocation } from "react-router-dom";
 
 export const GastosToolbar = () => {
   const [plazas, setPlazas] = useState([]);
   const [pagarA, setPagarA] = useState([]);
   const [ingenieros, setIngenieros] = useState([]);
   const [reloadData, setReloadData] = useState(false);
+  const history = useLocation()?.state;
 
   const { session: user } = useUserSession();
   const {
@@ -32,15 +34,21 @@ export const GastosToolbar = () => {
     isCheckedSucursal,
     toggleCheckedSucursal,
   } = useGastosData();
+
   useEffect(() => {
     cargaInicial();
-  }, [user.profile.COD_USU, user.profile.baseDatos, reloadData]);
+  }, [user.profile.COD_USU, user.profile.baseDatos, reloadData, folio]);
 
   useEffect(() => {
     if (plazaSeleccionada) getFolioIgenieros();
-  }, [plazaSeleccionada]);
+    console.log("new ")
+  }, [plazaSeleccionada, folio]);
 
   const cargaInicial = async () => {
+    let isConsulta = false;
+    if (history?.plaza && history?.folio) {
+      isConsulta = true;
+    }
     try {
       const [obtenerPlazas, pagarAQuien] = await Promise.all([
         PlazasService.getAll({
@@ -48,7 +56,7 @@ export const GastosToolbar = () => {
           baseDatos: user.profile.baseDatos,
         }),
         GastosService.pagarA({
-          cod_usu: user.profile.COD_USU,
+          cod_usu: isConsulta ? "" : user.profile.COD_USU,
           baseDatos: user.profile.baseDatos,
         }),
       ]);
@@ -66,7 +74,7 @@ export const GastosToolbar = () => {
 
   const getFolioIgenieros = async () => {
     try {
-      if (!folio) {
+      if (!folio && !history?.plaza && !history?.folio) {
         const [folioData, ingenierosData] = await Promise.all([
           GastosService.getFolioProvisional(plazaSeleccionada),
           IngenierosService.getAll({
