@@ -87,6 +87,7 @@ Meteor.methods({
         @TUA=${datos.tua},
         @OBSERVACION='${datos.observaciones}',
         @ACCION='${accion}',
+        ${datos.proyecto ? `@CODIGO_PROYECTO =${datos.proyecto},` : ""}
         @EsWeb=1,
         @RFC_RECEPTOR='${datos.rfc}'
       `;
@@ -299,15 +300,32 @@ Meteor.methods({
       console.log(e);
     }
   },
-});
+  "gastos.getProyectos": async () => {
+    try {
+      conexiones.body_bdseleccionada.tipo = "procedimiento";
+      conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
+      conexiones.body_bdseleccionada.query =
+        "SELECT CODIGO_PROYECTO CODIGO,NOMBRE_PROYECTO NOMBRE FROM IANSA..CAT_PROYECTOS ORDER BY CODIGO_PROYECTO DESC";
 
-/**
- * BD CONSUMOS_PASSA
-exec dbo.[MP_GASTOS_CONSULTAS] 
-@PLAZA=N'01',
-@FECHA1='2023-09-12 00:00:00',
-@FECHA2='2024-10-12 00:00:00',
-@ESTATUS='G',
-@CODIGO_VENDEDOR='0',
-@Cod_Usuario='0'
- */
+      const response = await axios.get(conexiones.windows_api, {
+        data: conexiones.body_bdseleccionada,
+      });
+
+      if (!response.data.data.esValido) {
+        return {
+          isValid: response.data.data.esValido,
+          data: null,
+          message: response.data.data.mensaje,
+        };
+      }
+
+      return {
+        isValid: response.data.data.esValido,
+        data: JSON.parse(response.data.data.resultado),
+        message: response.data.data.mensaje,
+      };
+    } catch (e) {
+      console.log(e);
+    }
+  },
+});

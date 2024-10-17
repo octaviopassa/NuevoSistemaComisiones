@@ -24,7 +24,7 @@ export const LoginForm = ({ empresas }) => {
 
   const handleSubmit = async (values) => {
     const { user, password, empresa: empresaSeleccionada } = values;
-
+    const empresaData = JSON.parse(empresaSeleccionada.value);
     try {
       if (user == "roberto" || user == "jorge" || user == "ernesto") {
         Meteor.loginWithPassword(user, password, async (error) => {
@@ -58,7 +58,13 @@ export const LoginForm = ({ empresas }) => {
           setUserLogged(true);
 
           setUserRol(rol.name);
-          setUserSession(localUser);
+          setUserSession({
+            ...localUser,
+            profile: {
+              ...localUser.profile,
+              MOSTRAR_COMBO_PROYECTO: empresaData.MOSTRAR_COMBO_PROYECTO === "1",
+            },
+          });
           setAllowedModules(allowedModules);
           setUserLenguage(localUser?.profile?.idioma);
 
@@ -68,7 +74,7 @@ export const LoginForm = ({ empresas }) => {
         });
       } else {
         const empresa = {
-          ...JSON.parse(empresaSeleccionada.value),
+          ...empresaData,
           params: { nombre_usuario: user, contrasenia: password },
         };
 
@@ -106,7 +112,13 @@ export const LoginForm = ({ empresas }) => {
             usuario.profile.rol = rol;
             setUserLogged(true);
             setUserRol(rol.name);
-            setUserSession(usuario);
+            setUserSession({
+              ...usuario,
+              profile: {
+                ...usuario.profile,
+                MOSTRAR_COMBO_PROYECTO: empresaData.MOSTRAR_COMBO_PROYECTO === "1",
+              },
+            });
             setAllowedModules(allowedModules);
             toastr.success(
               "Bienvenido",

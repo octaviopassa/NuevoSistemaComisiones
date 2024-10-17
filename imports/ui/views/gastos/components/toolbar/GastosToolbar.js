@@ -15,6 +15,7 @@ export const GastosToolbar = () => {
   const [plazas, setPlazas] = useState([]);
   const [pagarA, setPagarA] = useState([]);
   const [ingenieros, setIngenieros] = useState([]);
+  const [proyectos, setProyectos] = useState([]);
   const [reloadData, setReloadData] = useState(false);
   const history = useLocation()?.state;
 
@@ -22,6 +23,8 @@ export const GastosToolbar = () => {
   const {
     plazaSeleccionada,
     setPlazaSeleccionada,
+    proyectoSeleccionado,
+    setProyectoSeleccionado,
     pagarASeleccionado,
     setPagarASeleccionado,
     selectedIngeniero,
@@ -41,31 +44,42 @@ export const GastosToolbar = () => {
 
   useEffect(() => {
     if (plazaSeleccionada) getFolioIgenieros();
-    console.log("new ")
+    console.log("new ");
   }, [plazaSeleccionada, folio]);
 
   const cargaInicial = async () => {
-    let isConsulta = false;
-    if (history?.plaza && history?.folio) {
-      isConsulta = true;
-    }
     try {
-      const [obtenerPlazas, pagarAQuien] = await Promise.all([
-        PlazasService.getAll({
-          cod_usu: user.profile.COD_USU,
-          baseDatos: user.profile.baseDatos,
-        }),
-        GastosService.pagarA({
-          cod_usu: isConsulta ? "" : user.profile.COD_USU,
-          baseDatos: user.profile.baseDatos,
-        }),
-      ]);
+      const isConsulta = (history?.plaza && history?.folio) || estatus.oldFolio;
+
+      const plazasPromise = PlazasService.getAll({
+        cod_usu: user.profile.COD_USU,
+        baseDatos: user.profile.baseDatos,
+      });
+
+      const pagarAPromise = GastosService.pagarA({
+        cod_usu: isConsulta ? "" : user.profile.COD_USU,
+        baseDatos: user.profile.baseDatos,
+      });
+
+      const proyectosPromise = user.profile.MOSTRAR_COMBO_PROYECTO
+        ? GastosService.getProyectos()
+        : null;
+
+      const [obtenerPlazas, pagarAQuien, proyectosResponse] = await Promise.all(
+        [plazasPromise, pagarAPromise, proyectosPromise]
+      );
+
+      if (proyectosResponse) {
+        setProyectos(proyectosResponse.data);
+      }
 
       setPlazas(
-        obtenerPlazas?.map((plaza) => {
-          return { Codigo: plaza.CODIGO, Nombre: plaza.NOMBRE };
-        })
+        obtenerPlazas?.map((plaza) => ({
+          Codigo: plaza.CODIGO,
+          Nombre: plaza.NOMBRE,
+        }))
       );
+
       setPagarA(pagarAQuien);
     } catch (error) {
       console.error("Error durante la carga inicial", error);
@@ -262,6 +276,29 @@ export const GastosToolbar = () => {
                 reloadData={() => setReloadData(!reloadData)}
               />
             )}
+          </div>
+          <div className="input-group">
+            <div className="input-group-prepend">
+              <label className="input-group-text" htmlFor="selectCuenta">
+                Proyecto:
+              </label>
+            </div>
+            <select
+              className="custom-select"
+              id="selectCuenta"
+              disabled={
+                estatus.estatus !== "Nuevo" && estatus.estatus !== "GRABADO"
+              }
+              onChange={(e) => setProyectoSeleccionado(e.target.value)}
+              value={proyectoSeleccionado}
+            >
+              <option value="">Seleccione un proyecto</option>
+              {proyectos?.map((proyecto) => (
+                <option key={proyecto.CODIGO} value={proyecto.CODIGO}>
+                  {proyecto.NOMBRE}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
       </div>

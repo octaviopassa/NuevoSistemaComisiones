@@ -90,6 +90,8 @@ export const GastosFolioInput = () => {
       const detalle = detalleData.data;
       const resumen = resumenData.data;
 
+      console.log(gastos)
+
       const newDocumentos = detalle.map((doc) => {
         return {
           renglonId: doc.RENGLON_ID,
@@ -200,8 +202,10 @@ export const GastosFolioInput = () => {
       .toString()
       .padStart(numericPart.length, "0")}`;
 
-    history.folio = null;
-    history.plaza = null;
+    if (history?.plaza && history?.folio) {
+      history.folio = null;
+      history.plaza = null;
+    }
     await handleFolioChange(newFolio);
   };
 

@@ -3,11 +3,15 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 export const useGastosData = create(
-  persist(
+  // persist(
     (set, get) => ({
       plazaSeleccionada: "",
       setPlazaSeleccionada: (nuevaPlaza) =>
         set({ plazaSeleccionada: nuevaPlaza }),
+
+      proyectoSeleccionado: "",
+      setProyectoSeleccionado: (nuevoProyecto) =>
+        set({ proyectoSeleccionado: nuevoProyecto }),
 
       isCheckedSucursal: true,
       toggleCheckedSucursal: () =>
@@ -52,6 +56,7 @@ export const useGastosData = create(
         set({
           // plazaSeleccionada: "",
           isCheckedSucursal: true,
+          proyectoSeleccionado: "",
           documentos: [],
           pagarASeleccionado: "",
           selectedIngeniero: "",
@@ -75,9 +80,9 @@ export const useGastosData = create(
         set(nuevosDatos);
       },
     }),
-    {
-      name: "global-data-fetch",
-      getStorage: () => sessionStorage,
-    }
-  )
+  //   {
+  //     name: "global-data-fetch",
+  //     getStorage: () => localStorage,
+  //   }
+  // )
 );

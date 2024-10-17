@@ -32,13 +32,17 @@ export const NuevoButton = () => {
       if (!result.isConfirmed) {
         return;
       }
-      history.folio = null;
-      history.plaza = null;
+      if (history?.plaza && history?.folio) {
+        history.folio = null;
+        history.plaza = null;
+      }
       resetData();
       window.scrollTo(0, 0);
     } else {
-      history.folio = null;
-      history.plaza = null;
+      if (history?.plaza && history?.folio) {
+        history.folio = null;
+        history.plaza = null;
+      }
       resetData();
       window.scrollTo(0, 0);
     }

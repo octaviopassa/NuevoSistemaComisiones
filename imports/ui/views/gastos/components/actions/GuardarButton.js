@@ -14,6 +14,7 @@ export const GuardarButton = ({ setLoading }) => {
     documentos,
     setDocumentos,
     plazaSeleccionada,
+    proyectoSeleccionado,
     pagarASeleccionado,
     selectedIngeniero,
     gastosDate,
@@ -85,17 +86,22 @@ export const GuardarButton = ({ setLoading }) => {
           ...totalImportes,
         };
 
+        
         const { observaciones, ...dataToValidate } = dataGastoGlobal;
-
+        
         const areFieldsValid = Object.values(dataToValidate).every(
           (value) => value !== "" && value !== null && value !== undefined
         );
-
+        
         if (!areFieldsValid) {
           toastr.warning("Por favor, llene todos los campos requeridos.");
           return;
         }
-
+  
+        if (session.profile.MOSTRAR_COMBO_PROYECTO) {
+          dataGastoGlobal.proyecto = proyectoSeleccionado || "0";
+        }
+        
         const grabadoGlobal = await GastosService.grabar(dataGastoGlobal);
 
         if (!grabadoGlobal.isValid) {

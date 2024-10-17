@@ -24,5 +24,8 @@ GastosService.consultar = async (datos) => {
   return await Meteor.callSync("gastos.consultar", datos);
 };
 
+GastosService.getProyectos = async () => {
+  return await Meteor.callSync("gastos.getProyectos");
+};
+
 export { GastosService };
-  
