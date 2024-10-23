@@ -1,8 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-// Define el store usando Zustand
-const useUserModulesStore = create(
+export const useUserModulesStore = create(
   persist(
     (set, get) => ({
       allowedModules: [], // Valor inicial del estado

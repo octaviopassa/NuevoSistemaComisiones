@@ -1,12 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import PropTypes from "prop-types";
-import useUserModulesStore from "../../store/userModules";
-// import { useSelector } from "react-redux"
-// import { PageContext } from "./Page"
+import { useUserModulesStore } from "../../store";
 
 function ProtectModule({ method, module, ...props }) {
   const { allowedModules } = useUserModulesStore();
-  // const user = useSelector(state => state.user)
   const page = props.page;
 
   const hasPermission = allowedModules.some(

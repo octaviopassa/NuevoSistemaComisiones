@@ -105,7 +105,7 @@ function Roles(props) {
         modules: selectedModules.map((m) => m._id),
         subroles: role.subroles,
       };
-      console.log({ dataSaveRole });
+
       const id = await RolesService.save(dataSaveRole);
       console.log(id);
       if (id != null) {

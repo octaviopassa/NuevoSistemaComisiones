@@ -1,7 +1,12 @@
 const EmpresasService = {};
 
 EmpresasService.getAll = async () => {
-  return await Meteor.callSync("empresas.getAll");
+  const empresas = await Meteor.callSync("empresas.getAll");
+
+  return empresas.map((item) => ({
+    value: JSON.stringify(item),
+    label: item.BASE_DATOS.trim(),
+  }));
 };
 
 EmpresasService.getByName = async (nombre) => {
@@ -15,4 +20,8 @@ EmpresasService.getById = async (empresaId) => {
   return await Meteor.callSync("empresas.getById", empresaId);
 };
 
-export default EmpresasService;
+EmpresasService.getRFC = async (database) => {
+  return await Meteor.callSync("empresas.getRFC", database);
+};
+
+export { EmpresasService };

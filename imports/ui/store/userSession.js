@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-// Define el store usando Zustand
 const userDefault = {
   _id: undefined,
   profile: {
@@ -15,7 +14,7 @@ const userDefault = {
   username: undefined,
 };
 
-const useUserSession = create(
+export const useUserSession = create(
   persist(
     (set, get) => ({
       session: userDefault, // Valor inicial del estado

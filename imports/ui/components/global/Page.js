@@ -1,5 +1,5 @@
 import React from "react";
-import useUserModulesStore from "../../store/userModules";
+import { useUserModulesStore } from "../../store";
 
 function Page(props) {
   const { allowedModules } = useUserModulesStore();

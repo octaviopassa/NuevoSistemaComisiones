@@ -69,3 +69,25 @@ export const estatusPago = (estatus) => {
 
   return [claseNombre, estatusNombre];
 };
+
+export function extraerRFC(cadena) {
+  const regex = /\(([^)]+)\)/; // Expresión regular para encontrar texto entre paréntesis
+  const resultado = regex.exec(cadena);
+  return resultado ? resultado[1] : false; // Devuelve el RFC si se encuentra, o null si no
+}
+
+export function validarMesYAnio(fechaVariable, fechaAValidar) {
+  // Convertir ambas fechas de string a objetos Date
+  const [diaVar, mesVar, anioVar] = fechaVariable.split("/").map(Number);
+  const [diaVal, mesVal, anioVal] = fechaAValidar.split("/").map(Number);
+
+  // Crear objetos Date para las fechas
+  const fecha1 = new Date(anioVar, mesVar - 1, diaVar); // -1 porque los meses en JavaScript van de 0 a 11
+  const fecha2 = new Date(anioVal, mesVal - 1, diaVal);
+
+  // Comparar mes y año de ambas fechas
+  return (
+    fecha1.getMonth() === fecha2.getMonth() &&
+    fecha1.getFullYear() === fecha2.getFullYear()
+  );
+}

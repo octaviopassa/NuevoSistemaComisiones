@@ -4,4 +4,4 @@ PlazasService.getAll = async (datos) => {
   return await Meteor.callSync("plazas.getAll", datos);
 };
 
-export default PlazasService;
+export { PlazasService };

@@ -10,7 +10,7 @@ import { Subheader } from "../../components/global/Subheader";
 import { ocultarDropdown } from "../../../../client/js/sync";
 import { showModal } from "../../components/global/Modal";
 import Page from "../../components/global/Page";
-import useUserSession from "../../store/userSession";
+import { useUserSession } from "../../store";
 import { Link } from "react-router-dom";
 import { formatDate, formatDuration } from "../../../utils/utils";
 

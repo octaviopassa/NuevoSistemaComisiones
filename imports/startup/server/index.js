@@ -38,13 +38,20 @@ import "../../api/collections/Collections";
 import "../../api/collections/Page";
 import "../../api/collections/Role";
 
-import "../../api/methods/api";
 import "../../api/methods/clientesAuth";
-import "../../api/methods/getApiMethods";
 import "../../api/methods/page";
 import "../../api/methods/roles";
 import "../../api/methods/usuarios";
 import "../../api/methods/empresas";
+import "../../api/methods/proveedores";
+import "../../api/methods/conductores";
+import "../../api/methods/gasolineras";
+import "../../api/methods/vehiculos";
+import "../../api/methods/clientes";
+import "../../api/methods/cuentas";
+import "../../api/methods/gastos";
+import "../../api/methods/documentos";
+import "../../api/methods/reportes";
 
 import "./startup";
 import "./initialLoad";

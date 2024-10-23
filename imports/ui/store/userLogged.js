@@ -1,8 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-// Define el store usando Zustand
-const useUserLoggedStore = create(
+export const useUserLoggedStore = create(
   persist(
     (set, get) => ({
       isLogged: false, // Valor inicial del estado

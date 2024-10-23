@@ -1,8 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-// Define el store usando Zustand
-const useUserRolStore = create(
+export const useUserRolStore = create(
   persist(
     (set, get) => ({
       rol: undefined, // Valor inicial del estado

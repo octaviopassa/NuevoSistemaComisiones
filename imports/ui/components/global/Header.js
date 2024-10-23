@@ -1,22 +1,24 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import toastr from "toastr";
-import { useTranslation, Trans } from "react-i18next";
-import UserService from "../../services/user";
-import useUserLoggedStore from "../../store/userLogged";
-import useUserLenguageStore from "../../store/userLenguage";
-import useUserModulesStore from "../../store/userModules";
-import useUserRolStore from "../../store/userRol";
-import useUserSession from "../../store/userSession";
+import { useTranslation } from "react-i18next";
+import {
+  useUserLoggedStore,
+  useUserLenguageStore,
+  useUserModulesStore,
+  useUserRolStore,
+  useUserSession,
+} from "../../store";
 import Swal from "sweetalert2";
+import { useGastosData } from "../../views/gastos/store";
 
 export const Header = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { resetAllowedModules } = useUserModulesStore();
   const { resetUserLenguage, setUserLenguage } = useUserLenguageStore();
   const { resetUserLogged } = useUserLoggedStore();
   const { resetUserSession, session } = useUserSession();
   const { resetUserRol, rol } = useUserRolStore();
+  const { resetData } = useGastosData();
   const navigate = useNavigate();
 
   const user = {
@@ -38,6 +40,7 @@ export const Header = () => {
         resetUserSession();
         resetUserLogged();
         resetUserRol();
+        resetData();
         navigate("/");
         Meteor.logout();
       }

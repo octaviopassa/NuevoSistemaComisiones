@@ -2,7 +2,6 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import { Meteor } from "meteor/meteor";
 import { App } from "/imports/ui/App";
-import * as ReactDOM from "react-dom";
 import toastr from "toastr";
 
 // import "./imports/startup/stylesheets/custom.css";

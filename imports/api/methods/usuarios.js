@@ -208,22 +208,17 @@ Meteor.methods({
   "usuarios.loginWithPassa": async (data) => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
-      //conexiones.body_bdseleccionada.servidor = data.SERVIDOR;
       conexiones.body_bdseleccionada.baseDatos = data.BASE_DATOS;
-      conexiones.body_bdseleccionada.query =
-        "EXEC MP_WEB_LOGIN " +
-        " @NOMBRE_USUARIO  = '" +
-        data.params.nombre_usuario +
-        "'," +
-        " @CONTRASENIA = '" +
-        data.params.contrasenia +
-        "'";
+
+      conexiones.body_bdseleccionada.query = `
+        EXEC MP_WEB_LOGIN  
+          @NOMBRE_USUARIO='${data.params.nombre_usuario}', 
+          @CONTRASENIA = '${data.params.contrasenia}'
+      `;
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
       });
-
-      console.log(response.data);
 
       if (response.data.data.esValido) {
         const respuesta = JSON.parse(response.data.data.resultado);
@@ -234,18 +229,17 @@ Meteor.methods({
           username: data.params.nombre_usuario,
           "profile.baseDatos": data.BASE_DATOS,
         });
-        console.log("exuser", existingUser);
 
         if (!existingUser) {
-          console.log("entre aquí");
-          // Crear un nuevo usuario
           const userId = Accounts.createUser({
             username: data.params.nombre_usuario,
             password: data.params.contrasenia,
             profile: {
+              ...userData,
               baseDatos: data.BASE_DATOS,
               estatus: true,
-              ...userData,
+              WEB_REACT_CLIENTE_OBLIGATORIO:
+                userData.WEB_REACT_CLIENTE_OBLIGATORIO === "1",
             },
           });
 
@@ -259,14 +253,7 @@ Meteor.methods({
         // Generar un token de inicio de sesión para el usuario
         const stampedLoginToken = Accounts._generateStampedLoginToken();
         Accounts._insertLoginToken(existingUser._id, stampedLoginToken);
-        console.log({
-          success: true,
-          data: {
-            userData: userData,
-            userId: existingUser._id,
-            token: stampedLoginToken.token,
-          },
-        });
+
         return {
           success: true,
           data: {
@@ -277,14 +264,10 @@ Meteor.methods({
         };
       } else {
         console.log(response.data);
-        console.log("error", {
-          success: false,
-          message: response.data.data.message,
-          data: "",
-        });
+
         return {
           success: false,
-          message: response.data.data.message,
+          message: response.data.data.mensaje,
           data: "",
         };
       }

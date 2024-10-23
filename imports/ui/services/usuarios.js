@@ -22,4 +22,4 @@ UsuariosService.createUser = async (empleado, rol) => {
   });
 };
 
-export default UsuariosService;
+export { UsuariosService };
