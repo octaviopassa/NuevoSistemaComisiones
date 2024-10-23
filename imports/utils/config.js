@@ -1,10 +1,10 @@
 module.exports = {
-  windows_api: "http://192.168.100.106/querysv2/api/querys/ejecutar",
-  windows_api_post: "http://192.168.100.106/querysv2/api/querys/ejecutarPost",
+  windows_api: "http://172.16.101.213/querys/api/querys/ejecutar",
+  windows_api_post: "http://172.16.101.213/querys/api/querys/ejecutarPost",
   body_fabrica: {
     usuario: "sa",
     contrasena: "SU2orange!",
-    servidor: "192.168.100.106",
+    servidor: "192.168.68.111,1433\\SQLEXPRESS",
     baseDatos: "FABRICA_PASSA",
     parametros: [],
     esValido: true,
@@ -14,7 +14,7 @@ module.exports = {
   body_empresas: {
     usuario: "sa",
     contrasena: "SU2orange!",
-    servidor: "192.168.100.106",
+    servidor: "192.168.68.111,1433\\SQLEXPRESS",
     baseDatos: "EMPRESAS",
     parametros: [],
     esValido: true,
@@ -22,7 +22,7 @@ module.exports = {
     resultado: "",
   },
   body_bdseleccionada: {
-    servidor: "192.168.100.106",
+    servidor: "192.168.68.111,1433\\SQLEXPRESS",
     baseDatos: "",
     usuario: "sa",
     contrasena: "SU2orange!",
@@ -32,7 +32,6 @@ module.exports = {
     resultado: "",
   },
 };
-
 
 // {
 //   "parametros": [
