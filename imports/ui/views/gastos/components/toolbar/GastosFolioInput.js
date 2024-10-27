@@ -19,6 +19,7 @@ export const GastosFolioInput = () => {
     documentos,
     setMultiple,
     estatus,
+    empresa,
   } = useGastosData();
   const MySwal = withReactContent(Swal);
 
@@ -30,7 +31,7 @@ export const GastosFolioInput = () => {
       });
       handleFolioChange(history.folio);
     }
-  }, []);
+  }, [plazaSeleccionada]);
 
   const handleFolioInputChange = (e) => {
     setFolio(e.target.value);
@@ -89,8 +90,6 @@ export const GastosFolioInput = () => {
       const gastos = gastosData.data[0];
       const detalle = detalleData.data;
       const resumen = resumenData.data;
-
-      console.log(gastos)
 
       const newDocumentos = detalle.map((doc) => {
         return {
@@ -151,6 +150,7 @@ export const GastosFolioInput = () => {
         selectedIngeniero: gastos.ORIGEN === "I" ? gastos.CODIGO_VENDEDOR : "",
         folio: gastos.FOLIO_GASTO,
         gastosDate: format(new Date(gastos.FECHA), "yyyy-MM-dd"),
+        empresa: gastos.EMPRESA,
         estatus: {
           estatus: gastos.NOM_ESTATUS,
           grabo: `${gastos.NOM_USU_GRABO} ${format(
@@ -247,6 +247,8 @@ export const GastosFolioInput = () => {
           </button>
         </div>
       </div>
+
+      {empresa && <p className="font-weight-bold text-primary mt-2">{empresa}</p>}
     </div>
   );
 };

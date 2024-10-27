@@ -44,7 +44,6 @@ export const GastosToolbar = () => {
 
   useEffect(() => {
     if (plazaSeleccionada) getFolioIgenieros();
-    console.log("new ");
   }, [plazaSeleccionada, folio]);
 
   const cargaInicial = async () => {
@@ -79,6 +78,10 @@ export const GastosToolbar = () => {
           Nombre: plaza.NOMBRE,
         }))
       );
+
+      if (obtenerPlazas.length === 1) {
+        setPlazaSeleccionada(obtenerPlazas[0].CODIGO);
+      }
 
       setPagarA(pagarAQuien);
     } catch (error) {
@@ -277,29 +280,31 @@ export const GastosToolbar = () => {
               />
             )}
           </div>
-          <div className="input-group">
-            <div className="input-group-prepend">
-              <label className="input-group-text" htmlFor="selectCuenta">
-                Proyecto:
-              </label>
+          {user.profile.MOSTRAR_COMBO_PROYECTO && (
+            <div className="input-group">
+              <div className="input-group-prepend">
+                <label className="input-group-text" htmlFor="selectCuenta">
+                  Proyecto:
+                </label>
+              </div>
+              <select
+                className="custom-select"
+                id="selectCuenta"
+                disabled={
+                  estatus.estatus !== "Nuevo" && estatus.estatus !== "GRABADO"
+                }
+                onChange={(e) => setProyectoSeleccionado(e.target.value)}
+                value={proyectoSeleccionado}
+              >
+                <option value="">Seleccione un proyecto</option>
+                {proyectos?.map((proyecto) => (
+                  <option key={proyecto.CODIGO} value={proyecto.CODIGO}>
+                    {proyecto.NOMBRE}
+                  </option>
+                ))}
+              </select>
             </div>
-            <select
-              className="custom-select"
-              id="selectCuenta"
-              disabled={
-                estatus.estatus !== "Nuevo" && estatus.estatus !== "GRABADO"
-              }
-              onChange={(e) => setProyectoSeleccionado(e.target.value)}
-              value={proyectoSeleccionado}
-            >
-              <option value="">Seleccione un proyecto</option>
-              {proyectos?.map((proyecto) => (
-                <option key={proyecto.CODIGO} value={proyecto.CODIGO}>
-                  {proyecto.NOMBRE}
-                </option>
-              ))}
-            </select>
-          </div>
+          )}
         </div>
       </div>
     </>
