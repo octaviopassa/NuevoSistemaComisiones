@@ -2,12 +2,18 @@ import conexiones from "../../utils/config";
 import axios from "axios";
 
 Meteor.methods({
-  "clientes.getAll": async () => {
+  "clientes.getAll": async (baseDatos) => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
       conexiones.body_bdseleccionada.query =
         "EXEC MP_CAT_CLIENTES_CONSULTA @CODIGO_CLIENTE=''";
+
+      // const sss = conexiones.body_bdseleccionada.servidor.split("\\");
+      // conexiones.body_bdseleccionada.servidor = sss[0] + "\\" + baseDatos;
+
+
+      
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
