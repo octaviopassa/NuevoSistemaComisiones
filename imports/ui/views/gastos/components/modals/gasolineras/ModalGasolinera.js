@@ -13,6 +13,7 @@ import Switch from "react-switch";
 import toastr from "toastr";
 import { useGastosData } from "../../../store";
 import { GasolinerasService } from "../../../../../services";
+import { useUserSession } from "../../../../../store";
 
 export const ModalGasolinera = ({
   isModalOpen,
@@ -20,6 +21,7 @@ export const ModalGasolinera = ({
   gasolinera,
   reloadData,
 }) => {
+  const { session } = useUserSession();
   const { plazaSeleccionada: plaza } = useGastosData();
 
   const initialValues = {
@@ -37,9 +39,15 @@ export const ModalGasolinera = ({
     try {
       let result;
       if (gasolinera) {
-        result = await GasolinerasService.update(data);
+        result = await GasolinerasService.update(
+          data,
+          session.profile.baseDatos
+        );
       } else {
-        result = await GasolinerasService.insert(data);
+        result = await GasolinerasService.insert(
+          data,
+          session.profile.baseDatos
+        );
       }
 
       if (!result.isValid) {

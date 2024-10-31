@@ -16,17 +16,20 @@ export const AutorizarButton = ({ setLoading }) => {
 
     try {
       setLoading(true);
-      const autorizado = await DocumentosService.autorizarGasto(data);
+      const autorizado = await DocumentosService.autorizarGasto(
+        data,
+        session.profile.baseDatos
+      );
 
       if (!autorizado.isValid) {
         toastr.error(autorizado.message || "Error al autorizar el gasto");
         return;
       }
 
-      const gasto = await DocumentosService.getGastoGlobal({
-        plazaSeleccionada,
-        ...data,
-      });
+      const gasto = await DocumentosService.getGastoGlobal(
+        { plazaSeleccionada, ...data },
+        session.profile.baseDatos
+      );
 
       setEstatus({
         ...estatus,

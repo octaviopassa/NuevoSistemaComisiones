@@ -38,9 +38,15 @@ export const ModalProveedores = ({
     try {
       let result;
       if (proveedor) {
-        result = await ProveedoresService.update(data);
+        result = await ProveedoresService.update(
+          data,
+          session.profile.baseDatos
+        );
       } else {
-        result = await ProveedoresService.insert(data);
+        result = await ProveedoresService.insert(
+          data,
+          session.profile.baseDatos
+        );
       }
 
       if (!result.isValid) {

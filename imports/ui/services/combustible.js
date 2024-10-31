@@ -1,7 +1,7 @@
 const CombustibleService = {};
 
-CombustibleService.getAll = async () => {
-  return await Meteor.callSync("combustibles.getAll");
+CombustibleService.getAll = async (baseDatos) => {
+  return await Meteor.callSync("combustibles.getAll", baseDatos);
 };
 
 export { CombustibleService };

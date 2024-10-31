@@ -2,13 +2,18 @@ import conexiones from "../../utils/config";
 import axios from "axios";
 
 Meteor.methods({
-  "proveedores.getAllWithName": async (datos) => {
+  "proveedores.getAllWithName": async (datos, baseDatos) => {
     conexiones.body_bdseleccionada.tipo = "procedimiento";
     conexiones.body_bdseleccionada.query =
       "Exec MP_Consulta_Clientes_Nombre_RFC @Texto_Buscar ='" +
       datos.search +
       "'";
     conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
+    const [ip, _] = conexiones.body_bdseleccionada.servidor.split("\\");
+    conexiones.body_bdseleccionada.servidor = conexiones.getInstancia(
+      ip,
+      baseDatos
+    );
 
     const response = await axios.get(conexiones.windows_api, {
       data: conexiones.body_bdseleccionada,
@@ -18,12 +23,18 @@ Meteor.methods({
 
     return respuesta;
   },
-  "proveedores.getAll": async () => {
+  "proveedores.getAll": async (baseDatos) => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
       conexiones.body_bdseleccionada.query =
         "exec SP_CAT_PROVEEDORES_Consulta @Cod_Proveedor=''";
+
+      const [ip, _] = conexiones.body_bdseleccionada.servidor.split("\\");
+      conexiones.body_bdseleccionada.servidor = conexiones.getInstancia(
+        ip,
+        baseDatos
+      );
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
@@ -50,7 +61,7 @@ Meteor.methods({
       console.log(error);
     }
   },
-  "proveedores.insert": async (datos) => {
+  "proveedores.insert": async (datos, baseDatos) => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
@@ -62,6 +73,11 @@ Meteor.methods({
         @Estatus='${datos.estatus ? "A" : "B"}',
         @COD_USUARIO_GRABO='${datos.cod_usu}'
       `;
+      const [ip, _] = conexiones.body_bdseleccionada.servidor.split("\\");
+      conexiones.body_bdseleccionada.servidor = conexiones.getInstancia(
+        ip,
+        baseDatos
+      );
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
@@ -76,7 +92,7 @@ Meteor.methods({
       console.log(error);
     }
   },
-  "proveedores.update": async (datos) => {
+  "proveedores.update": async (datos, baseDatos) => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
@@ -88,6 +104,11 @@ Meteor.methods({
         @Estatus='${datos.estatus ? "A" : "B"}',
         @COD_USUARIO_GRABO='${datos.cod_usu}'
       `;
+      const [ip, _] = conexiones.body_bdseleccionada.servidor.split("\\");
+      conexiones.body_bdseleccionada.servidor = conexiones.getInstancia(
+        ip,
+        baseDatos
+      );
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,

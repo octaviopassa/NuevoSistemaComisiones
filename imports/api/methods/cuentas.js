@@ -12,6 +12,11 @@ Meteor.methods({
       FROM CAT_BANCOS 
       ORDER BY NOMBRE_BANCO
       `;
+      const [ip, _] = conexiones.body_bdseleccionada.servidor.split("\\");
+      conexiones.body_bdseleccionada.servidor = conexiones.getInstancia(
+        ip,
+        baseDatos
+      );
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
@@ -22,7 +27,7 @@ Meteor.methods({
       console.log(e);
     }
   },
-  "cuentas.insert": async (data) => {
+  "cuentas.insert": async (data, baseDatos) => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
@@ -41,6 +46,12 @@ Meteor.methods({
           @ACCION='INSERTAR'
         `;
 
+      const [ip, _] = conexiones.body_bdseleccionada.servidor.split("\\");
+      conexiones.body_bdseleccionada.servidor = conexiones.getInstancia(
+        ip,
+        baseDatos
+      );
+
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
       });
@@ -54,7 +65,7 @@ Meteor.methods({
       console.log(error);
     }
   },
-  "cuentas.update": async (data) => {
+  "cuentas.update": async (data, baseDatos) => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
@@ -72,6 +83,12 @@ Meteor.methods({
             @CODIGO_USUARIO_GRABO='${data.cod_usu}',
             @ACCION='ACTUALIZAR'
           `;
+
+      const [ip, _] = conexiones.body_bdseleccionada.servidor.split("\\");
+      conexiones.body_bdseleccionada.servidor = conexiones.getInstancia(
+        ip,
+        baseDatos
+      );
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,

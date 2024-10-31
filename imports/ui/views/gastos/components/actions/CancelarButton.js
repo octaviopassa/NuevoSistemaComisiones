@@ -17,23 +17,27 @@ export const CancelarButton = ({ setLoading }) => {
 
     try {
       setLoading(true);
-      const cancelado = await DocumentosService.cancelarGasto(data);
+      const cancelado = await DocumentosService.cancelarGasto(
+        data,
+        session.profile.baseDatos
+      );
 
       if (!cancelado.isValid) {
         toastr.error(cancelado.message || "Error al cancelar el gasto");
         return;
       }
 
-      const gasto = await DocumentosService.getGastoGlobal({
-        plazaSeleccionada,
-        ...data,
-      });
+      const gasto = await DocumentosService.getGastoGlobal(
+        { plazaSeleccionada, ...data },
+        session.profile.baseDatos
+      );
 
       setEstatus({
         ...estatus,
         estatus: "CANCELADO",
         cancelo: `${gasto.data[0].NOM_USU_CANCELO} - ${format(
-          new Date(gasto.data[0].FECHA_CANCELACION), "dd/MM/yyyy"
+          new Date(gasto.data[0].FECHA_CANCELACION),
+          "dd/MM/yyyy"
         )}`,
       });
       toastr.success("Se ha cancelado el gasto");

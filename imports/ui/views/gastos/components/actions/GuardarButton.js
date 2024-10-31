@@ -86,23 +86,25 @@ export const GuardarButton = ({ setLoading }) => {
           ...totalImportes,
         };
 
-        
         const { observaciones, ...dataToValidate } = dataGastoGlobal;
-        
+
         const areFieldsValid = Object.values(dataToValidate).every(
           (value) => value !== "" && value !== null && value !== undefined
         );
-        
+
         if (!areFieldsValid) {
           toastr.warning("Por favor, llene todos los campos requeridos.");
           return;
         }
-  
+
         if (session.profile.MOSTRAR_COMBO_PROYECTO) {
           dataGastoGlobal.proyecto = proyectoSeleccionado || "0";
         }
-        
-        const grabadoGlobal = await GastosService.grabar(dataGastoGlobal);
+
+        const grabadoGlobal = await GastosService.grabar(
+          dataGastoGlobal,
+          session.profile.baseDatos
+        );
 
         if (!grabadoGlobal.isValid) {
           toastr.warning("No se pudo realizar el grabado.");
@@ -181,7 +183,8 @@ export const GuardarButton = ({ setLoading }) => {
           };
 
           const grabarRenglon = await GastosService.grabarRenglon(
-            datosDocumento
+            datosDocumento,
+            session.profile.baseDatos
           );
 
           if (!grabarRenglon.isValid) {
@@ -215,7 +218,10 @@ export const GuardarButton = ({ setLoading }) => {
             };
 
             const grabarGastoCombustible =
-              await GastosService.grabarGastoCombustible(datosGasolina);
+              await GastosService.grabarGastoCombustible(
+                datosGasolina,
+                session.profile.baseDatos
+              );
 
             if (!grabarGastoCombustible.isValid) {
               console.error(grabarGastoCombustible);
@@ -223,56 +229,71 @@ export const GuardarButton = ({ setLoading }) => {
           }
 
           // TODO: GRABAR PDF Y XML
-          const xmlGrabo = await DocumentosService.grabarArchivoXML({
-            id_renglon: renglonId,
-            nombre_xml: xmlArchivo?.nombre || "",
-            archivo: xmlArchivo?.contenido || "",
-            cod_usu: session.profile.COD_USU,
-          });
+          const xmlGrabo = await DocumentosService.grabarArchivoXML(
+            {
+              id_renglon: renglonId,
+              nombre_xml: xmlArchivo?.nombre || "",
+              archivo: xmlArchivo?.contenido || "",
+              cod_usu: session.profile.COD_USU,
+            },
+            session.profile.baseDatos
+          );
 
           if (!xmlGrabo?.isValid) console.error(xmlGrabo);
 
-          const pdfGrabo = await DocumentosService.grabarArchivoPDF({
-            id_renglon: renglonId,
-            nombre_pdf: documento?.pdfArchivo?.nombre || "",
-            archivo: documento?.pdfArchivo?.contenido,
-            cod_usu: session.profile.COD_USU,
-          });
+          const pdfGrabo = await DocumentosService.grabarArchivoPDF(
+            {
+              id_renglon: renglonId,
+              nombre_pdf: documento?.pdfArchivo?.nombre || "",
+              archivo: documento?.pdfArchivo?.contenido,
+              cod_usu: session.profile.COD_USU,
+            },
+            session.profile.baseDatos
+          );
 
           if (!pdfGrabo?.isValid) console.error(pdfGrabo);
 
           // Checar archivos
-          const grabarDocGlobal = await DocumentosService.grabarArchivo({
-            folio: newFolio,
-            archivo_xml: xmlArchivo?.contenido || "",
-            archivo_pdf: documento?.pdfArchivo?.contenido || "",
-            cadena_xml: xmlArchivo?.contenido,
-            cod_usu: session.profile.COD_USU,
-          });
+          const grabarDocGlobal = await DocumentosService.grabarArchivo(
+            {
+              folio: newFolio,
+              archivo_xml: xmlArchivo?.contenido || "",
+              archivo_pdf: documento?.pdfArchivo?.contenido || "",
+              cadena_xml: xmlArchivo?.contenido,
+              cod_usu: session.profile.COD_USU,
+            },
+            session.profile.baseDatos
+          );
 
           if (!grabarDocGlobal?.isValid) console.error(grabarDocGlobal);
 
           const grabadoArchivosGlobal =
-            await DocumentosService.grabarArchivoNota({
-              id_renglon: renglonId,
-              nombre_xml:
-                documento?.pdfArchivo?.nombre ||
-                xmlArchivo?.nombre ||
-                "documento.pdf",
-              archivo: documento?.pdfArchivo?.contenido,
-              cod_usu: session.profile.COD_USU,
-            });
+            await DocumentosService.grabarArchivoNota(
+              {
+                id_renglon: renglonId,
+                nombre_xml:
+                  documento?.pdfArchivo?.nombre ||
+                  xmlArchivo?.nombre ||
+                  "documento.pdf",
+                archivo: documento?.pdfArchivo?.contenido,
+                cod_usu: session.profile.COD_USU,
+              },
+              session.profile.baseDatos
+            );
 
           if (!grabadoArchivosGlobal?.isValid)
             console.error(grabadoArchivosGlobal);
 
           const [resumenData, gastoGlobalData] = await Promise.all([
-            DocumentosService.getResumen(newFolio),
-            DocumentosService.getGastoGlobal({
-              folio: newFolio,
-              plaza: plazaSeleccionada,
-              cod_usu: session.profile.COD_USU,
-            }),
+            DocumentosService.getResumen(newFolio, session.profile.baseDatos),
+            DocumentosService.getGastoGlobal(
+              {
+                folio: newFolio,
+                plaza: plazaSeleccionada,
+                cod_usu: session.profile.COD_USU,
+              },
+              session.profile.baseDatos
+            ),
           ]);
 
           if (!resumenData?.isValid) console.error(resumenData);

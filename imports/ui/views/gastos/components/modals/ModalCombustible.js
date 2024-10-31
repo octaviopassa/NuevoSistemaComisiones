@@ -14,6 +14,7 @@ import { ModalCatalogoConductores } from "./conductores";
 import { ModalCatalogoVehiculos } from "./vehiculos";
 import { useGastosData } from "../../store";
 import { ModalCatalogoGasolineras } from "./gasolineras/ModalCatalogoGasolineras";
+import { useUserSession } from "../../../../store";
 
 export const ModalCombustible = ({
   isModalOpen,
@@ -43,6 +44,7 @@ export const ModalCombustible = ({
   );
 
   const { plazaSeleccionada } = useGastosData();
+  const { session } = useUserSession();
 
   useEffect(() => {
     cargaInicial();
@@ -56,12 +58,21 @@ export const ModalCombustible = ({
 
   const cargaInicial = async () => {
     if (plazaSeleccionada != "") {
-      const gasolineras = await GasolinerasService.getAll(plazaSeleccionada);
-      const vehiculos = await VehiculosService.getAll({
-        plaza: plazaSeleccionada,
-      });
-      const conductores = await ConductoresService.getAll(plazaSeleccionada);
-      const combustibles = await CombustibleService.getAll();
+      const gasolineras = await GasolinerasService.getAll(
+        plazaSeleccionada,
+        session.profile.baseDatos
+      );
+      const vehiculos = await VehiculosService.getAll(
+        plazaSeleccionada,
+        session.profile.baseDatos
+      );
+      const conductores = await ConductoresService.getAll(
+        plazaSeleccionada,
+        session.profile.baseDatos
+      );
+      const combustibles = await CombustibleService.getAll(
+        session.profile.baseDatos
+      );
 
       setVehiculos(
         vehiculos.map((obj) => ({

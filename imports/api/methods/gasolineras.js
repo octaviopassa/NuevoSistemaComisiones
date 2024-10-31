@@ -2,11 +2,16 @@ import conexiones from "../../utils/config";
 import axios from "axios";
 
 Meteor.methods({
-  "gasolineras.getAll": async (plaza) => {
+  "gasolineras.getAll": async (plaza, baseDatos) => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
       conexiones.body_bdseleccionada.query = `exec dbo.SP_Cat_Gasolineras_Consulta @Cod_Gasolinera='', @Nom_Gasolinera='', @Estatus='', @Cod_Plaza='${plaza}'`;
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
+      const [ip, _] = conexiones.body_bdseleccionada.servidor.split("\\");
+      conexiones.body_bdseleccionada.servidor = conexiones.getInstancia(
+        ip,
+        baseDatos
+      );
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
@@ -17,7 +22,7 @@ Meteor.methods({
       console.log(e);
     }
   },
-  "gasolineras.insert": async (data) => {
+  "gasolineras.insert": async (data, baseDatos) => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
@@ -29,6 +34,11 @@ Meteor.methods({
         @Cod_Plaza='${data.plaza}',
         @Accion='Insertar'
       `;
+      const [ip, _] = conexiones.body_bdseleccionada.servidor.split("\\");
+      conexiones.body_bdseleccionada.servidor = conexiones.getInstancia(
+        ip,
+        baseDatos
+      );
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
@@ -45,7 +55,7 @@ Meteor.methods({
       console.log(e);
     }
   },
-  "gasolineras.update": async (data) => {
+  "gasolineras.update": async (data, baseDatos) => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
@@ -57,6 +67,11 @@ Meteor.methods({
         @Cod_Plaza='${data.plaza}',
         @Accion='Actualizar'
       `;
+      const [ip, _] = conexiones.body_bdseleccionada.servidor.split("\\");
+      conexiones.body_bdseleccionada.servidor = conexiones.getInstancia(
+        ip,
+        baseDatos
+      );
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,

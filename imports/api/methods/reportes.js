@@ -11,9 +11,14 @@ import { format } from "date-fns";
 const convertapi = new ConvertAPI("secret_M2CC06K9StuPUDEz");
 
 Meteor.methods({
-  "reportes.generarReporte": async function (data) {
+  "reportes.generarReporte": async function (data, baseDatos) {
     conexiones.body_bdseleccionada.tipo = "procedimiento";
     conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
+    const [ip, _] = conexiones.body_bdseleccionada.servidor.split("\\");
+    conexiones.body_bdseleccionada.servidor = conexiones.getInstancia(
+      ip,
+      baseDatos
+    );
 
     const queryGlobal = `
       exec Mp_rpt_gastos 

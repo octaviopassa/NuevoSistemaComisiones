@@ -1,7 +1,7 @@
 const ReportesService = {};
 
-ReportesService.generarReporte = async (data) => {
-  return await Meteor.callSync("reportes.generarReporte", data);
+ReportesService.generarReporte = async (data, baseDatos) => {
+  return await Meteor.callSync("reportes.generarReporte", data, baseDatos);
 };
 
 export { ReportesService };

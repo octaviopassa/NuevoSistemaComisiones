@@ -19,6 +19,11 @@ Meteor.methods({
     WHERE ESTATUS= 'A' ${datos.cod_usu ? `AND COD_USU='${datos.cod_usu}'` : ""}
     `;
     conexiones.body_bdseleccionada.baseDatos = datos.baseDatos;
+    const [ip, _] = conexiones.body_bdseleccionada.servidor.split("\\");
+    conexiones.body_bdseleccionada.servidor = conexiones.getInstancia(
+      ip,
+      datos.baseDatos
+    );
 
     const response = await axios.get(conexiones.windows_api, {
       data: conexiones.body_bdseleccionada,
@@ -28,12 +33,17 @@ Meteor.methods({
 
     return respuesta;
   },
-  "tipoGastos.getAll": async () => {
+  "tipoGastos.getAll": async (baseDatos) => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
       conexiones.body_bdseleccionada.query =
         "SELECT CODIGO_GASTO Codigo, NOMBRE_GASTO Nombre FROM CONSUMOS_PASSA..CAT_GASTOS ORDER BY NOMBRE_GASTO";
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
+      const [ip, _] = conexiones.body_bdseleccionada.servidor.split("\\");
+      conexiones.body_bdseleccionada.servidor = conexiones.getInstancia(
+        ip,
+        baseDatos
+      );
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
@@ -46,11 +56,16 @@ Meteor.methods({
       console.log(e);
     }
   },
-  "gastos.getFolioProvisional": async (plaza) => {
+  "gastos.getFolioProvisional": async (plaza, baseDatos) => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
       conexiones.body_bdseleccionada.query = `exec MP_GENERA_FOLIO_SELECT @COD_DOC='GT', @MODULO='G', @PLAZA='${plaza}'`;
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
+      const [ip, _] = conexiones.body_bdseleccionada.servidor.split("\\");
+      conexiones.body_bdseleccionada.servidor = conexiones.getInstancia(
+        ip,
+        baseDatos
+      );
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
@@ -63,7 +78,7 @@ Meteor.methods({
       console.log(e);
     }
   },
-  "gastos.grabar": async (datos, accion = "INSERTAR") => {
+  "gastos.grabar": async (datos, baseDatos) => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
@@ -86,11 +101,16 @@ Meteor.methods({
         @ISH=${datos.ish},
         @TUA=${datos.tua},
         @OBSERVACION='${datos.observaciones}',
-        @ACCION='${accion}',
+        @ACCION='INSERTAR',
         ${datos.proyecto ? `@CODIGO_PROYECTO =${datos.proyecto},` : ""}
         @EsWeb=1,
         @RFC_RECEPTOR='${datos.rfc}'
       `;
+      const [ip, _] = conexiones.body_bdseleccionada.servidor.split("\\");
+      conexiones.body_bdseleccionada.servidor = conexiones.getInstancia(
+        ip,
+        baseDatos
+      );
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
@@ -105,7 +125,7 @@ Meteor.methods({
       console.log(e);
     }
   },
-  "gastos.grabarRenglon": async (datos) => {
+  "gastos.grabarRenglon": async (datos, baseDatos) => {
     try {
       const cadena_xml = datos.cadena_xml
         ? Buffer.from(datos.cadena_xml, "base64").toString("utf-8")
@@ -141,6 +161,12 @@ Meteor.methods({
         @ROWUID_PDF_EN_SERVIBOX=''
       `;
 
+      const [ip, _] = conexiones.body_bdseleccionada.servidor.split("\\");
+      conexiones.body_bdseleccionada.servidor = conexiones.getInstancia(
+        ip,
+        baseDatos
+      );
+
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
       });
@@ -154,7 +180,7 @@ Meteor.methods({
       console.log(e);
     }
   },
-  "gastos.grabarGastoCombustible": async (datos) => {
+  "gastos.grabarGastoCombustible": async (datos, baseDatos) => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
@@ -175,6 +201,12 @@ Meteor.methods({
         @FOLIO_GASTO='${datos.folioGasto}',
         @ACCION='INSERTAR'
       `;
+
+      const [ip, _] = conexiones.body_bdseleccionada.servidor.split("\\");
+      conexiones.body_bdseleccionada.servidor = conexiones.getInstancia(
+        ip,
+        baseDatos
+      );
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
@@ -197,75 +229,7 @@ Meteor.methods({
       console.log(e);
     }
   },
-  "gastos.autorizar": async (datos) => {
-    try {
-      conexiones.body_bdseleccionada.tipo = "procedimiento";
-      conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
-      conexiones.body_bdseleccionada.query = `
-        exec MP_AUTORIZA_GASTO_GLOBAL
-        @FOLIO_GASTO='${datos.folio}',
-        @COD_USU='${datos.cod_usu}'
-      `;
-
-      const response = await axios.get(conexiones.windows_api, {
-        data: conexiones.body_bdseleccionada,
-      });
-
-      return {
-        isValid: response.data.isValid,
-        data: JSON.parse(response.data.data.resultado),
-        message: response.data.data.mensaje,
-      };
-    } catch (e) {
-      console.log(e);
-    }
-  },
-  "gastos.desautorizar": async (datos) => {
-    try {
-      conexiones.body_bdseleccionada.tipo = "procedimiento";
-      conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
-      conexiones.body_bdseleccionada.query = `
-        exec MP_DESAUTORIZA_GASTO_GLOBAL 
-        @FOLIO_GASTO='${datos.folio}'
-      `;
-
-      const response = await axios.get(conexiones.windows_api, {
-        data: conexiones.body_bdseleccionada,
-      });
-
-      return {
-        isValid: response.data.isValid,
-        data: JSON.parse(response.data.data.resultado),
-        message: response.data.data.mensaje,
-      };
-    } catch (e) {
-      console.log(e);
-    }
-  },
-  "gastos.cancelar": async (datos) => {
-    try {
-      conexiones.body_bdseleccionada.tipo = "procedimiento";
-      conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
-      conexiones.body_bdseleccionada.query = `
-        exec MP_CANCELA_GASTO
-        @FOLIO_GASTO='${datos.folio}',
-        @COD_USU='${datos.cod_usu}'
-      `;
-
-      const response = await axios.get(conexiones.windows_api, {
-        data: conexiones.body_bdseleccionada,
-      });
-
-      return {
-        isValid: response.data.isValid,
-        data: JSON.parse(response.data.data.resultado),
-        message: response.data.data.mensaje,
-      };
-    } catch (e) {
-      console.log(e);
-    }
-  },
-  "gastos.consultar": async (datos) => {
+  "gastos.consultar": async (datos, baseDatos) => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
@@ -278,6 +242,12 @@ Meteor.methods({
         @CODIGO_VENDEDOR='${datos.vendedor}',
         @Cod_Usuario='${datos.cod_usu}'
       `;
+
+      const [ip, _] = conexiones.body_bdseleccionada.servidor.split("\\");
+      conexiones.body_bdseleccionada.servidor = conexiones.getInstancia(
+        ip,
+        baseDatos
+      );
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
@@ -300,12 +270,17 @@ Meteor.methods({
       console.log(e);
     }
   },
-  "gastos.getProyectos": async () => {
+  "gastos.getProyectos": async (baseDatos) => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
       conexiones.body_bdseleccionada.query =
         "SELECT CODIGO_PROYECTO CODIGO,NOMBRE_PROYECTO NOMBRE FROM IANSA..CAT_PROYECTOS ORDER BY CODIGO_PROYECTO DESC";
+      const [ip, _] = conexiones.body_bdseleccionada.servidor.split("\\");
+      conexiones.body_bdseleccionada.servidor = conexiones.getInstancia(
+        ip,
+        baseDatos
+      );
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,

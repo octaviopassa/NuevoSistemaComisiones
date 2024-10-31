@@ -54,9 +54,9 @@ export const ModalConductores = ({
     try {
       let result;
       if (conductor) {
-        result = await ConductoresService.update(data);
+        result = await ConductoresService.update(data, session.profile.baseDatos);
       } else {
-        result = await ConductoresService.insert(data);
+        result = await ConductoresService.insert(data, session.profile.baseDatos);
       }
 
       if (!result.isValid) {

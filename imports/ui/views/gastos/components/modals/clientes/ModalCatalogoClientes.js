@@ -21,16 +21,16 @@ import {
 import { ModalButton } from "../ModalButton";
 import { ClientesService } from "../../../../../services";
 import { ModalClientes } from "./ModalClientes";
+import { useUserSession } from "../../../../../store";
 
 export const ModalCatalogoClientes = ({ isModalOpen, toggle }) => {
+  const { session } = useUserSession();
   const {
     isLoading,
     data: clientes,
     reloadData,
-  } = useFetchData(ClientesService.getAll);
-  const { searchText, setSearchText, filteredData } = useSearch(
-    clientes || []
-  );
+  } = useFetchData(ClientesService.getAll, [session.profile.baseDatos]);
+  const { searchText, setSearchText, filteredData } = useSearch(clientes || []);
 
   const { paginatedData, PaginationComponent, PaginationSelector } =
     useClientPagination(filteredData);

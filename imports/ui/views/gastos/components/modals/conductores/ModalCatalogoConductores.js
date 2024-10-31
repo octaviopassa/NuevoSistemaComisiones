@@ -21,17 +21,19 @@ import {
 import { ModalButton } from "../ModalButton";
 import { ConductoresService } from "../../../../../services";
 import { ModalConductores } from "./ModalConductores";
+import { useUserSession } from "../../../../../store";
 
 export const ModalCatalogoConductores = ({
   isModalOpen,
   toggle,
   reloadDataCombustible,
 }) => {
+  const { session } = useUserSession();
   const {
     isLoading,
     data: conductores,
     reloadData,
-  } = useFetchData(ConductoresService.getAll);
+  } = useFetchData(ConductoresService.getAll, [session.profile.baseDatos]);
   const { searchText, setSearchText, filteredData } = useSearch(
     conductores || []
   );

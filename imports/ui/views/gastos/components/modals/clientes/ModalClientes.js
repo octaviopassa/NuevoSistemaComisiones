@@ -33,9 +33,9 @@ export const ModalClientes = ({ isModalOpen, toggle, cliente, reloadData }) => {
     try {
       let result;
       if (cliente) {
-        result = await ClientesService.update(data);
+        result = await ClientesService.update(data, session.profile.baseDatos);
       } else {
-        result = await ClientesService.insert(data);
+        result = await ClientesService.insert(data, session.profile.baseDatos);
       }
 
       if (!result.isValid) {

@@ -51,7 +51,10 @@ const GastosAdmin = () => {
     };
     try {
       setLoading(true);
-      const consultaResponse = await GastosService.consultar(data);
+      const consultaResponse = await GastosService.consultar(
+        data,
+        session.profile.baseDatos
+      );
 
       setGastos(consultaResponse.data);
     } catch (error) {

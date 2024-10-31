@@ -66,7 +66,9 @@ export const TableGastos = () => {
     plazaSeleccionada,
     gastosDate,
   } = useGastosData();
-  const { data: dataTipoGastos } = useFetchData(TipoGastosService.getAll);
+  const { data: dataTipoGastos } = useFetchData(TipoGastosService.getAll, [
+    session.profile.baseDatos,
+  ]);
   const tipoGastos = dataTipoGastos?.map((tg) => ({
     value: tg.Codigo,
     label: tg.Nombre,
@@ -75,9 +77,10 @@ export const TableGastos = () => {
   const proveedoresOptions = async (inputValue) => {
     if (inputValue.length >= 3) {
       try {
-        const proveedores = await ProveedoresService.getAllWithName({
-          search: inputValue,
-        });
+        const proveedores = await ProveedoresService.getAllWithName(
+          { search: inputValue },
+          session.profile.baseDatos
+        );
         return proveedores.map((p) => ({
           value: p.Codigo,
           label: p.Nombre,
@@ -93,9 +96,10 @@ export const TableGastos = () => {
   const clientesOptions = async (inputValue) => {
     if (inputValue.length >= 3) {
       try {
-        const clientes = await ClientesService.getAllByName({
-          search: inputValue,
-        });
+        const clientes = await ClientesService.getAllByName(
+          { search: inputValue },
+          session.profile.baseDatos
+        );
 
         return clientes.map((p) => ({
           value: p.Codigo,
@@ -180,7 +184,8 @@ export const TableGastos = () => {
             );
 
             const existingInDatabase = await DocumentosService.validarXml(
-              uuidFiscal
+              uuidFiscal,
+              session.profile.baseDatos
             );
 
             if (!existingInDatabase.isValid) {
@@ -678,7 +683,10 @@ export const TableGastos = () => {
         return;
       }
 
-      await DocumentosService.eliminarXML(documentos[index].renglonId);
+      await DocumentosService.eliminarXML(
+        documentos[index].renglonId,
+        session.profile.baseDatos
+      );
     }
 
     setDocumentos(documentos.filter((_, i) => i !== index));
@@ -723,7 +731,10 @@ export const TableGastos = () => {
     }
 
     try {
-      const descartado = await DocumentosService.descartarDetalle(data);
+      const descartado = await DocumentosService.descartarDetalle(
+        data,
+        session.profile.baseDatos
+      );
 
       if (!descartado.isValid) {
         toastr.error("No se pudo descartar el detalle");
@@ -751,7 +762,10 @@ export const TableGastos = () => {
     };
 
     try {
-      const habilitado = await DocumentosService.habilitarDetalle(data);
+      const habilitado = await DocumentosService.habilitarDetalle(
+        data,
+        session.profile.baseDatos
+      );
 
       if (!habilitado.isValid) {
         toastr.error("No se pudo descartar el gasto");

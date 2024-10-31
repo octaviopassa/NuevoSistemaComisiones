@@ -55,9 +55,9 @@ export const ModalCuentas = ({ isModalOpen, toggle, cuenta, reloadData }) => {
     try {
       let result;
       if (cuenta) {
-        result = await CuentasService.update(data);
+        result = await CuentasService.update(data, session.profile.baseDatos);
       } else {
-        result = await CuentasService.insert(data);
+        result = await CuentasService.insert(data, session.profile.baseDatos);
       }
 
       if (!result.isValid) {

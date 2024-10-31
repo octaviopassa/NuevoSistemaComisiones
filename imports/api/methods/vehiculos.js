@@ -2,15 +2,17 @@ import conexiones from "../../utils/config";
 import axios from "axios";
 
 Meteor.methods({
-  "vehiculos.getAll": async (datos) => {
+  "vehiculos.getAll": async (plaza, baseDatos) => {
     try {
       conexiones.body_bdseleccionada.tipo = "consulta";
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
-      conexiones.body_bdseleccionada.query =
-        "exec dbo.SP_Cat_Vehiculos_Consulta @CODIGO_VEHICULO=0, @NOMBRE_VEHICULO='', @PLACA='', @MODELO='', @NUMERO_SERIE='', @POLIZA_SEGURO='', @CODIGO_ENCARGADO=0, @COD_ZONA='', @ESTATUS=' ', @ES_VEHICULO_OFICIAL='0', @CODIGO_VEHICULO_OFICIAL=0, @Plaza='" +
-        datos.plaza +
-        "'";
-      datos.plaza + "'";
+      conexiones.body_bdseleccionada.query = `exec dbo.SP_Cat_Vehiculos_Consulta @CODIGO_VEHICULO=0, @NOMBRE_VEHICULO='', @PLACA='', @MODELO='', @NUMERO_SERIE='', @POLIZA_SEGURO='', @CODIGO_ENCARGADO=0, @COD_ZONA='', @ESTATUS=' ', @ES_VEHICULO_OFICIAL='0', @CODIGO_VEHICULO_OFICIAL=0, @Plaza='${plaza}'`;
+      const [ip, _] = conexiones.body_bdseleccionada.servidor.split("\\");
+      conexiones.body_bdseleccionada.servidor = conexiones.getInstancia(
+        ip,
+        baseDatos
+      );
+
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
       });
@@ -20,7 +22,7 @@ Meteor.methods({
       console.log(e);
     }
   },
-  "vehiculos.insert": async (datos) => {
+  "vehiculos.insert": async (datos, baseDatos) => {
     try {
       conexiones.body_bdseleccionada.tipo = "consulta";
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
@@ -40,6 +42,12 @@ Meteor.methods({
             @Accion='Insertar'
         `;
 
+      const [ip, _] = conexiones.body_bdseleccionada.servidor.split("\\");
+      conexiones.body_bdseleccionada.servidor = conexiones.getInstancia(
+        ip,
+        baseDatos
+      );
+
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
       });
@@ -53,7 +61,7 @@ Meteor.methods({
       console.log(error);
     }
   },
-  "vehiculos.update": async (datos) => {
+  "vehiculos.update": async (datos, baseDatos) => {
     try {
       conexiones.body_bdseleccionada.tipo = "consulta";
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
@@ -72,6 +80,11 @@ Meteor.methods({
             @CODIGO_VEHICULO_OFICIAL='0', 
             @Accion='Actualizar'
         `;
+      const [ip, _] = conexiones.body_bdseleccionada.servidor.split("\\");
+      conexiones.body_bdseleccionada.servidor = conexiones.getInstancia(
+        ip,
+        baseDatos
+      );
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,

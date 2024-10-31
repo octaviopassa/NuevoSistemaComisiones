@@ -14,7 +14,10 @@ export const DesautorizarButton = ({ setLoading }) => {
     };
     try {
       setLoading(true);
-      const desautorizado = await DocumentosService.desautorizarGasto(data);
+      const desautorizado = await DocumentosService.desautorizarGasto(
+        data,
+        session.profile.baseDatos
+      );
       if (!desautorizado.isValid) {
         toastr.error(desautorizado.message || "Error al desautorizar el gasto");
         return;
