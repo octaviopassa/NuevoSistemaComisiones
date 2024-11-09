@@ -48,13 +48,11 @@ const GastosAdmin = () => {
       cod_usu: session.profile.TIENE_ACCESO_VER_TODOS_GASTOS
         ? "0"
         : session.profile.COD_USU,
+      servidor: session.profile.servidor,
     };
     try {
       setLoading(true);
-      const consultaResponse = await GastosService.consultar(
-        data,
-        session.profile.baseDatos
-      );
+      const consultaResponse = await GastosService.consultar(data);
 
       setGastos(consultaResponse.data);
     } catch (error) {

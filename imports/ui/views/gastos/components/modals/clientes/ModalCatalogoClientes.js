@@ -29,7 +29,7 @@ export const ModalCatalogoClientes = ({ isModalOpen, toggle }) => {
     isLoading,
     data: clientes,
     reloadData,
-  } = useFetchData(ClientesService.getAll, [session.profile.baseDatos]);
+  } = useFetchData(ClientesService.getAll, [session.profile.servidor]);
   const { searchText, setSearchText, filteredData } = useSearch(clientes || []);
 
   const { paginatedData, PaginationComponent, PaginationSelector } =

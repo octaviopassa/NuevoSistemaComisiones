@@ -29,7 +29,7 @@ export const ModalCatalogoProveedores = ({ isModalOpen, toggle }) => {
     isLoading,
     data: proveedores,
     reloadData,
-  } = useFetchData(ProveedoresService.getAll, [session.profile.baseDatos]);
+  } = useFetchData(ProveedoresService.getAll, [session.profile.servidor]);
   const { searchText, setSearchText, filteredData } = useSearch(
     proveedores || []
   );

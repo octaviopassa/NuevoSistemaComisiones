@@ -12,24 +12,22 @@ export const AutorizarButton = ({ setLoading }) => {
     const data = {
       folio,
       cod_usu: session.profile.COD_USU,
+      servidor: session.profile.servidor,
     };
 
     try {
       setLoading(true);
-      const autorizado = await DocumentosService.autorizarGasto(
-        data,
-        session.profile.baseDatos
-      );
+      const autorizado = await DocumentosService.autorizarGasto(data);
 
       if (!autorizado.isValid) {
         toastr.error(autorizado.message || "Error al autorizar el gasto");
         return;
       }
 
-      const gasto = await DocumentosService.getGastoGlobal(
-        { plazaSeleccionada, ...data },
-        session.profile.baseDatos
-      );
+      const gasto = await DocumentosService.getGastoGlobal({
+        plazaSeleccionada,
+        ...data,
+      });
 
       setEstatus({
         ...estatus,

@@ -78,16 +78,20 @@ export const GastosFolioInput = () => {
       setLoading(true);
 
       const [gastosData, detalleData, resumenData] = await Promise.all([
-        DocumentosService.getGastoGlobal(
-          {
-            folio: newFolio,
-            plaza: plazaSeleccionada,
-            cod_usu: session.profile.COD_USU,
-          },
-          session.profile.baseDatos
-        ),
-        DocumentosService.getGastosDetalle(newFolio, session.profile.baseDatos),
-        DocumentosService.getResumen(newFolio, session.profile.baseDatos),
+        DocumentosService.getGastoGlobal({
+          folio: newFolio,
+          plaza: plazaSeleccionada,
+          cod_usu: session.profile.COD_USU,
+          servidor: session.profile.servidor,
+        }),
+        DocumentosService.getGastosDetalle({
+          folio: newFolio,
+          servidor: session.profile.servidor,
+        }),
+        DocumentosService.getResumen({
+          folio: newFolio,
+          servidor: session.profile.servidor,
+        }),
       ]);
 
       const gastos = gastosData.data[0];

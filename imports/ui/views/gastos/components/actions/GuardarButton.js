@@ -68,7 +68,10 @@ export const GuardarButton = ({ setLoading }) => {
       let newFolio = folio;
 
       if (estatus.estatus === "Nuevo") {
-        const [rfc] = await EmpresasService.getRFC(session.profile.baseDatos);
+        const [rfc] = await EmpresasService.getRFC({
+          baseDatos: session.profile.baseDatos,
+          servidor: session.profile.servidor,
+        });
 
         const dataGastoGlobal = {
           plaza: plazaSeleccionada,
@@ -84,6 +87,7 @@ export const GuardarButton = ({ setLoading }) => {
           iva: totalImportes.iva_16 + totalImportes.iva_8,
           rfc: rfc.rfc,
           ...totalImportes,
+          servidor: session.profile.servidor,
         };
 
         const { observaciones, ...dataToValidate } = dataGastoGlobal;
@@ -101,10 +105,7 @@ export const GuardarButton = ({ setLoading }) => {
           dataGastoGlobal.proyecto = proyectoSeleccionado || "0";
         }
 
-        const grabadoGlobal = await GastosService.grabar(
-          dataGastoGlobal,
-          session.profile.baseDatos
-        );
+        const grabadoGlobal = await GastosService.grabar(dataGastoGlobal);
 
         if (!grabadoGlobal.isValid) {
           toastr.warning("No se pudo realizar el grabado.");
@@ -180,11 +181,11 @@ export const GuardarButton = ({ setLoading }) => {
               session.profile.WEB_REACT_CLIENTE_OBLIGATORIO
                 ? documento.detalleGasto.label
                 : "",
+            servidor: session.profile.servidor,
           };
 
           const grabarRenglon = await GastosService.grabarRenglon(
-            datosDocumento,
-            session.profile.baseDatos
+            datosDocumento
           );
 
           if (!grabarRenglon.isValid) {
@@ -215,13 +216,11 @@ export const GuardarButton = ({ setLoading }) => {
               gasolinera: detalleGasto.gasolinera.value,
               plaza: plazaSeleccionada,
               folioGasto: newFolio,
+              servidor: session.profile.servidor,
             };
 
             const grabarGastoCombustible =
-              await GastosService.grabarGastoCombustible(
-                datosGasolina,
-                session.profile.baseDatos
-              );
+              await GastosService.grabarGastoCombustible(datosGasolina);
 
             if (!grabarGastoCombustible.isValid) {
               console.error(grabarGastoCombustible);
@@ -229,71 +228,64 @@ export const GuardarButton = ({ setLoading }) => {
           }
 
           // TODO: GRABAR PDF Y XML
-          const xmlGrabo = await DocumentosService.grabarArchivoXML(
-            {
-              id_renglon: renglonId,
-              nombre_xml: xmlArchivo?.nombre || "",
-              archivo: xmlArchivo?.contenido || "",
-              cod_usu: session.profile.COD_USU,
-            },
-            session.profile.baseDatos
-          );
+          const xmlGrabo = await DocumentosService.grabarArchivoXML({
+            id_renglon: renglonId,
+            nombre_xml: xmlArchivo?.nombre || "",
+            archivo: xmlArchivo?.contenido || "",
+            cod_usu: session.profile.COD_USU,
+            servidor: session.profile.servidor,
+          });
 
           if (!xmlGrabo?.isValid) console.error(xmlGrabo);
 
-          const pdfGrabo = await DocumentosService.grabarArchivoPDF(
-            {
-              id_renglon: renglonId,
-              nombre_pdf: documento?.pdfArchivo?.nombre || "",
-              archivo: documento?.pdfArchivo?.contenido,
-              cod_usu: session.profile.COD_USU,
-            },
-            session.profile.baseDatos
-          );
+          const pdfGrabo = await DocumentosService.grabarArchivoPDF({
+            id_renglon: renglonId,
+            nombre_pdf: documento?.pdfArchivo?.nombre || "",
+            archivo: documento?.pdfArchivo?.contenido,
+            cod_usu: session.profile.COD_USU,
+            servidor: session.profile.servidor,
+          });
 
           if (!pdfGrabo?.isValid) console.error(pdfGrabo);
 
           // Checar archivos
-          const grabarDocGlobal = await DocumentosService.grabarArchivo(
-            {
-              folio: newFolio,
-              archivo_xml: xmlArchivo?.contenido || "",
-              archivo_pdf: documento?.pdfArchivo?.contenido || "",
-              cadena_xml: xmlArchivo?.contenido,
-              cod_usu: session.profile.COD_USU,
-            },
-            session.profile.baseDatos
-          );
+          const grabarDocGlobal = await DocumentosService.grabarArchivo({
+            folio: newFolio,
+            archivo_xml: xmlArchivo?.contenido || "",
+            archivo_pdf: documento?.pdfArchivo?.contenido || "",
+            cadena_xml: xmlArchivo?.contenido,
+            cod_usu: session.profile.COD_USU,
+            servidor: session.profile.servidor,
+          });
 
           if (!grabarDocGlobal?.isValid) console.error(grabarDocGlobal);
 
           const grabadoArchivosGlobal =
-            await DocumentosService.grabarArchivoNota(
-              {
-                id_renglon: renglonId,
-                nombre_xml:
-                  documento?.pdfArchivo?.nombre ||
-                  xmlArchivo?.nombre ||
-                  "documento.pdf",
-                archivo: documento?.pdfArchivo?.contenido,
-                cod_usu: session.profile.COD_USU,
-              },
-              session.profile.baseDatos
-            );
+            await DocumentosService.grabarArchivoNota({
+              id_renglon: renglonId,
+              nombre_xml:
+                documento?.pdfArchivo?.nombre ||
+                xmlArchivo?.nombre ||
+                "documento.pdf",
+              archivo: documento?.pdfArchivo?.contenido,
+              cod_usu: session.profile.COD_USU,
+              servidor: session.profile.servidor,
+            });
 
           if (!grabadoArchivosGlobal?.isValid)
             console.error(grabadoArchivosGlobal);
 
           const [resumenData, gastoGlobalData] = await Promise.all([
-            DocumentosService.getResumen(newFolio, session.profile.baseDatos),
-            DocumentosService.getGastoGlobal(
-              {
-                folio: newFolio,
-                plaza: plazaSeleccionada,
-                cod_usu: session.profile.COD_USU,
-              },
-              session.profile.baseDatos
-            ),
+            DocumentosService.getResumen({
+              folio: newFolio,
+              servidor: session.profile.servidor,
+            }),
+            DocumentosService.getGastoGlobal({
+              folio: newFolio,
+              plaza: plazaSeleccionada,
+              cod_usu: session.profile.COD_USU,
+              servidor: session.profile.servidor,
+            }),
           ]);
 
           if (!resumenData?.isValid) console.error(resumenData);

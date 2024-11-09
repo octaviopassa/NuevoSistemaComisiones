@@ -33,20 +33,15 @@ export const ModalProveedores = ({
     const data = {
       ...values,
       cod_usu: session.profile.COD_USU,
+      servidor: session.profile.servidor,
     };
 
     try {
       let result;
       if (proveedor) {
-        result = await ProveedoresService.update(
-          data,
-          session.profile.baseDatos
-        );
+        result = await ProveedoresService.update(data);
       } else {
-        result = await ProveedoresService.insert(
-          data,
-          session.profile.baseDatos
-        );
+        result = await ProveedoresService.insert(data);
       }
 
       if (!result.isValid) {

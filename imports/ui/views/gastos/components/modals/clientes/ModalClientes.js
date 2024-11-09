@@ -28,14 +28,15 @@ export const ModalClientes = ({ isModalOpen, toggle, cliente, reloadData }) => {
     const data = {
       ...values,
       cod_usu: session.profile.COD_USU,
+      servidor: session.profile.servidor,
     };
 
     try {
       let result;
       if (cliente) {
-        result = await ClientesService.update(data, session.profile.baseDatos);
+        result = await ClientesService.update(data);
       } else {
-        result = await ClientesService.insert(data, session.profile.baseDatos);
+        result = await ClientesService.insert(data);
       }
 
       if (!result.isValid) {

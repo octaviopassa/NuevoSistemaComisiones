@@ -18,11 +18,7 @@ Meteor.methods({
         @Cod_Usu='${datos.cod_usu}'
       `;
     conexiones.body_bdseleccionada.baseDatos = datos.baseDatos;
-    const [ip, _] = conexiones.body_bdseleccionada.servidor.split("\\");
-    conexiones.body_bdseleccionada.servidor = conexiones.getInstancia(
-      ip,
-      datos.baseDatos
-    );
+    conexiones.body_bdseleccionada.servidor = datos.servidor;
 
     const response = await axios.get(conexiones.windows_api, {
       data: conexiones.body_bdseleccionada,
@@ -36,11 +32,7 @@ Meteor.methods({
     conexiones.body_bdseleccionada.tipo = "procedimiento";
     conexiones.body_bdseleccionada.query = `exec SPCB_Carga_Combo_Ingenieros @Plaza= '${datos.plaza}', @HTML = 0`;
     conexiones.body_bdseleccionada.baseDatos = datos.baseDatos;
-    const [ip, _] = conexiones.body_bdseleccionada.servidor.split("\\");
-    conexiones.body_bdseleccionada.servidor = conexiones.getInstancia(
-      ip,
-      datos.baseDatos
-    );
+    conexiones.body_bdseleccionada.servidor = datos.servidor;
 
     const response = await axios.get(conexiones.windows_api, {
       data: conexiones.body_bdseleccionada,
@@ -50,15 +42,11 @@ Meteor.methods({
 
     return respuesta;
   },
-  "combustibles.getAll": async (baseDatos) => {
+  "combustibles.getAll": async (datos) => {
     try {
       conexiones.body_bdseleccionada.tipo = "consulta";
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
-      const [ip, _] = conexiones.body_bdseleccionada.servidor.split("\\");
-      conexiones.body_bdseleccionada.servidor = conexiones.getInstancia(
-        ip,
-        baseDatos
-      );
+      conexiones.body_bdseleccionada.servidor = datos.servidor;
       conexiones.body_bdseleccionada.query = `SELECT TIPO_COMBUSTIBLE Codigo, NOM_TIPO_COMBUSTIBLE Nombre FROM CAT_TIPOS_COMBUSTIBLES`;
 
       const response = await axios.get(conexiones.windows_api, {
@@ -70,16 +58,12 @@ Meteor.methods({
       console.log(e);
     }
   },
-  "empresas.getRFC": async (database) => {
+  "empresas.getRFC": async (datos) => {
     try {
       conexiones.body_bdseleccionada.tipo = "consulta";
       conexiones.body_bdseleccionada.query = "SELECT rfc FROM facpars;";
-      conexiones.body_bdseleccionada.baseDatos = database;
-      const [ip, _] = conexiones.body_bdseleccionada.servidor.split("\\");
-      conexiones.body_bdseleccionada.servidor = conexiones.getInstancia(
-        ip,
-        database
-      );
+      conexiones.body_bdseleccionada.baseDatos = datos.baseDatos;
+      conexiones.body_bdseleccionada.servidor = datos.servidor;
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,

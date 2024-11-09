@@ -1,59 +1,59 @@
 const DocumentosService = {};
 
-DocumentosService.grabarArchivoXML = async (data, baseDatos) => {
-  return await Meteor.callSync("documentos.grabarArchivoXML", data, baseDatos);
+DocumentosService.grabarArchivoXML = async (data) => {
+  return await Meteor.callSync("documentos.grabarArchivoXML", data);
 };
 
-DocumentosService.grabarArchivoPDF = async (data, baseDatos) => {
-  return await Meteor.callSync("documentos.grabarArchivoPDF", data, baseDatos);
+DocumentosService.grabarArchivoPDF = async (data) => {
+  return await Meteor.callSync("documentos.grabarArchivoPDF", data);
 };
 
-DocumentosService.grabarArchivo = async (data, baseDatos) => {
-  return await Meteor.callSync("documentos.grabarArchivo", data, baseDatos);
+DocumentosService.grabarArchivo = async (data) => {
+  return await Meteor.callSync("documentos.grabarArchivo", data);
 };
 
-DocumentosService.grabarArchivoNota = async (data, baseDatos) => {
-  return await Meteor.callSync("documentos.grabarArchivoNota", data, baseDatos);
+DocumentosService.grabarArchivoNota = async (data) => {
+  return await Meteor.callSync("documentos.grabarArchivoNota", data);
 };
 
-DocumentosService.eliminarXML = async (id, baseDatos) => {
-  return await Meteor.callSync("documentos.eliminarXML", id, baseDatos);
+DocumentosService.eliminarXML = async (data) => {
+  return await Meteor.callSync("documentos.eliminarXML", data);
 };
 
-DocumentosService.getResumen = async (folio, baseDatos) => {
-  return await Meteor.callSync("documentos.getResumen", folio, baseDatos);
+DocumentosService.getResumen = async (data) => {
+  return await Meteor.callSync("documentos.getResumen", data);
 };
 
-DocumentosService.getGastoGlobal = async (data, baseDatos) => {
-  return await Meteor.callSync("documentos.getGastoGlobal", data, baseDatos);
+DocumentosService.getGastoGlobal = async (data) => {
+  return await Meteor.callSync("documentos.getGastoGlobal", data);
 };
 
-DocumentosService.getGastosDetalle = async (folio, baseDatos) => {
-  return await Meteor.callSync("documentos.getGastosDetalle", folio, baseDatos);
+DocumentosService.getGastosDetalle = async (data) => {
+  return await Meteor.callSync("documentos.getGastosDetalle", data);
 };
 
-DocumentosService.autorizarGasto = async (data, baseDatos) => {
-  return await Meteor.callSync("documentos.autorizarGasto", data, baseDatos);
+DocumentosService.autorizarGasto = async (data) => {
+  return await Meteor.callSync("documentos.autorizarGasto", data);
 };
 
-DocumentosService.desautorizarGasto = async (data, baseDatos) => {
-  return await Meteor.callSync("documentos.desautorizarGasto", data, baseDatos);
+DocumentosService.desautorizarGasto = async (data) => {
+  return await Meteor.callSync("documentos.desautorizarGasto", data);
 };
 
-DocumentosService.cancelarGasto = async (data, baseDatos) => {
-  return await Meteor.callSync("documentos.cancelarGasto", data, baseDatos);
+DocumentosService.cancelarGasto = async (data) => {
+  return await Meteor.callSync("documentos.cancelarGasto", data);
 };
 
-DocumentosService.descartarDetalle = async (data, baseDatos) => {
-  return await Meteor.callSync("documentos.descartarDetalle", data, baseDatos);
+DocumentosService.descartarDetalle = async (data) => {
+  return await Meteor.callSync("documentos.descartarDetalle", data);
 };
 
-DocumentosService.habilitarDetalle = async (data, baseDatos) => {
-  return await Meteor.callSync("documentos.habilitarDetalleDescartado", data, baseDatos);
+DocumentosService.habilitarDetalle = async (data) => {
+  return await Meteor.callSync("documentos.habilitarDetalleDescartado", data);
 };
 
-DocumentosService.validarXml = async (uuid, baseDatos) => {
-  return await Meteor.callSync("documentos.validarXml", uuid, baseDatos);
+DocumentosService.validarXml = async (data) => {
+  return await Meteor.callSync("documentos.validarXml", data);
 };
 
 export { DocumentosService };

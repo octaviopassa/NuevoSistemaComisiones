@@ -1,19 +1,19 @@
 const ProveedoresService = {};
 
-ProveedoresService.getAll = async (baseDatos) => {
-  return await Meteor.callSync("proveedores.getAll", baseDatos);
+ProveedoresService.getAll = async (servidor) => {
+  return await Meteor.callSync("proveedores.getAll", servidor);
 };
 
-ProveedoresService.getAllWithName = async (datos, baseDatos) => {
-  return await Meteor.callSync("proveedores.getAllWithName", datos, baseDatos);
+ProveedoresService.getAllWithName = async (datos) => {
+  return await Meteor.callSync("proveedores.getAllWithName", datos);
 };
 
-ProveedoresService.insert = async (datos, baseDatos) => {
-  return await Meteor.callSync("proveedores.insert", datos, baseDatos);
+ProveedoresService.insert = async (datos) => {
+  return await Meteor.callSync("proveedores.insert", datos);
 };
 
-ProveedoresService.update = async (datos, baseDatos) => {
-  return await Meteor.callSync("proveedores.update", datos, baseDatos);
+ProveedoresService.update = async (datos) => {
+  return await Meteor.callSync("proveedores.update", datos);
 };
 
 export { ProveedoresService };

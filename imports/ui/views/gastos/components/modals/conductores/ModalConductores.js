@@ -29,6 +29,7 @@ export const ModalConductores = ({
       {
         cod_usu: session.profile.COD_USU,
         baseDatos: session.profile.baseDatos,
+        servidor: session.profile.servidor,
       },
     ]
   );
@@ -49,14 +50,15 @@ export const ModalConductores = ({
     const data = {
       ...values,
       cod_usu: session.profile.COD_USU,
+      servidor: session.profile.servidor,
     };
 
     try {
       let result;
       if (conductor) {
-        result = await ConductoresService.update(data, session.profile.baseDatos);
+        result = await ConductoresService.update(data);
       } else {
-        result = await ConductoresService.insert(data, session.profile.baseDatos);
+        result = await ConductoresService.insert(data);
       }
 
       if (!result.isValid) {

@@ -4,28 +4,28 @@ GastosService.pagarA = async (datos) => {
   return await Meteor.callSync("gastos.pagarA", datos);
 };
 
-GastosService.getFolioProvisional = async (plaza, baseDatos) => {
-  return await Meteor.callSync("gastos.getFolioProvisional", plaza, baseDatos);
+GastosService.getFolioProvisional = async (datos) => {
+  return await Meteor.callSync("gastos.getFolioProvisional", datos);
 };
 
-GastosService.grabar = async (datos, baseDatos) => {
-  return await Meteor.callSync("gastos.grabar", datos, baseDatos);
+GastosService.grabar = async (datos) => {
+  return await Meteor.callSync("gastos.grabar", datos);
 };
 
-GastosService.grabarRenglon = async (datos, baseDatos) => {
-  return await Meteor.callSync("gastos.grabarRenglon", datos, baseDatos);
+GastosService.grabarRenglon = async (datos) => {
+  return await Meteor.callSync("gastos.grabarRenglon", datos);
 };
 
-GastosService.grabarGastoCombustible = async (datos, baseDatos) => {
-  return await Meteor.callSync("gastos.grabarGastoCombustible", datos, baseDatos);
+GastosService.grabarGastoCombustible = async (datos) => {
+  return await Meteor.callSync("gastos.grabarGastoCombustible", datos);
 };
 
-GastosService.consultar = async (datos, baseDatos) => {
-  return await Meteor.callSync("gastos.consultar", datos, baseDatos);
+GastosService.consultar = async (datos) => {
+  return await Meteor.callSync("gastos.consultar", datos);
 };
 
-GastosService.getProyectos = async (baseDatos) => {
-  return await Meteor.callSync("gastos.getProyectos", baseDatos);
+GastosService.getProyectos = async (servidor) => {
+  return await Meteor.callSync("gastos.getProyectos", servidor);
 };
 
 export { GastosService };

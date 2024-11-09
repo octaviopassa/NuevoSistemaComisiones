@@ -67,7 +67,9 @@ export const TableGastos = () => {
     gastosDate,
   } = useGastosData();
   const { data: dataTipoGastos } = useFetchData(TipoGastosService.getAll, [
-    session.profile.baseDatos,
+    {
+      servidor: session.profile.servidor,
+    },
   ]);
   const tipoGastos = dataTipoGastos?.map((tg) => ({
     value: tg.Codigo,
@@ -77,10 +79,10 @@ export const TableGastos = () => {
   const proveedoresOptions = async (inputValue) => {
     if (inputValue.length >= 3) {
       try {
-        const proveedores = await ProveedoresService.getAllWithName(
-          { search: inputValue },
-          session.profile.baseDatos
-        );
+        const proveedores = await ProveedoresService.getAllWithName({
+          search: inputValue,
+          servidor: session.profile.servidor,
+        });
         return proveedores.map((p) => ({
           value: p.Codigo,
           label: p.Nombre,
@@ -96,10 +98,10 @@ export const TableGastos = () => {
   const clientesOptions = async (inputValue) => {
     if (inputValue.length >= 3) {
       try {
-        const clientes = await ClientesService.getAllByName(
-          { search: inputValue },
-          session.profile.baseDatos
-        );
+        const clientes = await ClientesService.getAllByName({
+          search: inputValue,
+          servidor: session.profile.servidor,
+        });
 
         return clientes.map((p) => ({
           value: p.Codigo,
@@ -183,10 +185,10 @@ export const TableGastos = () => {
               (doc) => doc?.xmlArchivo?.uuid === uuidFiscal
             );
 
-            const existingInDatabase = await DocumentosService.validarXml(
-              uuidFiscal,
-              session.profile.baseDatos
-            );
+            const existingInDatabase = await DocumentosService.validarXml({
+              uuid: uuidFiscal,
+              servidor: session.profile.servidor,
+            });
 
             if (!existingInDatabase.isValid) {
               toastr.warning(existingInDatabase.message);
@@ -215,9 +217,10 @@ export const TableGastos = () => {
             return;
           }
 
-          const [empresaRfc] = await EmpresasService.getRFC(
-            session.profile.baseDatos
-          );
+          const [empresaRfc] = await EmpresasService.getRFC({
+            baseDatos: session.profile.baseDatos,
+            servidor: session.profile.servidor,
+          });
 
           if (tipo !== "I") {
             toastr.error("XML de tipo invalido, debe ser de tipo Ingreso");
@@ -683,10 +686,10 @@ export const TableGastos = () => {
         return;
       }
 
-      await DocumentosService.eliminarXML(
-        documentos[index].renglonId,
-        session.profile.baseDatos
-      );
+      await DocumentosService.eliminarXML({
+        id: documentos[index].renglonId,
+        servidor: session.profile.servidor,
+      });
     }
 
     setDocumentos(documentos.filter((_, i) => i !== index));
@@ -723,6 +726,7 @@ export const TableGastos = () => {
       plaza: plazaSeleccionada,
       detalleId: documento.renglonId,
       cod_usu: session.profile.COD_USU,
+      servidor: session.profile.servidor,
     };
 
     if (!data.detalleId) {
@@ -731,10 +735,7 @@ export const TableGastos = () => {
     }
 
     try {
-      const descartado = await DocumentosService.descartarDetalle(
-        data,
-        session.profile.baseDatos
-      );
+      const descartado = await DocumentosService.descartarDetalle(data);
 
       if (!descartado.isValid) {
         toastr.error("No se pudo descartar el detalle");
@@ -759,13 +760,11 @@ export const TableGastos = () => {
       plaza: plazaSeleccionada,
       detalleId: documento.renglonId,
       cod_usu: session.profile.COD_USU,
+      servidor: session.profile.servidor,
     };
 
     try {
-      const habilitado = await DocumentosService.habilitarDetalle(
-        data,
-        session.profile.baseDatos
-      );
+      const habilitado = await DocumentosService.habilitarDetalle(data);
 
       if (!habilitado.isValid) {
         toastr.error("No se pudo descartar el gasto");

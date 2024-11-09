@@ -19,11 +19,7 @@ Meteor.methods({
     WHERE ESTATUS= 'A' ${datos.cod_usu ? `AND COD_USU='${datos.cod_usu}'` : ""}
     `;
     conexiones.body_bdseleccionada.baseDatos = datos.baseDatos;
-    const [ip, _] = conexiones.body_bdseleccionada.servidor.split("\\");
-    conexiones.body_bdseleccionada.servidor = conexiones.getInstancia(
-      ip,
-      datos.baseDatos
-    );
+    conexiones.body_bdseleccionada.servidor = datos.servidor;
 
     const response = await axios.get(conexiones.windows_api, {
       data: conexiones.body_bdseleccionada,
@@ -33,17 +29,13 @@ Meteor.methods({
 
     return respuesta;
   },
-  "tipoGastos.getAll": async (baseDatos) => {
+  "tipoGastos.getAll": async (data) => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
       conexiones.body_bdseleccionada.query =
         "SELECT CODIGO_GASTO Codigo, NOMBRE_GASTO Nombre FROM CONSUMOS_PASSA..CAT_GASTOS ORDER BY NOMBRE_GASTO";
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
-      const [ip, _] = conexiones.body_bdseleccionada.servidor.split("\\");
-      conexiones.body_bdseleccionada.servidor = conexiones.getInstancia(
-        ip,
-        baseDatos
-      );
+      conexiones.body_bdseleccionada.servidor = data.servidor;
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
@@ -56,16 +48,12 @@ Meteor.methods({
       console.log(e);
     }
   },
-  "gastos.getFolioProvisional": async (plaza, baseDatos) => {
+  "gastos.getFolioProvisional": async (data) => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
-      conexiones.body_bdseleccionada.query = `exec MP_GENERA_FOLIO_SELECT @COD_DOC='GT', @MODULO='G', @PLAZA='${plaza}'`;
+      conexiones.body_bdseleccionada.query = `exec MP_GENERA_FOLIO_SELECT @COD_DOC='GT', @MODULO='G', @PLAZA='${data.plaza}'`;
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
-      const [ip, _] = conexiones.body_bdseleccionada.servidor.split("\\");
-      conexiones.body_bdseleccionada.servidor = conexiones.getInstancia(
-        ip,
-        baseDatos
-      );
+      conexiones.body_bdseleccionada.servidor = data.servidor;
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
@@ -78,7 +66,7 @@ Meteor.methods({
       console.log(e);
     }
   },
-  "gastos.grabar": async (datos, baseDatos) => {
+  "gastos.grabar": async (datos) => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
@@ -106,11 +94,7 @@ Meteor.methods({
         @EsWeb=1,
         @RFC_RECEPTOR='${datos.rfc}'
       `;
-      const [ip, _] = conexiones.body_bdseleccionada.servidor.split("\\");
-      conexiones.body_bdseleccionada.servidor = conexiones.getInstancia(
-        ip,
-        baseDatos
-      );
+      conexiones.body_bdseleccionada.servidor = datos.servidor;
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
@@ -125,7 +109,7 @@ Meteor.methods({
       console.log(e);
     }
   },
-  "gastos.grabarRenglon": async (datos, baseDatos) => {
+  "gastos.grabarRenglon": async (datos) => {
     try {
       const cadena_xml = datos.cadena_xml
         ? Buffer.from(datos.cadena_xml, "base64").toString("utf-8")
@@ -160,12 +144,7 @@ Meteor.methods({
         @CLIENTE='${datos.cliente}',
         @ROWUID_PDF_EN_SERVIBOX=''
       `;
-
-      const [ip, _] = conexiones.body_bdseleccionada.servidor.split("\\");
-      conexiones.body_bdseleccionada.servidor = conexiones.getInstancia(
-        ip,
-        baseDatos
-      );
+      conexiones.body_bdseleccionada.servidor = datos.servidor;
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
@@ -180,7 +159,7 @@ Meteor.methods({
       console.log(e);
     }
   },
-  "gastos.grabarGastoCombustible": async (datos, baseDatos) => {
+  "gastos.grabarGastoCombustible": async (datos) => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
@@ -201,12 +180,7 @@ Meteor.methods({
         @FOLIO_GASTO='${datos.folioGasto}',
         @ACCION='INSERTAR'
       `;
-
-      const [ip, _] = conexiones.body_bdseleccionada.servidor.split("\\");
-      conexiones.body_bdseleccionada.servidor = conexiones.getInstancia(
-        ip,
-        baseDatos
-      );
+      conexiones.body_bdseleccionada.servidor = datos.servidor;
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
@@ -229,7 +203,7 @@ Meteor.methods({
       console.log(e);
     }
   },
-  "gastos.consultar": async (datos, baseDatos) => {
+  "gastos.consultar": async (datos) => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
@@ -242,12 +216,7 @@ Meteor.methods({
         @CODIGO_VENDEDOR='${datos.vendedor}',
         @Cod_Usuario='${datos.cod_usu}'
       `;
-
-      const [ip, _] = conexiones.body_bdseleccionada.servidor.split("\\");
-      conexiones.body_bdseleccionada.servidor = conexiones.getInstancia(
-        ip,
-        baseDatos
-      );
+      conexiones.body_bdseleccionada.servidor = datos.servidor;
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
@@ -270,17 +239,13 @@ Meteor.methods({
       console.log(e);
     }
   },
-  "gastos.getProyectos": async (baseDatos) => {
+  "gastos.getProyectos": async (servidor) => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
       conexiones.body_bdseleccionada.query =
         "SELECT CODIGO_PROYECTO CODIGO,NOMBRE_PROYECTO NOMBRE FROM IANSA..CAT_PROYECTOS ORDER BY CODIGO_PROYECTO DESC";
-      const [ip, _] = conexiones.body_bdseleccionada.servidor.split("\\");
-      conexiones.body_bdseleccionada.servidor = conexiones.getInstancia(
-        ip,
-        baseDatos
-      );
+      conexiones.body_bdseleccionada.servidor = servidor;
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,

@@ -62,17 +62,17 @@ export const ModalCombustible = ({
         plazaSeleccionada,
         session.profile.baseDatos
       );
-      const vehiculos = await VehiculosService.getAll(
-        plazaSeleccionada,
-        session.profile.baseDatos
-      );
-      const conductores = await ConductoresService.getAll(
-        plazaSeleccionada,
-        session.profile.baseDatos
-      );
-      const combustibles = await CombustibleService.getAll(
-        session.profile.baseDatos
-      );
+      const vehiculos = await VehiculosService.getAll({
+        plaza: plazaSeleccionada,
+        servidor: session.profile.servidor,
+      });
+      const conductores = await ConductoresService.getAll({
+        plaza: plazaSeleccionada,
+        servidor: session.profile.servidor,
+      });
+      const combustibles = await CombustibleService.getAll({
+        servidor: session.profile.servidor,
+      });
 
       setVehiculos(
         vehiculos.map((obj) => ({

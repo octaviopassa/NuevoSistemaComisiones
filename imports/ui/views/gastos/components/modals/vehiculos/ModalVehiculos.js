@@ -27,7 +27,7 @@ export const ModalVehiculos = ({
   const { plazaSeleccionada: plaza } = useGastosData();
   const { data, isLoading: isLoadingConductores } = useFetchData(
     ConductoresService.getAllByPlazaAndCode,
-    [plaza, session.profile.baseDatos]
+    [{ plaza, servidor: session.profile.servidor }]
   );
 
   const conductores = data.map((conductor) => ({
@@ -50,13 +50,14 @@ export const ModalVehiculos = ({
     const data = {
       ...values,
       plaza,
+      servidor: session.profile.servidor,
     };
     try {
       let result;
       if (vehiculo) {
-        result = await VehiculosService.update(data, session.profile.baseDatos);
+        result = await VehiculosService.update(data);
       } else {
-        result = await VehiculosService.insert(data, session.profile.baseDatos);
+        result = await VehiculosService.insert(data);
       }
 
       if (!result.isValid) {

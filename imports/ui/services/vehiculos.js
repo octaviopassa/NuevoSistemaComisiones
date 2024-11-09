@@ -1,15 +1,15 @@
 const VehiculosService = {};
 
-VehiculosService.getAll = async (plaza, baseDatos) => {
-  return await Meteor.callSync("vehiculos.getAll", plaza, baseDatos);
+VehiculosService.getAll = async (plaza) => {
+  return await Meteor.callSync("vehiculos.getAll", plaza);
 };
 
-VehiculosService.insert = async (datos, baseDatos) => {
-  return await Meteor.callSync("vehiculos.insert", datos, baseDatos);
+VehiculosService.insert = async (datos) => {
+  return await Meteor.callSync("vehiculos.insert", datos);
 };
 
-VehiculosService.update = async (datos, baseDatos) => {
-  return await Meteor.callSync("vehiculos.update", datos, baseDatos);
+VehiculosService.update = async (datos) => {
+  return await Meteor.callSync("vehiculos.update", datos);
 };
 
 export { VehiculosService };

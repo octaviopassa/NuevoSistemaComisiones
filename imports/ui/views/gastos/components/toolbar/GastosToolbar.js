@@ -58,10 +58,11 @@ export const GastosToolbar = () => {
       const pagarAPromise = GastosService.pagarA({
         cod_usu: isConsulta ? "" : user.profile.COD_USU,
         baseDatos: user.profile.baseDatos,
+        servidor: user.profile.servidor,
       });
 
       const proyectosPromise = user.profile.MOSTRAR_COMBO_PROYECTO
-        ? GastosService.getProyectos(user.profile.baseDatos)
+        ? GastosService.getProyectos(user.profile.servidor)
         : null;
 
       const [obtenerPlazas, pagarAQuien, proyectosResponse] = await Promise.all(
@@ -93,10 +94,10 @@ export const GastosToolbar = () => {
     try {
       if (!folio && !history?.plaza && !history?.folio) {
         const [folioData, ingenierosData] = await Promise.all([
-          GastosService.getFolioProvisional(
-            plazaSeleccionada,
-            user.profile.baseDatos
-          ),
+          GastosService.getFolioProvisional({
+            plaza: plazaSeleccionada,
+            servidor: user.profile.servidor,
+          }),
           IngenierosService.getAll({
             plaza: plazaSeleccionada,
             baseDatos: user.profile.baseDatos,

@@ -209,7 +209,7 @@ Meteor.methods({
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
       conexiones.body_bdseleccionada.baseDatos = data.BASE_DATOS;
-
+      conexiones.body_bdseleccionada.servidor = data.SERVIDOR;
       conexiones.body_bdseleccionada.query = `
         EXEC MP_WEB_LOGIN  
           @NOMBRE_USUARIO='${data.params.nombre_usuario}', 

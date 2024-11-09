@@ -9,15 +9,12 @@ export const DesautorizarButton = ({ setLoading }) => {
   const { session } = useUserSession();
 
   const handleDesautorizado = async () => {
-    const data = {
-      folio,
-    };
     try {
       setLoading(true);
-      const desautorizado = await DocumentosService.desautorizarGasto(
-        data,
-        session.profile.baseDatos
-      );
+      const desautorizado = await DocumentosService.desautorizarGasto({
+        folio,
+        servidor: session.profile.servidor,
+      });
       if (!desautorizado.isValid) {
         toastr.error(desautorizado.message || "Error al desautorizar el gasto");
         return;

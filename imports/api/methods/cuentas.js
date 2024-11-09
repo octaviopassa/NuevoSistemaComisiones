@@ -2,21 +2,17 @@ import conexiones from "../../utils/config";
 import axios from "axios";
 
 Meteor.methods({
-  "cuentas.getBancos": async (baseDatos) => {
+  "cuentas.getBancos": async (data) => {
     try {
       conexiones.body_bdseleccionada.tipo = "consulta";
-      conexiones.body_bdseleccionada.baseDatos = baseDatos;
+      conexiones.body_bdseleccionada.baseDatos = data.baseDatos;
       conexiones.body_bdseleccionada.query = `SELECT 
         NOMBRE_BANCO CODIGO,
         NOMBRE_BANCO NOMBRE 
       FROM CAT_BANCOS 
       ORDER BY NOMBRE_BANCO
       `;
-      const [ip, _] = conexiones.body_bdseleccionada.servidor.split("\\");
-      conexiones.body_bdseleccionada.servidor = conexiones.getInstancia(
-        ip,
-        baseDatos
-      );
+      conexiones.body_bdseleccionada.servidor = data.servidor;
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
@@ -27,7 +23,7 @@ Meteor.methods({
       console.log(e);
     }
   },
-  "cuentas.insert": async (data, baseDatos) => {
+  "cuentas.insert": async (data) => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
@@ -45,12 +41,7 @@ Meteor.methods({
           @CODIGO_USUARIO_GRABO='${data.cod_usu}',
           @ACCION='INSERTAR'
         `;
-
-      const [ip, _] = conexiones.body_bdseleccionada.servidor.split("\\");
-      conexiones.body_bdseleccionada.servidor = conexiones.getInstancia(
-        ip,
-        baseDatos
-      );
+      conexiones.body_bdseleccionada.servidor = data.servidor;
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
@@ -65,7 +56,7 @@ Meteor.methods({
       console.log(error);
     }
   },
-  "cuentas.update": async (data, baseDatos) => {
+  "cuentas.update": async (data) => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
@@ -84,11 +75,7 @@ Meteor.methods({
             @ACCION='ACTUALIZAR'
           `;
 
-      const [ip, _] = conexiones.body_bdseleccionada.servidor.split("\\");
-      conexiones.body_bdseleccionada.servidor = conexiones.getInstancia(
-        ip,
-        baseDatos
-      );
+      conexiones.body_bdseleccionada.servidor = data.servidor;
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,

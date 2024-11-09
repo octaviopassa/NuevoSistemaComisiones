@@ -13,24 +13,22 @@ export const CancelarButton = ({ setLoading }) => {
     const data = {
       folio,
       cod_usu: session.profile.COD_USU,
+      servidor: session.profile.servidor,
     };
 
     try {
       setLoading(true);
-      const cancelado = await DocumentosService.cancelarGasto(
-        data,
-        session.profile.baseDatos
-      );
+      const cancelado = await DocumentosService.cancelarGasto(data);
 
       if (!cancelado.isValid) {
         toastr.error(cancelado.message || "Error al cancelar el gasto");
         return;
       }
 
-      const gasto = await DocumentosService.getGastoGlobal(
-        { plazaSeleccionada, ...data },
-        session.profile.baseDatos
-      );
+      const gasto = await DocumentosService.getGastoGlobal({
+        plazaSeleccionada,
+        ...data,
+      });
 
       setEstatus({
         ...estatus,

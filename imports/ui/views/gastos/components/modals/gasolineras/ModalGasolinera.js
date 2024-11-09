@@ -34,20 +34,15 @@ export const ModalGasolinera = ({
     const data = {
       ...values,
       plaza,
+      servidor: session.profile.servidor,
     };
 
     try {
       let result;
       if (gasolinera) {
-        result = await GasolinerasService.update(
-          data,
-          session.profile.baseDatos
-        );
+        result = await GasolinerasService.update(data);
       } else {
-        result = await GasolinerasService.insert(
-          data,
-          session.profile.baseDatos
-        );
+        result = await GasolinerasService.insert(data);
       }
 
       if (!result.isValid) {

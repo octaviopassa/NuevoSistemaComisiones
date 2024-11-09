@@ -8,10 +8,11 @@ export const ImprimirButton = () => {
   const { session } = useUserSession();
   const { plazaSeleccionada, folio } = useGastosData();
   const handlePrint = async () => {
-    const data = await ReportesService.generarReporte(
-      { plaza: plazaSeleccionada, folio },
-      session.profile.baseDatos
-    );
+    const data = await ReportesService.generarReporte({
+      plaza: plazaSeleccionada,
+      folio,
+      servidor: session.profile.servidor,
+    });
     printJS({
       printable: data,
       type: "pdf",
