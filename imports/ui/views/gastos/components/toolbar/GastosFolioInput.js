@@ -19,6 +19,7 @@ export const GastosFolioInput = () => {
     documentos,
     setMultiple,
     estatus,
+    empresa,
   } = useGastosData();
   const MySwal = withReactContent(Swal);
 
@@ -30,7 +31,7 @@ export const GastosFolioInput = () => {
       });
       handleFolioChange(history.folio);
     }
-  }, []);
+  }, [plazaSeleccionada]);
 
   const handleFolioInputChange = (e) => {
     setFolio(e.target.value);
@@ -45,11 +46,6 @@ export const GastosFolioInput = () => {
   const handleFolioChange = async (newFolio) => {
     if (!plazaSeleccionada && !history?.plaza) {
       toastr.error("Por favor, seleccione una plaza");
-      return;
-    }
-
-    if (newFolio.replace(/\d/g, "") !== "GC-") {
-      toastr.error("El folio debe tener un formato valido");
       return;
     }
 
@@ -81,16 +77,21 @@ export const GastosFolioInput = () => {
           folio: newFolio,
           plaza: plazaSeleccionada,
           cod_usu: session.profile.COD_USU,
+          servidor: session.profile.servidor,
         }),
-        DocumentosService.getGastosDetalle(newFolio),
-        DocumentosService.getResumen(newFolio),
+        DocumentosService.getGastosDetalle({
+          folio: newFolio,
+          servidor: session.profile.servidor,
+        }),
+        DocumentosService.getResumen({
+          folio: newFolio,
+          servidor: session.profile.servidor,
+        }),
       ]);
 
       const gastos = gastosData.data[0];
       const detalle = detalleData.data;
       const resumen = resumenData.data;
-
-      console.log(gastos)
 
       const newDocumentos = detalle.map((doc) => {
         return {
@@ -151,6 +152,7 @@ export const GastosFolioInput = () => {
         selectedIngeniero: gastos.ORIGEN === "I" ? gastos.CODIGO_VENDEDOR : "",
         folio: gastos.FOLIO_GASTO,
         gastosDate: format(new Date(gastos.FECHA), "yyyy-MM-dd"),
+        empresa: gastos.EMPRESA,
         estatus: {
           estatus: gastos.NOM_ESTATUS,
           grabo: `${gastos.NOM_USU_GRABO} ${format(
@@ -247,6 +249,10 @@ export const GastosFolioInput = () => {
           </button>
         </div>
       </div>
+
+      {empresa && (
+        <p className="font-weight-bold text-primary mt-2">{empresa}</p>
+      )}
     </div>
   );
 };

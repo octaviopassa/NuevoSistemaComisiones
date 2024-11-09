@@ -4,12 +4,12 @@ GastosService.pagarA = async (datos) => {
   return await Meteor.callSync("gastos.pagarA", datos);
 };
 
-GastosService.getFolioProvisional = async (plaza) => {
-  return await Meteor.callSync("gastos.getFolioProvisional", plaza);
+GastosService.getFolioProvisional = async (datos) => {
+  return await Meteor.callSync("gastos.getFolioProvisional", datos);
 };
 
-GastosService.grabar = async (datos, accion) => {
-  return await Meteor.callSync("gastos.grabar", datos, accion);
+GastosService.grabar = async (datos) => {
+  return await Meteor.callSync("gastos.grabar", datos);
 };
 
 GastosService.grabarRenglon = async (datos) => {
@@ -24,8 +24,8 @@ GastosService.consultar = async (datos) => {
   return await Meteor.callSync("gastos.consultar", datos);
 };
 
-GastosService.getProyectos = async () => {
-  return await Meteor.callSync("gastos.getProyectos");
+GastosService.getProyectos = async (servidor) => {
+  return await Meteor.callSync("gastos.getProyectos", servidor);
 };
 
 export { GastosService };

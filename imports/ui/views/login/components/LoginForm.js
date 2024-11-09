@@ -62,7 +62,10 @@ export const LoginForm = ({ empresas }) => {
             ...localUser,
             profile: {
               ...localUser.profile,
-              MOSTRAR_COMBO_PROYECTO: empresaData.MOSTRAR_COMBO_PROYECTO === "1",
+              MOSTRAR_COMBO_PROYECTO: Number(
+                empresaData.MOSTRAR_COMBO_PROYECTO
+              ),
+              servidor: empresaData.SERVIDOR,
             },
           });
           setAllowedModules(allowedModules);
@@ -116,7 +119,10 @@ export const LoginForm = ({ empresas }) => {
               ...usuario,
               profile: {
                 ...usuario.profile,
-                MOSTRAR_COMBO_PROYECTO: empresaData.MOSTRAR_COMBO_PROYECTO === "1",
+                MOSTRAR_COMBO_PROYECTO: Number(
+                  empresaData.MOSTRAR_COMBO_PROYECTO
+                ),
+                servidor: empresaData.SERVIDOR,
               },
             });
             setAllowedModules(allowedModules);

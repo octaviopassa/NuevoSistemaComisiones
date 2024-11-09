@@ -7,6 +7,7 @@ Meteor.methods({
       conexiones.body_bdseleccionada.tipo = "procedimientoAlmacenado";
       conexiones.body_bdseleccionada.baseDatos = "expedientes";
       conexiones.body_bdseleccionada.query = `dbo.MP_XML_GRABA_ARCHIVO`;
+      conexiones.body_bdseleccionada.servidor = datos.servidor;
       conexiones.body_bdseleccionada.parametros = [
         {
           parametro: "@ID_GASTO_DETALLE",
@@ -39,7 +40,7 @@ Meteor.methods({
           direccion: "entrada",
         },
       ];
-      console.log(conexiones.body_bdseleccionada);
+
       const response = await axios.post(
         conexiones.windows_api_post,
         conexiones.body_bdseleccionada,
@@ -72,6 +73,7 @@ Meteor.methods({
       conexiones.body_bdseleccionada.tipo = "procedimientoAlmacenado";
       conexiones.body_bdseleccionada.baseDatos = "expedientes";
       conexiones.body_bdseleccionada.query = `MP_GASTOS_GRABA_ARCHIVO_NOTA`;
+      conexiones.body_bdseleccionada.servidor = datos.servidor;
       conexiones.body_bdseleccionada.parametros = [
         {
           parametro: "@ID_GASTO_DETALLE",
@@ -136,6 +138,7 @@ Meteor.methods({
       conexiones.body_bdseleccionada.tipo = "procedimientoAlmacenado";
       conexiones.body_bdseleccionada.baseDatos = "expedientes";
       conexiones.body_bdseleccionada.query = `dbo.MP_GASTOS_SUBIR_XML_PDF`;
+      conexiones.body_bdseleccionada.servidor = datos.servidor;
       conexiones.body_bdseleccionada.parametros = [
         {
           parametro: "@FOLIO_GASTO",
@@ -174,7 +177,7 @@ Meteor.methods({
           direccion: "entrada",
         },
       ];
-      console.log(conexiones.body_bdseleccionada);
+
       const response = await axios.post(
         conexiones.windows_api_post,
         conexiones.body_bdseleccionada,
@@ -207,6 +210,7 @@ Meteor.methods({
       conexiones.body_bdseleccionada.tipo = "procedimientoAlmacenado";
       conexiones.body_bdseleccionada.baseDatos = "expedientes";
       conexiones.body_bdseleccionada.query = `dbo.MP_GASTOS_GRABA_ARCHIVO_NOTA`;
+      conexiones.body_bdseleccionada.servidor = datos.servidor;
       conexiones.body_bdseleccionada.parametros = [
         {
           parametro: "@ID_GASTO_DETALLE",
@@ -233,7 +237,7 @@ Meteor.methods({
           direccion: "entrada",
         },
       ];
-      console.log(conexiones.body_bdseleccionada);
+
       const response = await axios.post(
         conexiones.windows_api_post,
         conexiones.body_bdseleccionada,
@@ -261,14 +265,15 @@ Meteor.methods({
       console.log(error);
     }
   },
-  "documentos.eliminarXML": async (id) => {
+  "documentos.eliminarXML": async (datos) => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
       conexiones.body_bdseleccionada.baseDatos = "expedientes";
+      conexiones.body_bdseleccionada.servidor = datos.servidor;
       conexiones.body_bdseleccionada.query = `
               exec dbo.MP_GASTOS_INSERTAR_RENGLON_ELIMINADO
               @UUID='null',
-              @ID_Gasto_Detalle='${id}'
+              @ID_Gasto_Detalle='${datos.id}'
             `;
 
       const response = await axios.get(conexiones.windows_api, {
@@ -302,6 +307,7 @@ Meteor.methods({
               @PLAZA='${data.plaza}', 
               @COD_USUARIO='${data.cod_usu}' 
             `;
+      conexiones.body_bdseleccionada.servidor = data.servidor;
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
@@ -324,14 +330,15 @@ Meteor.methods({
       console.log(error);
     }
   },
-  "documentos.getGastosDetalle": async (folio) => {
+  "documentos.getGastosDetalle": async (data) => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
       conexiones.body_bdseleccionada.query = `
               EXEC DBO.MP_CONSULTA_WEB_REACT_GASTOS_DETALLE 
-              @FOLIO_GASTO='${folio}'
+              @FOLIO_GASTO='${data.folio}'
             `;
+      conexiones.body_bdseleccionada.servidor = data.servidor;
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
@@ -355,14 +362,15 @@ Meteor.methods({
       console.log(error);
     }
   },
-  "documentos.getResumen": async (folio) => {
+  "documentos.getResumen": async (data) => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
       conexiones.body_bdseleccionada.query = `
               EXEC MP_CONSULTA_WEB_REACT_OBTIENE_RESUMEN
-              @FOLIO_GASTO='${folio}'
+              @FOLIO_GASTO='${data.folio}'
             `;
+      conexiones.body_bdseleccionada.servidor = data.servidor;
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
@@ -395,6 +403,8 @@ Meteor.methods({
               @COD_USU='${data.cod_usu}' 
             `;
 
+      conexiones.body_bdseleccionada.servidor = data.servidor;
+
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
       });
@@ -424,6 +434,7 @@ Meteor.methods({
               exec MP_DESAUTORIZA_GASTO_GLOBAL 
               @FOLIO_GASTO='${data.folio}'
             `;
+      conexiones.body_bdseleccionada.servidor = data.servidor;
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
@@ -455,6 +466,7 @@ Meteor.methods({
               @FOLIO_GASTO='${data.folio}', 
               @COD_USU='${data.cod_usu}' 
             `;
+      conexiones.body_bdseleccionada.servidor = data.servidor;
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
@@ -489,6 +501,7 @@ Meteor.methods({
               @COD_USU='${data.cod_usu}', 
               @DESCARTADO='DESCARTADO' 
             `;
+      conexiones.body_bdseleccionada.servidor = data.servidor;
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
@@ -525,6 +538,7 @@ Meteor.methods({
               @COD_USU='${data.cod_usu}', 
               @DESCARTADO='' 
             `;
+      conexiones.body_bdseleccionada.servidor = data.servidor;
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
@@ -549,18 +563,19 @@ Meteor.methods({
       console.log(error);
     }
   },
-  "documentos.validarXml": async (uuid) => {
+  "documentos.validarXml": async (data) => {
     conexiones.body_bdseleccionada.tipo = "procedimiento";
     conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
+    conexiones.body_bdseleccionada.servidor = data.servidor;
 
     const queryGlobal = `
       MP_VALIDA_XML_EXISTE_UUID_EXPEDIENTES 
-      @UUID='${uuid}'
+      @UUID='${data.uuid}'
     `;
 
     const queryResumen = `
       MP_VALIDA_XML_EXISTE_UUID
-      @UUID='${uuid}'
+      @UUID='${data.uuid}'
     `;
 
     try {

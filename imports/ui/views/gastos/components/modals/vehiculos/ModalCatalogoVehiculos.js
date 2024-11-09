@@ -28,12 +28,15 @@ export const ModalCatalogoVehiculos = ({
   toggle,
   reloadDataCombustible,
 }) => {
-  const { plazaSeleccionada: plaza } = useGastosData();
+  const { plazaSeleccionada } = useGastosData();
   const {
     isLoading,
     data: vehiculos,
     reloadData,
-  } = useFetchData(VehiculosService.getAll, [{ plaza }]);
+  } = useFetchData(VehiculosService.getAll, [
+    plazaSeleccionada,
+    session.profile.baseDatos,
+  ]);
   const { searchText, setSearchText, filteredData } = useSearch(
     vehiculos || []
   );

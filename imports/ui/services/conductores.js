@@ -1,11 +1,11 @@
 const ConductoresService = {};
 
-ConductoresService.getAll = async (plaza) => {
-  return await Meteor.callSync("conductores.getAll", plaza);
+ConductoresService.getAll = async (data) => {
+  return await Meteor.callSync("conductores.getAll", data);
 };
 
-ConductoresService.getAllByPlazaAndCode = async (plaza, code) => {
-  return await Meteor.callSync("conductores.getAllByPlazaAndCode", plaza, code);
+ConductoresService.getAllByPlazaAndCode = async (data) => {
+  return await Meteor.callSync("conductores.getAllByPlazaAndCode", data);
 };
 
 ConductoresService.insert = async (data) => {

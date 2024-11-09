@@ -1,7 +1,7 @@
 const ProveedoresService = {};
 
-ProveedoresService.getAll = async () => {
-  return await Meteor.callSync("proveedores.getAll");
+ProveedoresService.getAll = async (servidor) => {
+  return await Meteor.callSync("proveedores.getAll", servidor);
 };
 
 ProveedoresService.getAllWithName = async (datos) => {

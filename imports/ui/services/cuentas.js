@@ -4,11 +4,11 @@ CuentasService.getBancos = async (baseDatos) => {
   return await Meteor.callSync("cuentas.getBancos", baseDatos);
 };
 
-CuentasService.insert = async (data) => {
+CuentasService.insert = async (data, baseDatos) => {
   return await Meteor.callSync("cuentas.insert", data);
 };
 
-CuentasService.update = async (data) => {
+CuentasService.update = async (data, baseDatos) => {
   return await Meteor.callSync("cuentas.update", data);
 };
 

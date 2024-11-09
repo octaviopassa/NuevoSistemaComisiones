@@ -17,7 +17,11 @@ Meteor.methods({
         EXEC MP_WEB_REACT_LOGIN_PAZAS_USUARIO
         @Cod_Usu='${datos.cod_usu}'
       `;
+
+      console.log(datos)
     conexiones.body_bdseleccionada.baseDatos = datos.baseDatos;
+    conexiones.body_bdseleccionada.servidor = datos.servidor;
+
     const response = await axios.get(conexiones.windows_api, {
       data: conexiones.body_bdseleccionada,
     });
@@ -28,11 +32,10 @@ Meteor.methods({
   },
   "ingenieros.getAll": async (datos) => {
     conexiones.body_bdseleccionada.tipo = "procedimiento";
-    conexiones.body_bdseleccionada.query =
-      "exec SPCB_Carga_Combo_Ingenieros @Plaza= '" +
-      datos.plaza +
-      "', @HTML = 0";
+    conexiones.body_bdseleccionada.query = `exec SPCB_Carga_Combo_Ingenieros @Plaza= '${datos.plaza}', @HTML = 0`;
     conexiones.body_bdseleccionada.baseDatos = datos.baseDatos;
+    conexiones.body_bdseleccionada.servidor = datos.servidor;
+
     const response = await axios.get(conexiones.windows_api, {
       data: conexiones.body_bdseleccionada,
     });
@@ -44,10 +47,10 @@ Meteor.methods({
   "combustibles.getAll": async (datos) => {
     try {
       conexiones.body_bdseleccionada.tipo = "consulta";
-      conexiones.body_bdseleccionada.query =
-        "SELECT TIPO_COMBUSTIBLE Codigo, NOM_TIPO_COMBUSTIBLE Nombre FROM CAT_TIPOS_COMBUSTIBLES";
-      console.log(conexiones.body_bdseleccionada.query);
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
+      conexiones.body_bdseleccionada.servidor = datos.servidor;
+      conexiones.body_bdseleccionada.query = `SELECT TIPO_COMBUSTIBLE Codigo, NOM_TIPO_COMBUSTIBLE Nombre FROM CAT_TIPOS_COMBUSTIBLES`;
+
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
       });
@@ -57,11 +60,12 @@ Meteor.methods({
       console.log(e);
     }
   },
-  "empresas.getRFC": async (database) => {
+  "empresas.getRFC": async (datos) => {
     try {
       conexiones.body_bdseleccionada.tipo = "consulta";
       conexiones.body_bdseleccionada.query = "SELECT rfc FROM facpars;";
-      conexiones.body_bdseleccionada.baseDatos = database;
+      conexiones.body_bdseleccionada.baseDatos = datos.baseDatos;
+      conexiones.body_bdseleccionada.servidor = datos.servidor;
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,

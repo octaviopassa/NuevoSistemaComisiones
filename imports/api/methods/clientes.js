@@ -2,12 +2,12 @@ import conexiones from "../../utils/config";
 import axios from "axios";
 
 Meteor.methods({
-  "clientes.getAll": async () => {
+  "clientes.getAll": async (data) => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
-      conexiones.body_bdseleccionada.query =
-        "EXEC MP_CAT_CLIENTES_CONSULTA @CODIGO_CLIENTE=''";
+      conexiones.body_bdseleccionada.query = `EXEC MP_CAT_CLIENTES_CONSULTA @CODIGO_CLIENTE=''`;
+      conexiones.body_bdseleccionada.servidor = data.servidor;
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
@@ -21,11 +21,10 @@ Meteor.methods({
   "clientes.getAllByName": async (datos) => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
-      conexiones.body_bdseleccionada.query =
-        "Exec MP_Consulta_Clientes_Consumos_Nombre_RFC @Texto_Buscar ='" +
-        datos.search +
-        "'";
+      conexiones.body_bdseleccionada.query = `Exec MP_Consulta_Clientes_Consumos_Nombre_RFC @Texto_Buscar ='${datos.search}'`;
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
+      conexiones.body_bdseleccionada.servidor = datos.servidor;
+
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
       });
@@ -38,11 +37,9 @@ Meteor.methods({
   "clientes.clientesVisible": async (datos) => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
-      conexiones.body_bdseleccionada.query =
-        "SELECT MOSTRAR_COLUMNA_CLIENTES FROM empresas..CAT_DB_EMPRESAS WHERE BASE_DATOS='" +
-        datos.baseDatos +
-        "'";
+      conexiones.body_bdseleccionada.query = `SELECT MOSTRAR_COLUMNA_CLIENTES FROM empresas..CAT_DB_EMPRESAS WHERE BASE_DATOS='${datos.baseDatos}'`;
       conexiones.body_bdseleccionada.baseDatos = datos.baseDatos;
+      conexiones.body_bdseleccionada.servidor = datos.servidor;
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
@@ -68,6 +65,7 @@ Meteor.methods({
         @COD_USUARIO_GRABO='${datos.cod_usu}',
         @ACCION='INSERTAR'
       `;
+      conexiones.body_bdseleccionada.servidor = datos.servidor;
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
@@ -95,6 +93,7 @@ Meteor.methods({
         @COD_USUARIO_GRABO='${datos.cod_usu}',
         @ACCION='ACTUALIZAR'
       `;
+      conexiones.body_bdseleccionada.servidor = datos.servidor;
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,

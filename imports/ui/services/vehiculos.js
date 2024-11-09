@@ -1,7 +1,7 @@
 const VehiculosService = {};
 
-VehiculosService.getAll = async (datos) => {
-  return await Meteor.callSync("vehiculos.getAll", datos);
+VehiculosService.getAll = async (plaza) => {
+  return await Meteor.callSync("vehiculos.getAll", plaza);
 };
 
 VehiculosService.insert = async (datos) => {

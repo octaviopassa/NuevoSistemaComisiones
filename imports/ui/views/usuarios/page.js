@@ -162,7 +162,6 @@ const Usuarios = () => {
         });
       } else if (role.name == "Admin" || role.name == "SuperAdmin") {
         AdministratorServices.getAll().then((response) => {
-          console.log(response);
           setUsuarios(response);
           window.usuarios = response;
         });

@@ -15,6 +15,7 @@ import { ConductoresService, VehiculosService } from "../../../../../services";
 import Select from "react-select";
 import { useFetchData } from "../../../../../hooks";
 import { useGastosData } from "../../../store";
+import { useUserSession } from "../../../../../store";
 
 export const ModalVehiculos = ({
   isModalOpen,
@@ -22,10 +23,11 @@ export const ModalVehiculos = ({
   vehiculo,
   reloadData,
 }) => {
+  const { session } = useUserSession();
   const { plazaSeleccionada: plaza } = useGastosData();
   const { data, isLoading: isLoadingConductores } = useFetchData(
     ConductoresService.getAllByPlazaAndCode,
-    [plaza]
+    [{ plaza, servidor: session.profile.servidor }]
   );
 
   const conductores = data.map((conductor) => ({
@@ -47,25 +49,25 @@ export const ModalVehiculos = ({
   const handleSubmit = async (values) => {
     const data = {
       ...values,
-      plaza
-    }
+      plaza,
+      servidor: session.profile.servidor,
+    };
     try {
-        let result;
-        if (vehiculo) {
-          result = await VehiculosService.update(data);
-        } else {
-          result = await VehiculosService.insert(data);
-        }
+      let result;
+      if (vehiculo) {
+        result = await VehiculosService.update(data);
+      } else {
+        result = await VehiculosService.insert(data);
+      }
 
-        if (!result.isValid) {
-          toastr.error(result.message);
-          return;
-        }
+      if (!result.isValid) {
+        toastr.error(result.message);
+        return;
+      }
 
-        toastr.success(
-          result.message ||
-            `${vehiculo ? "Actualizado" : "Creado"} correctamente`
-        );
+      toastr.success(
+        result.message || `${vehiculo ? "Actualizado" : "Creado"} correctamente`
+      );
       toggle();
       reloadData();
     } catch (error) {

@@ -1,7 +1,7 @@
 const TipoGastosService = {};
 
-TipoGastosService.getAll = async () => {
-  return await Meteor.callSync("tipoGastos.getAll");
+TipoGastosService.getAll = async (baseDatos) => {
+  return await Meteor.callSync("tipoGastos.getAll", baseDatos);
 };
 
 export { TipoGastosService };

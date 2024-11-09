@@ -2,11 +2,12 @@ import conexiones from "../../utils/config";
 import axios from "axios";
 
 Meteor.methods({
-  "gasolineras.getAll": async (plaza) => {
+  "gasolineras.getAll": async (data) => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
-      conexiones.body_bdseleccionada.query = `exec dbo.SP_Cat_Gasolineras_Consulta @Cod_Gasolinera='', @Nom_Gasolinera='', @Estatus='', @Cod_Plaza='${plaza}'`;
+      conexiones.body_bdseleccionada.query = `exec dbo.SP_Cat_Gasolineras_Consulta @Cod_Gasolinera='', @Nom_Gasolinera='', @Estatus='', @Cod_Plaza='${data.plaza}'`;
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
+      conexiones.body_bdseleccionada.servidor = data.servidor;
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
@@ -29,6 +30,7 @@ Meteor.methods({
         @Cod_Plaza='${data.plaza}',
         @Accion='Insertar'
       `;
+      conexiones.body_bdseleccionada.servidor = data.servidor;
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
@@ -57,6 +59,7 @@ Meteor.methods({
         @Cod_Plaza='${data.plaza}',
         @Accion='Actualizar'
       `;
+      conexiones.body_bdseleccionada.servidor = data.servidor;
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
@@ -72,12 +75,3 @@ Meteor.methods({
     }
   },
 });
-
-/**
- exec [MP_CATALOGOS_GASOLINERAS_GRABA] 
-  @Codigo_Gasolinera='0',
-  @Nombre_Gasolinera='prueba',
-  @Estatus='A',
-  @Cod_Plaza='01',
-  @Accion='Insertar'
- */

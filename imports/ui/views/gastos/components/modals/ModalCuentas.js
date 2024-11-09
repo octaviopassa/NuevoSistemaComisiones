@@ -27,7 +27,12 @@ export const ModalCuentas = ({ isModalOpen, toggle, cuenta, reloadData }) => {
   const { session } = useUserSession();
   const { data, isLoading: isLoadingBancos } = useFetchData(
     CuentasService.getBancos,
-    [session.profile.baseDatos]
+    [
+      {
+        baseDatos: session.profile.baseDatos,
+        servidor: session.profile.servidor,
+      },
+    ]
   );
 
   const bancos = data?.map((banco) => ({
@@ -51,6 +56,7 @@ export const ModalCuentas = ({ isModalOpen, toggle, cuenta, reloadData }) => {
     const data = {
       ...values,
       cod_usu: session.profile.COD_USU,
+      servidor: session.profile.servidor,
     };
     try {
       let result;

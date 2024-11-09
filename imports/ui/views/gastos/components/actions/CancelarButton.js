@@ -13,6 +13,7 @@ export const CancelarButton = ({ setLoading }) => {
     const data = {
       folio,
       cod_usu: session.profile.COD_USU,
+      servidor: session.profile.servidor,
     };
 
     try {
@@ -33,7 +34,8 @@ export const CancelarButton = ({ setLoading }) => {
         ...estatus,
         estatus: "CANCELADO",
         cancelo: `${gasto.data[0].NOM_USU_CANCELO} - ${format(
-          new Date(gasto.data[0].FECHA_CANCELACION), "dd/MM/yyyy"
+          new Date(gasto.data[0].FECHA_CANCELACION),
+          "dd/MM/yyyy"
         )}`,
       });
       toastr.success("Se ha cancelado el gasto");

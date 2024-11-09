@@ -33,6 +33,7 @@ export const ModalProveedores = ({
     const data = {
       ...values,
       cod_usu: session.profile.COD_USU,
+      servidor: session.profile.servidor,
     };
 
     try {

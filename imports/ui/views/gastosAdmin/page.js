@@ -48,6 +48,7 @@ const GastosAdmin = () => {
       cod_usu: session.profile.TIENE_ACCESO_VER_TODOS_GASTOS
         ? "0"
         : session.profile.COD_USU,
+      servidor: session.profile.servidor,
     };
     try {
       setLoading(true);

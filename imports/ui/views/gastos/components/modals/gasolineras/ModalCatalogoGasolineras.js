@@ -22,18 +22,23 @@ import { ModalButton } from "../ModalButton";
 import { GasolinerasService } from "../../../../../services";
 import { useGastosData } from "../../../store";
 import { ModalGasolinera } from "./ModalGasolinera";
+import { useUserSession } from "../../../../../store";
 
 export const ModalCatalogoGasolineras = ({
   isModalOpen,
   toggle,
   reloadDataCombustible,
 }) => {
+  const { session } = useUserSession();
   const { plazaSeleccionada: plaza } = useGastosData();
   const {
     isLoading,
     data: gasolineras,
     reloadData,
-  } = useFetchData(GasolinerasService.getAll, [plaza]);
+  } = useFetchData(GasolinerasService.getAll, [
+    plaza,
+    session.profile.baseDatos,
+  ]);
   const { searchText, setSearchText, filteredData } = useSearch(
     gasolineras || []
   );

@@ -32,6 +32,7 @@ const GastosAdminFilters = ({ filters, setFilters }) => {
       const obtenerPlazas = await PlazasService.getAll({
         cod_usu: session.profile.COD_USU,
         baseDatos: session.profile.baseDatos,
+        servidor: session.profile.servidor,
       });
 
       setPlazas(
@@ -49,6 +50,7 @@ const GastosAdminFilters = ({ filters, setFilters }) => {
       const obtenerVendedores = await IngenierosService.getAll({
         plaza: plazaSeleccionada,
         baseDatos: session.profile.baseDatos,
+        servidor: session.profile.servidor,
       });
       setVendedores(obtenerVendedores);
     } catch (error) {

@@ -66,7 +66,11 @@ export const TableGastos = () => {
     plazaSeleccionada,
     gastosDate,
   } = useGastosData();
-  const { data: dataTipoGastos } = useFetchData(TipoGastosService.getAll);
+  const { data: dataTipoGastos } = useFetchData(TipoGastosService.getAll, [
+    {
+      servidor: session.profile.servidor,
+    },
+  ]);
   const tipoGastos = dataTipoGastos?.map((tg) => ({
     value: tg.Codigo,
     label: tg.Nombre,
@@ -77,6 +81,7 @@ export const TableGastos = () => {
       try {
         const proveedores = await ProveedoresService.getAllWithName({
           search: inputValue,
+          servidor: session.profile.servidor,
         });
         return proveedores.map((p) => ({
           value: p.Codigo,
@@ -95,6 +100,7 @@ export const TableGastos = () => {
       try {
         const clientes = await ClientesService.getAllByName({
           search: inputValue,
+          servidor: session.profile.servidor,
         });
 
         return clientes.map((p) => ({
@@ -179,9 +185,10 @@ export const TableGastos = () => {
               (doc) => doc?.xmlArchivo?.uuid === uuidFiscal
             );
 
-            const existingInDatabase = await DocumentosService.validarXml(
-              uuidFiscal
-            );
+            const existingInDatabase = await DocumentosService.validarXml({
+              uuid: uuidFiscal,
+              servidor: session.profile.servidor,
+            });
 
             if (!existingInDatabase.isValid) {
               toastr.warning(existingInDatabase.message);
@@ -210,9 +217,10 @@ export const TableGastos = () => {
             return;
           }
 
-          const [empresaRfc] = await EmpresasService.getRFC(
-            session.profile.baseDatos
-          );
+          const [empresaRfc] = await EmpresasService.getRFC({
+            baseDatos: session.profile.baseDatos,
+            servidor: session.profile.servidor,
+          });
 
           if (tipo !== "I") {
             toastr.error("XML de tipo invalido, debe ser de tipo Ingreso");
@@ -678,7 +686,10 @@ export const TableGastos = () => {
         return;
       }
 
-      await DocumentosService.eliminarXML(documentos[index].renglonId);
+      await DocumentosService.eliminarXML({
+        id: documentos[index].renglonId,
+        servidor: session.profile.servidor,
+      });
     }
 
     setDocumentos(documentos.filter((_, i) => i !== index));
@@ -715,6 +726,7 @@ export const TableGastos = () => {
       plaza: plazaSeleccionada,
       detalleId: documento.renglonId,
       cod_usu: session.profile.COD_USU,
+      servidor: session.profile.servidor,
     };
 
     if (!data.detalleId) {
@@ -748,6 +760,7 @@ export const TableGastos = () => {
       plaza: plazaSeleccionada,
       detalleId: documento.renglonId,
       cod_usu: session.profile.COD_USU,
+      servidor: session.profile.servidor,
     };
 
     try {

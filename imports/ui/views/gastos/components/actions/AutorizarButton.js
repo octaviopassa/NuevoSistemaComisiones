@@ -12,6 +12,7 @@ export const AutorizarButton = ({ setLoading }) => {
     const data = {
       folio,
       cod_usu: session.profile.COD_USU,
+      servidor: session.profile.servidor,
     };
 
     try {

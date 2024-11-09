@@ -28,6 +28,7 @@ export const ModalClientes = ({ isModalOpen, toggle, cliente, reloadData }) => {
     const data = {
       ...values,
       cod_usu: session.profile.COD_USU,
+      servidor: session.profile.servidor,
     };
 
     try {

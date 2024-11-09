@@ -1,7 +1,7 @@
 const ClientesService = {};
 
-ClientesService.getAll = async () => {
-  return await Meteor.callSync("clientes.getAll");
+ClientesService.getAll = async (datos) => {
+  return await Meteor.callSync("clientes.getAll", datos);
 };
 
 ClientesService.getAllByName = async (datos) => {

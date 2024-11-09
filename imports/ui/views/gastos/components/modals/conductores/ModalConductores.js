@@ -29,6 +29,7 @@ export const ModalConductores = ({
       {
         cod_usu: session.profile.COD_USU,
         baseDatos: session.profile.baseDatos,
+        servidor: session.profile.servidor,
       },
     ]
   );
@@ -49,6 +50,7 @@ export const ModalConductores = ({
     const data = {
       ...values,
       cod_usu: session.profile.COD_USU,
+      servidor: session.profile.servidor,
     };
 
     try {

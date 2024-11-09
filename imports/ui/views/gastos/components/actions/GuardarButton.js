@@ -68,7 +68,10 @@ export const GuardarButton = ({ setLoading }) => {
       let newFolio = folio;
 
       if (estatus.estatus === "Nuevo") {
-        const [rfc] = await EmpresasService.getRFC(session.profile.baseDatos);
+        const [rfc] = await EmpresasService.getRFC({
+          baseDatos: session.profile.baseDatos,
+          servidor: session.profile.servidor,
+        });
 
         const dataGastoGlobal = {
           plaza: plazaSeleccionada,
@@ -84,24 +87,24 @@ export const GuardarButton = ({ setLoading }) => {
           iva: totalImportes.iva_16 + totalImportes.iva_8,
           rfc: rfc.rfc,
           ...totalImportes,
+          servidor: session.profile.servidor,
         };
 
-        
         const { observaciones, ...dataToValidate } = dataGastoGlobal;
-        
+
         const areFieldsValid = Object.values(dataToValidate).every(
           (value) => value !== "" && value !== null && value !== undefined
         );
-        
+
         if (!areFieldsValid) {
           toastr.warning("Por favor, llene todos los campos requeridos.");
           return;
         }
-  
+
         if (session.profile.MOSTRAR_COMBO_PROYECTO) {
           dataGastoGlobal.proyecto = proyectoSeleccionado || "0";
         }
-        
+
         const grabadoGlobal = await GastosService.grabar(dataGastoGlobal);
 
         if (!grabadoGlobal.isValid) {
@@ -178,6 +181,7 @@ export const GuardarButton = ({ setLoading }) => {
               session.profile.WEB_REACT_CLIENTE_OBLIGATORIO
                 ? documento.detalleGasto.label
                 : "",
+            servidor: session.profile.servidor,
           };
 
           const grabarRenglon = await GastosService.grabarRenglon(
@@ -212,6 +216,7 @@ export const GuardarButton = ({ setLoading }) => {
               gasolinera: detalleGasto.gasolinera.value,
               plaza: plazaSeleccionada,
               folioGasto: newFolio,
+              servidor: session.profile.servidor,
             };
 
             const grabarGastoCombustible =
@@ -228,6 +233,7 @@ export const GuardarButton = ({ setLoading }) => {
             nombre_xml: xmlArchivo?.nombre || "",
             archivo: xmlArchivo?.contenido || "",
             cod_usu: session.profile.COD_USU,
+            servidor: session.profile.servidor,
           });
 
           if (!xmlGrabo?.isValid) console.error(xmlGrabo);
@@ -237,6 +243,7 @@ export const GuardarButton = ({ setLoading }) => {
             nombre_pdf: documento?.pdfArchivo?.nombre || "",
             archivo: documento?.pdfArchivo?.contenido,
             cod_usu: session.profile.COD_USU,
+            servidor: session.profile.servidor,
           });
 
           if (!pdfGrabo?.isValid) console.error(pdfGrabo);
@@ -248,6 +255,7 @@ export const GuardarButton = ({ setLoading }) => {
             archivo_pdf: documento?.pdfArchivo?.contenido || "",
             cadena_xml: xmlArchivo?.contenido,
             cod_usu: session.profile.COD_USU,
+            servidor: session.profile.servidor,
           });
 
           if (!grabarDocGlobal?.isValid) console.error(grabarDocGlobal);
@@ -261,17 +269,22 @@ export const GuardarButton = ({ setLoading }) => {
                 "documento.pdf",
               archivo: documento?.pdfArchivo?.contenido,
               cod_usu: session.profile.COD_USU,
+              servidor: session.profile.servidor,
             });
 
           if (!grabadoArchivosGlobal?.isValid)
             console.error(grabadoArchivosGlobal);
 
           const [resumenData, gastoGlobalData] = await Promise.all([
-            DocumentosService.getResumen(newFolio),
+            DocumentosService.getResumen({
+              folio: newFolio,
+              servidor: session.profile.servidor,
+            }),
             DocumentosService.getGastoGlobal({
               folio: newFolio,
               plaza: plazaSeleccionada,
               cod_usu: session.profile.COD_USU,
+              servidor: session.profile.servidor,
             }),
           ]);
 

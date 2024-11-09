@@ -1,7 +1,7 @@
 const GasolinerasService = {};
 
-GasolinerasService.getAll = async (plaza) => {
-  return await Meteor.callSync("gasolineras.getAll", plaza);
+GasolinerasService.getAll = async (data) => {
+  return await Meteor.callSync("gasolineras.getAll", data);
 };
 
 GasolinerasService.insert = async (data) => {

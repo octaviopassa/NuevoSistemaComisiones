@@ -9,6 +9,7 @@ Meteor.methods({
       datos.search +
       "'";
     conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
+    conexiones.body_bdseleccionada.servidor = datos.servidor;
 
     const response = await axios.get(conexiones.windows_api, {
       data: conexiones.body_bdseleccionada,
@@ -18,12 +19,13 @@ Meteor.methods({
 
     return respuesta;
   },
-  "proveedores.getAll": async () => {
+  "proveedores.getAll": async (servidor) => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
       conexiones.body_bdseleccionada.query =
         "exec SP_CAT_PROVEEDORES_Consulta @Cod_Proveedor=''";
+      conexiones.body_bdseleccionada.servidor = servidor;
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
@@ -62,6 +64,7 @@ Meteor.methods({
         @Estatus='${datos.estatus ? "A" : "B"}',
         @COD_USUARIO_GRABO='${datos.cod_usu}'
       `;
+      conexiones.body_bdseleccionada.servidor = datos.servidor;
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
@@ -88,6 +91,7 @@ Meteor.methods({
         @Estatus='${datos.estatus ? "A" : "B"}',
         @COD_USUARIO_GRABO='${datos.cod_usu}'
       `;
+      conexiones.body_bdseleccionada.servidor = servidor;
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,

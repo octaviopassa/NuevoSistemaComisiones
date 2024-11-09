@@ -14,6 +14,7 @@ Meteor.methods({
   "reportes.generarReporte": async function (data) {
     conexiones.body_bdseleccionada.tipo = "procedimiento";
     conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
+    conexiones.body_bdseleccionada.servidor = data.servidor;
 
     const queryGlobal = `
       exec Mp_rpt_gastos 

@@ -43,9 +43,12 @@ export const GastosToolbar = () => {
   }, [user.profile.COD_USU, user.profile.baseDatos, reloadData, folio]);
 
   useEffect(() => {
-    if (plazaSeleccionada) getFolioIgenieros();
-    console.log("new ");
-  }, [plazaSeleccionada, folio]);
+    getFolio();
+  }, [plazaSeleccionada]);
+
+  useEffect(() => {
+    if (plazaSeleccionada) getIngenieros();
+  }, [folio]);
 
   const cargaInicial = async () => {
     try {
@@ -54,15 +57,17 @@ export const GastosToolbar = () => {
       const plazasPromise = PlazasService.getAll({
         cod_usu: user.profile.COD_USU,
         baseDatos: user.profile.baseDatos,
+        servidor: user.profile.servidor,
       });
 
       const pagarAPromise = GastosService.pagarA({
         cod_usu: isConsulta ? "" : user.profile.COD_USU,
         baseDatos: user.profile.baseDatos,
+        servidor: user.profile.servidor,
       });
 
       const proyectosPromise = user.profile.MOSTRAR_COMBO_PROYECTO
-        ? GastosService.getProyectos()
+        ? GastosService.getProyectos(user.profile.servidor)
         : null;
 
       const [obtenerPlazas, pagarAQuien, proyectosResponse] = await Promise.all(
@@ -80,36 +85,39 @@ export const GastosToolbar = () => {
         }))
       );
 
+      if (obtenerPlazas.length === 1) {
+        setPlazaSeleccionada(obtenerPlazas[0].CODIGO);
+      }
+
       setPagarA(pagarAQuien);
     } catch (error) {
       console.error("Error durante la carga inicial", error);
     }
   };
 
-  const getFolioIgenieros = async () => {
+  const getIngenieros = async () => {
     try {
-      if (!folio && !history?.plaza && !history?.folio) {
-        const [folioData, ingenierosData] = await Promise.all([
-          GastosService.getFolioProvisional(plazaSeleccionada),
-          IngenierosService.getAll({
-            plaza: plazaSeleccionada,
-            baseDatos: user.profile.baseDatos,
-          }),
-        ]);
-        setFolio(folioData[0]?.Folio || "");
-        setIngenieros(ingenierosData);
-
-        return;
-      }
-
       const ingenierosData = await IngenierosService.getAll({
         plaza: plazaSeleccionada,
         baseDatos: user.profile.baseDatos,
+        servidor: user.profile.servidor,
       });
 
       setIngenieros(ingenierosData);
     } catch (error) {
-      console.error("Error en getFolioIgenieros", error);
+      console.error("Error en getIngenieros", error);
+    }
+  };
+
+  const getFolio = async () => {
+    try {
+      const data = await GastosService.getFolioProvisional({
+        plaza: plazaSeleccionada,
+        servidor: user.profile.servidor,
+      });
+      setFolio(data[0]?.Folio || "");
+    } catch (error) {
+      console.error("Error en getFolioProvisional", error);
     }
   };
 
@@ -277,29 +285,31 @@ export const GastosToolbar = () => {
               />
             )}
           </div>
-          <div className="input-group">
-            <div className="input-group-prepend">
-              <label className="input-group-text" htmlFor="selectCuenta">
-                Proyecto:
-              </label>
+          {user.profile.MOSTRAR_COMBO_PROYECTO ? (
+            <div className="input-group">
+              <div className="input-group-prepend">
+                <label className="input-group-text" htmlFor="selectCuenta">
+                  Proyecto:
+                </label>
+              </div>
+              <select
+                className="custom-select"
+                id="selectCuenta"
+                disabled={
+                  estatus.estatus !== "Nuevo" && estatus.estatus !== "GRABADO"
+                }
+                onChange={(e) => setProyectoSeleccionado(e.target.value)}
+                value={proyectoSeleccionado}
+              >
+                <option value="">Seleccione un proyecto</option>
+                {proyectos?.map((proyecto) => (
+                  <option key={proyecto.CODIGO} value={proyecto.CODIGO}>
+                    {proyecto.NOMBRE}
+                  </option>
+                ))}
+              </select>
             </div>
-            <select
-              className="custom-select"
-              id="selectCuenta"
-              disabled={
-                estatus.estatus !== "Nuevo" && estatus.estatus !== "GRABADO"
-              }
-              onChange={(e) => setProyectoSeleccionado(e.target.value)}
-              value={proyectoSeleccionado}
-            >
-              <option value="">Seleccione un proyecto</option>
-              {proyectos?.map((proyecto) => (
-                <option key={proyecto.CODIGO} value={proyecto.CODIGO}>
-                  {proyecto.NOMBRE}
-                </option>
-              ))}
-            </select>
-          </div>
+          ) : null}
         </div>
       </div>
     </>

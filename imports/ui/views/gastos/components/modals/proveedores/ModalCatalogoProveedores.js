@@ -21,11 +21,15 @@ import {
 import { ModalButton } from "../ModalButton";
 import { ModalProveedores } from "./ModalProveedores";
 import { ProveedoresService } from "../../../../../services";
+import { useUserSession } from "../../../../../store";
 
 export const ModalCatalogoProveedores = ({ isModalOpen, toggle }) => {
-  const { isLoading, data: proveedores, reloadData } = useFetchData(
-    ProveedoresService.getAll
-  );
+  const { session } = useUserSession();
+  const {
+    isLoading,
+    data: proveedores,
+    reloadData,
+  } = useFetchData(ProveedoresService.getAll, [session.profile.servidor]);
   const { searchText, setSearchText, filteredData } = useSearch(
     proveedores || []
   );
