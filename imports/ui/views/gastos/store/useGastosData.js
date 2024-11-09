@@ -60,6 +60,7 @@ export const useGastosData = create(
         isCheckedSucursal: true,
         proyectoSeleccionado: "",
         documentos: [],
+        empresa: "",
         pagarASeleccionado: "",
         selectedIngeniero: "",
         gastosDate: format(new Date(), "yyyy-MM-dd"),
