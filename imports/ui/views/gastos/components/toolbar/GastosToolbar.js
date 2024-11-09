@@ -43,8 +43,12 @@ export const GastosToolbar = () => {
   }, [user.profile.COD_USU, user.profile.baseDatos, reloadData, folio]);
 
   useEffect(() => {
-    if (plazaSeleccionada) getFolioIgenieros();
-  }, [plazaSeleccionada, folio]);
+    getFolio();
+  }, [plazaSeleccionada]);
+
+  useEffect(() => {
+    if (plazaSeleccionada) getIngenieros();
+  }, [folio]);
 
   const cargaInicial = async () => {
     try {
@@ -53,6 +57,7 @@ export const GastosToolbar = () => {
       const plazasPromise = PlazasService.getAll({
         cod_usu: user.profile.COD_USU,
         baseDatos: user.profile.baseDatos,
+        servidor: user.profile.servidor,
       });
 
       const pagarAPromise = GastosService.pagarA({
@@ -90,33 +95,29 @@ export const GastosToolbar = () => {
     }
   };
 
-  const getFolioIgenieros = async () => {
+  const getIngenieros = async () => {
     try {
-      if (!folio && !history?.plaza && !history?.folio) {
-        const [folioData, ingenierosData] = await Promise.all([
-          GastosService.getFolioProvisional({
-            plaza: plazaSeleccionada,
-            servidor: user.profile.servidor,
-          }),
-          IngenierosService.getAll({
-            plaza: plazaSeleccionada,
-            baseDatos: user.profile.baseDatos,
-          }),
-        ]);
-        setFolio(folioData[0]?.Folio || "");
-        setIngenieros(ingenierosData);
-
-        return;
-      }
-
       const ingenierosData = await IngenierosService.getAll({
         plaza: plazaSeleccionada,
         baseDatos: user.profile.baseDatos,
+        servidor: user.profile.servidor,
       });
 
       setIngenieros(ingenierosData);
     } catch (error) {
-      console.error("Error en getFolioIgenieros", error);
+      console.error("Error en getIngenieros", error);
+    }
+  };
+
+  const getFolio = async () => {
+    try {
+      const data = await GastosService.getFolioProvisional({
+        plaza: plazaSeleccionada,
+        servidor: user.profile.servidor,
+      });
+      setFolio(data[0]?.Folio || "");
+    } catch (error) {
+      console.error("Error en getFolioProvisional", error);
     }
   };
 
@@ -284,7 +285,7 @@ export const GastosToolbar = () => {
               />
             )}
           </div>
-          {user.profile.MOSTRAR_COMBO_PROYECTO && (
+          {user.profile.MOSTRAR_COMBO_PROYECTO ? (
             <div className="input-group">
               <div className="input-group-prepend">
                 <label className="input-group-text" htmlFor="selectCuenta">
@@ -308,7 +309,7 @@ export const GastosToolbar = () => {
                 ))}
               </select>
             </div>
-          )}
+          ) : null}
         </div>
       </div>
     </>

@@ -55,6 +55,8 @@ Meteor.methods({
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
       conexiones.body_bdseleccionada.servidor = data.servidor;
 
+      console.log(data)
+
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
       });

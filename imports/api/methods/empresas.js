@@ -17,6 +17,8 @@ Meteor.methods({
         EXEC MP_WEB_REACT_LOGIN_PAZAS_USUARIO
         @Cod_Usu='${datos.cod_usu}'
       `;
+
+      console.log(datos)
     conexiones.body_bdseleccionada.baseDatos = datos.baseDatos;
     conexiones.body_bdseleccionada.servidor = datos.servidor;
 

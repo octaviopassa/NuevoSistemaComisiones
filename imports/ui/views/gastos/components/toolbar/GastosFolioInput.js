@@ -49,11 +49,6 @@ export const GastosFolioInput = () => {
       return;
     }
 
-    if (newFolio.replace(/\d/g, "") !== "GC-") {
-      toastr.error("El folio debe tener un formato valido");
-      return;
-    }
-
     if (!estatus.oldFolio && documentos.length > 0) {
       const result = await MySwal.fire({
         title: "¿Deseas cambiar el folio?",
