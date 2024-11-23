@@ -45,10 +45,6 @@ export const AutorizarButton = ({ setLoading }) => {
     }
   };
 
-  if (!session.profile.AUTORIZAR_GASTOS) {
-    return null;
-  }
-
   return (
     <button
       type="button"

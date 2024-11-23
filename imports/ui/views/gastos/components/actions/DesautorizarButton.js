@@ -30,10 +30,6 @@ export const DesautorizarButton = ({ setLoading }) => {
     }
   };
 
-  if (!session.profile.DESAUTORIZAR_GASTOS) {
-    return null;
-  }
-
   return (
     <button
       type="button"
