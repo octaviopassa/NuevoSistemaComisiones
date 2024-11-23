@@ -30,11 +30,14 @@ export const DesautorizarButton = ({ setLoading }) => {
     }
   };
 
+  if (!session.profile.DESAUTORIZAR_GASTOS) {
+    return null;
+  }
+
   return (
     <button
       type="button"
       className="btn btn-warning waves-effect waves-themed mr-2"
-      disabled={!session.profile.DESAUTORIZAR_GASTOS}
       onClick={handleDesautorizado}
     >
       <i className="fal fa-check"></i> Desautorizar

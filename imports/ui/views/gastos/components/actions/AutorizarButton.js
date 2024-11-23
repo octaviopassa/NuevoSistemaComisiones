@@ -45,11 +45,14 @@ export const AutorizarButton = ({ setLoading }) => {
     }
   };
 
+  if (!session.profile.AUTORIZAR_GASTOS) {
+    return null;
+  }
+
   return (
     <button
       type="button"
       className="btn btn-info waves-effect waves-themed mr-2"
-      disabled={!session.profile.AUTORIZAR_GASTOS}
       onClick={handleAutorizado}
     >
       <i className="fal fa-check"></i> Autorizar

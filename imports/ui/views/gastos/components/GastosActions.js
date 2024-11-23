@@ -23,7 +23,7 @@ export const GastosActions = () => {
         <ConsultarButton />
         <NuevoButton />
 
-        {(estatus === "Nuevo" || estatus === "GRABADO") && (
+        {(estatus === "Nuevo" || estatus === "GRABADO") && propietario && (
           <GuardarButton setLoading={setLoading} />
         )}
 

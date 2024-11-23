@@ -50,5 +50,7 @@ Thumbs.db
 *.mov
 *.wmv
 
-// config
+# Config
 imports/utils/config.js
+DockerFile
+docker-compose.yml
