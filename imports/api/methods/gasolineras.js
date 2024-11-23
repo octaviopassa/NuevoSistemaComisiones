@@ -36,8 +36,6 @@ Meteor.methods({
         data: conexiones.body_bdseleccionada,
       });
 
-      console.log(response);
-
       return {
         isValid: response.data.isValid,
         data: JSON.parse(response.data.data.resultado),

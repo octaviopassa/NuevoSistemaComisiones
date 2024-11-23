@@ -100,7 +100,7 @@ Meteor.methods({
           direccion: "entrada",
         },
       ];
-      console.log(conexiones.body_bdseleccionada);
+
       const response = await axios.post(
         conexiones.windows_api_post,
         conexiones.body_bdseleccionada,
@@ -110,8 +110,6 @@ Meteor.methods({
           },
         }
       );
-
-      console.log(response);
 
       if (!response.data.data.esValido) {
         return {
@@ -351,7 +349,6 @@ Meteor.methods({
           message: response.data.data.mensaje,
         };
       }
-      console.log(JSON.parse(response.data.data.resultado));
 
       return {
         isValid: response.data.isValid,
@@ -507,8 +504,6 @@ Meteor.methods({
         data: conexiones.body_bdseleccionada,
       });
 
-      console.log(response.data);
-
       if (!response.data.data.esValido) {
         return {
           isValid: response.data.data.esValido,
@@ -543,8 +538,6 @@ Meteor.methods({
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
       });
-
-      console.log(response.data);
 
       if (!response.data.data.esValido) {
         return {
@@ -626,6 +619,74 @@ Meteor.methods({
       };
     } catch (error) {
       console.log(error);
+    }
+  },
+  "documentos.getXml": async (data) => {
+    try {
+      conexiones.body_bdseleccionada.tipo = "procedimiento";
+      conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
+      conexiones.body_bdseleccionada.query = `SELECT 
+                'XML_FOLIO_'+ISNULL(FOLIO,'SIN_FOLIO')+'UUID'+UUID+'.XML' Nombre,
+                CAST('' AS XML).value('xs:base64Binary(sql:column("ARCHIVO"))', 'NVARCHAR(MAX)') AS ARCHIVO_XML
+              FROM XMLS_PASSA
+              WHERE IDXML=${data.id}
+            `;
+      conexiones.body_bdseleccionada.servidor = data.servidor;
+
+      const response = await axios.get(conexiones.windows_api, {
+        data: conexiones.body_bdseleccionada,
+      });
+
+      if (!response.data.data.esValido) {
+        throw new Error(response.data.data.mensaje);
+      }
+
+      return {
+        isValid: response.data.data.esValido,
+        data: JSON.parse(response.data.data.resultado),
+        message: response.data.data.mensaje,
+      };
+    } catch (error) {
+      console.log(error);
+      return {
+        isValid: false,
+        data: null,
+        message: error.message,
+      };
+    }
+  },
+  "documentos.getPdf": async (data) => {
+    try {
+      conexiones.body_bdseleccionada.tipo = "procedimiento";
+      conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
+      conexiones.body_bdseleccionada.query = `SELECT 
+                  'PDF_FOLIO_'+ISNULL(FOLIO,'SIN_FOLIO')+'UUID'+UUID+'.PDF' Nombre,
+                  CAST('' AS XML).value('xs:base64Binary(sql:column("ARCHIVO_PDF"))', 'NVARCHAR(MAX)') ARCHIVO_PDF
+                FROM XMLS_PASSA 
+                WHERE IDXML=${data.id}
+          `;
+      conexiones.body_bdseleccionada.servidor = data.servidor;
+
+      const response = await axios.get(conexiones.windows_api, {
+        data: conexiones.body_bdseleccionada,
+      });
+
+      if (!response.data.data.esValido) {
+        throw new Error(response.data.data.mensaje);
+      }
+
+      return {
+        isValid: response.data.data.esValido,
+        data: JSON.parse(response.data.data.resultado),
+        message: response.data.data.mensaje,
+      };
+    } catch (error) {
+      console.log(error);
+      return {
+        isValid: false,
+        data: null,
+        message: error.message,
+      };
     }
   },
 });

@@ -56,4 +56,12 @@ DocumentosService.validarXml = async (data) => {
   return await Meteor.callSync("documentos.validarXml", data);
 };
 
+DocumentosService.getXml = async (data) => {
+  return await Meteor.callSync("documentos.getXml", data);
+};
+
+DocumentosService.getPDF = async (data) => {
+  return await Meteor.callSync("documentos.getPDF", data);
+};
+
 export { DocumentosService };

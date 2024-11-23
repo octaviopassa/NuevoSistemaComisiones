@@ -151,8 +151,6 @@ Meteor.methods({
 
       const base64Pdf = pdfBuffer.toString("base64");
 
-      console.log("PDF en Base64 generado exitosamente.");
-
       fs.unlinkSync(tempDocxPath);
       fs.unlinkSync(tempPdfPath);
 
