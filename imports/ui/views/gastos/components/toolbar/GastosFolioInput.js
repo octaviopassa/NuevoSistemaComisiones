@@ -124,8 +124,8 @@ export const GastosFolioInput = () => {
             total: doc.TOTAL,
             tua: doc.TUA,
           },
-          pdfArchivo: doc.ARCHIVO_PDF
-            ? { contenido: doc.ARCHIVO_PDF, nombre: doc.NOMBRE_ARCHIVO_PDF }
+          pdfArchivo: doc?.IDPDF
+            ? { id: doc.IDPDF, origen: doc?.ORIGEN_PDF }
             : "",
           proveedor: {
             label: doc.NOMBRE_PROVEEDOR_RFC,
@@ -133,9 +133,8 @@ export const GastosFolioInput = () => {
           },
           tipoDocumento: doc.Nom_Tipo_Documento,
           tipoGasto: { label: doc.NOMBRE_GASTO, value: doc.CODIGO_GASTO },
-          //validar si el base64 viene vacío
-          xmlArchivo: doc.ARCHIVO_XML
-            ? { contenido: doc.ARCHIVO_XML, nombre: `${doc.RENGLON_ID}.xml` }
+          xmlArchivo: doc?.IDXML
+            ? { id: doc.IDXML, origen: doc?.ORIGEN_XML }
             : "",
         };
       });

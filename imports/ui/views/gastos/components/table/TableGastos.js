@@ -470,11 +470,16 @@ export const TableGastos = () => {
     }
   };
 
-  const handleXmlDownload = (index) => {
-    const doc = documentos[index];
-    if (doc.xmlArchivo) {
-      // Convertir la cadena base64 a un Blob
-      const byteCharacters = atob(doc.xmlArchivo.contenido);
+  const handleXmlDownload = async (xmlArchivo) => {
+    const doc = xmlArchivo?.contenido
+      ? xmlArchivo
+      : await DocumentosService.getXml({
+          id: xmlArchivo?.id,
+          servidor: session.profile.servidor,
+        });
+
+    if (doc) {
+      const byteCharacters = atob(doc?.contenido || doc.data);
       const byteNumbers = new Array(byteCharacters.length);
       for (let i = 0; i < byteCharacters.length; i++) {
         byteNumbers[i] = byteCharacters.charCodeAt(i);
@@ -482,11 +487,10 @@ export const TableGastos = () => {
       const byteArray = new Uint8Array(byteNumbers);
       const blob = new Blob([byteArray], { type: "application/xml" });
 
-      // Crear URL del objeto y descargar
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = doc.xmlArchivo.nombre || "documento.xml";
+      a.download = doc?.nombre || `${doc?.id}.xml`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -497,37 +501,35 @@ export const TableGastos = () => {
     }
   };
 
-  const handleFileDownload = (index) => {
-    const doc = documentos[index];
-    if (doc.pdfArchivo && doc.pdfArchivo.contenido) {
+  const handleFileDownload = async (pdfArchivo) => {
+    const doc = pdfArchivo?.contenido
+      ? pdfArchivo
+      : await DocumentosService.getPDF({
+          id: pdfArchivo?.id,
+          servidor: session.profile.servidor,
+        });
+
+    if (doc) {
       try {
-        // Limpiar y convertir la cadena base64
-        const cleanedBase64 = doc.pdfArchivo.contenido.replace(
-          /[^A-Za-z0-9+/=]/g,
-          ""
-        ); // Limpiar base64
-        const byteCharacters = atob(cleanedBase64); // Decodificar base64
+        const cleanedBase64 = doc.contenido.replace(/[^A-Za-z0-9+/=]/g, "");
+        const byteCharacters = atob(cleanedBase64);
         const byteNumbers = new Array(byteCharacters.length);
 
-        // Convertir caracteres a códigos
         for (let i = 0; i < byteCharacters.length; i++) {
           byteNumbers[i] = byteCharacters.charCodeAt(i);
         }
 
-        const byteArray = new Uint8Array(byteNumbers); // Crear Uint8Array
-
-        // Crear un Blob a partir del byteArray
+        const byteArray = new Uint8Array(byteNumbers);
         const blob = new Blob([byteArray], { type: "application/pdf" });
 
-        // Crear URL del objeto y descargar
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = doc.pdfArchivo.nombre || "documento.pdf"; // Nombre del archivo
+        a.download = doc?.nombre || `${doc?.id}.pdf`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
-        URL.revokeObjectURL(url); // Limpiar la URL del objeto
+        URL.revokeObjectURL(url);
       } catch (error) {
         console.error("Error al convertir el archivo PDF:", error);
         toastr.error(
@@ -1109,8 +1111,10 @@ export const TableGastos = () => {
                             marginRight: "8px",
                             cursor: "pointer",
                           }}
-                          onClick={() => handleXmlDownload(i)}
-                          title={doc.xmlArchivo.nombre}
+                          onClick={() => handleXmlDownload(doc?.xmlArchivo)}
+                          title={
+                            doc.xmlArchivo.nombre || `${doc.xmlArchivo.id}.xml`
+                          }
                         />
                         {estatus.estatus === "Nuevo" && (
                           <label
@@ -1154,17 +1158,15 @@ export const TableGastos = () => {
                 <td className="text-center">
                   {estatus.estatus !== "CANCELADO" && doc.pdfArchivo && (
                     <div className="d-flex align-items-center justify-content-center">
-                      {doc.pdfArchivo.contenido !== "bnVsbA==" && (
-                        <FontAwesomeIcon
-                          icon={faDownload}
-                          style={{
-                            marginRight: "8px",
-                            cursor: estatus.estatus === "Nuevo" && "pointer",
-                          }}
-                          onClick={() => handleFileDownload(i)}
-                          title={doc.pdfArchivo.nombre}
-                        />
-                      )}
+                      <FontAwesomeIcon
+                        icon={faDownload}
+                        style={{
+                          marginRight: "8px",
+                          cursor: estatus.estatus === "Nuevo" && "pointer",
+                        }}
+                        onClick={() => handleFileDownload(doc?.pdfArchivo)}
+                        title={doc.pdfArchivo.nombre}
+                      />
 
                       {(estatus.estatus === "Nuevo" || !doc.renglonId) && (
                         <label

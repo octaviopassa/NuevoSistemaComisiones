@@ -18,7 +18,6 @@ Meteor.methods({
         @Cod_Usu='${datos.cod_usu}'
       `;
 
-      console.log(datos)
     conexiones.body_bdseleccionada.baseDatos = datos.baseDatos;
     conexiones.body_bdseleccionada.servidor = datos.servidor;
 

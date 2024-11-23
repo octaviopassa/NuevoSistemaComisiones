@@ -136,7 +136,6 @@ Meteor.methods({
   },
   "usuarios.createUser": async (datos) => {
     try {
-      console.log("usuario", datos);
       const usuario = datos.empleado;
       const rol = datos.rol;
 
@@ -263,7 +262,6 @@ Meteor.methods({
           },
         };
       } else {
-        console.log(response.data);
 
         return {
           success: false,
