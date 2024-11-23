@@ -28,4 +28,8 @@ GastosService.getProyectos = async (servidor) => {
   return await Meteor.callSync("gastos.getProyectos", servidor);
 };
 
+GastosService.isAuthorized = async (data) => {
+  return await Meteor.callSync("gastos.isAuthorized", data);
+};
+
 export { GastosService };

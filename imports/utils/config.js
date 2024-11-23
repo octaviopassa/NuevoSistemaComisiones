@@ -31,14 +31,4 @@ module.exports = {
     mensaje: "",
     resultado: "",
   },
-  // instancias: [
-  //   { baseDatos: "FABRICA_PASSA", instancia: "SERVERR2" },
-  //   { baseDatos: "IANSA", instancia: "IANSA" },
-  //   { baseDatos: "SMARTCARB", instancia: "IANSA" },
-  //   { baseDatos: "VICTOR_PADILLA", instancia: "VPD" },
-  // ],
-  // getInstancia: (url, baseDatos) => {
-  //   const instancia = this.instancias.find((e) => e.baseDatos === baseDatos);
-  //   return `${url}\\${instancia.instancia}`;
-  // },
 };

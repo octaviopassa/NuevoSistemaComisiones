@@ -66,6 +66,35 @@ Meteor.methods({
       console.log(e);
     }
   },
+  "gastos.isAuthorized": async (data) => {
+    try {
+      conexiones.body_bdseleccionada.tipo = "procedimiento";
+      conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
+      conexiones.body_bdseleccionada.query = `select DBO.VALIDA_DOCUMENTO_POR_USUARIO_PLAZA('${data.user}','GT','G','${data.plaza}')`;
+      conexiones.body_bdseleccionada.servidor = data.servidor;
+
+      const response = await axios.get(conexiones.windows_api, {
+        data: conexiones.body_bdseleccionada,
+      });
+
+      if (!response.data.data.esValido) {
+        throw new Error(response.data.data.mensaje);
+      }
+
+      return {
+        isValid: response.data.data.esValido,
+        data: JSON.parse(response.data.data.resultado) ? true : false,
+        message: response.data.data.mensaje,
+      };
+    } catch (error) {
+      console.log(error);
+      return {
+        isValid: false,
+        data: null,
+        message: error.message,
+      };
+    }
+  },
   "gastos.grabar": async (datos) => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
