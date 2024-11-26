@@ -624,10 +624,10 @@ Meteor.methods({
   "documentos.getXml": async (data) => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
-      conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
+      conexiones.body_bdseleccionada.baseDatos = "expedientes";
       conexiones.body_bdseleccionada.query = `SELECT 
                 'XML_FOLIO_'+ISNULL(FOLIO,'SIN_FOLIO')+'UUID'+UUID+'.XML' Nombre,
-                CAST('' AS XML).value('xs:base64Binary(sql:column("ARCHIVO"))', 'NVARCHAR(MAX)') AS ARCHIVO_XML
+                CAST('' AS XML).value('xs:base64Binary(sql:column("ARCHIVO_XML"))', 'NVARCHAR(MAX)') ARCHIVO_XML
               FROM XMLS_PASSA
               WHERE IDXML=${data.id}
             `;

@@ -57,6 +57,16 @@ export const GuardarButton = ({ setLoading }) => {
     e.preventDefault();
     setLoading(true);
     try {
+      const isAuthorized = await GastosService.isAuthorized({
+        plaza: plazaSeleccionada,
+        user: session.profile.COD_USU,
+      });
+
+      if (isAuthorized.data) {
+        toastr.error("No tienes permiso para registrar gastos");
+        return;
+      }
+
       if (documentos.length === 0) {
         toastr.error("No hay documentos para registrar");
         return;
