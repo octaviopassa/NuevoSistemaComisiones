@@ -94,6 +94,15 @@ export const GastosFolioInput = () => {
       const resumen = resumenData.data;
 
       const newDocumentos = detalle.map((doc) => {
+        //REEMPLAZAMOS LA COMA PARA QUE NO MARQUE ERROR EL parseFloat DE TableCantidades
+        const ieps_fix = doc.IEPS.split(",")[0]+doc.IEPS.split(",")[1]
+        const iva8_fix = doc.IVA_8.split(",")[0]+doc.IVA_8.split(",")[1]
+        const iva16_fix = doc.IVA_16.split(",")[0]+doc.IVA_16.split(",")[1]
+        const ret_fix = doc.RETENCION.split(",")[0]+doc.RETENCION.split(",")[1]
+        const subtotal_fix = doc.SUBTOTAL.split(",")[0]+doc.SUBTOTAL.split(",")[1]
+        const total_fix = doc.TOTAL.split(",")[0]+doc.TOTAL.split(",")[1]
+        const tua_fix = doc.TUA.split(",")[0]+doc.TUA.split(",")[1]
+        
         return {
           renglonId: doc.RENGLON_ID,
           cliente: { label: "", value: "" },
@@ -116,13 +125,13 @@ export const GastosFolioInput = () => {
           importes: {
             fecha: doc.FECHA,
             folio: doc.FOLIO_PROVEEDOR,
-            ieps: doc.IEPS,
-            iva_8: doc.IVA_8,
-            iva_16: doc.IVA_16,
-            ret: doc.RETENCION,
-            subtotal: doc.SUBTOTAL,
-            total: doc.TOTAL,
-            tua: doc.TUA,
+            ieps: ieps_fix,//doc.IEPS,
+            iva_8: iva8_fix,//doc.IVA_8,
+            iva_16: iva16_fix,//doc.IVA_16,
+            ret: ret_fix,//doc.RETENCION,
+            subtotal: subtotal_fix,//doc.SUBTOTAL,
+            total: total_fix,//doc.TOTAL,
+            tua: tua_fix,//doc.TUA,
           },
           pdfArchivo: doc?.IDPDF
             ? { id: doc.IDPDF, origen: doc?.ORIGEN_PDF }

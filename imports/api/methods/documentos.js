@@ -655,10 +655,10 @@ Meteor.methods({
       };
     }
   },
-  "documentos.getPdf": async (data) => {
+  "documentos.getPDF": async (data) => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
-      conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
+      conexiones.body_bdseleccionada.baseDatos = "EXPEDIENTES";
       conexiones.body_bdseleccionada.query = `SELECT 
                   'PDF_FOLIO_'+ISNULL(FOLIO,'SIN_FOLIO')+'UUID'+UUID+'.PDF' Nombre,
                   CAST('' AS XML).value('xs:base64Binary(sql:column("ARCHIVO_PDF"))', 'NVARCHAR(MAX)') ARCHIVO_PDF

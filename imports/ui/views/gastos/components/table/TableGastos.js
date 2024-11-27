@@ -470,16 +470,15 @@ export const TableGastos = () => {
     }
   };
 
-  const handleXmlDownload = async (xmlArchivo) => {
+  const handleXmlDownload = async (xmlArchivo) => {    
     const doc = xmlArchivo?.contenido
       ? xmlArchivo
       : await DocumentosService.getXml({
           id: xmlArchivo?.id,
           servidor: session.profile.servidor,
-        });
-
-    if (doc) {
-      const byteCharacters = atob(doc?.contenido || doc.data);
+        });        
+    if (doc) {      
+      const byteCharacters = atob(doc?.contenido || doc.data[0].ARCHIVO_XML);
       const byteNumbers = new Array(byteCharacters.length);
       for (let i = 0; i < byteCharacters.length; i++) {
         byteNumbers[i] = byteCharacters.charCodeAt(i);
@@ -490,7 +489,7 @@ export const TableGastos = () => {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = doc?.nombre || `${doc?.id}.xml`;
+      a.download = doc[0]?.Nombre || `ARCHIVO_XML.xml`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -501,7 +500,7 @@ export const TableGastos = () => {
     }
   };
 
-  const handleFileDownload = async (pdfArchivo) => {
+  const handleFileDownload = async (pdfArchivo) => {    
     const doc = pdfArchivo?.contenido
       ? pdfArchivo
       : await DocumentosService.getPDF({
@@ -510,8 +509,9 @@ export const TableGastos = () => {
         });
 
     if (doc) {
+      const archivoPDFBase64=doc?.data[0].ARCHIVO_PDF || doc?.contenido      
       try {
-        const cleanedBase64 = doc.contenido.replace(/[^A-Za-z0-9+/=]/g, "");
+        const cleanedBase64 = archivoPDFBase64.replace(/[^A-Za-z0-9+/=]/g, "");
         const byteCharacters = atob(cleanedBase64);
         const byteNumbers = new Array(byteCharacters.length);
 
@@ -525,7 +525,7 @@ export const TableGastos = () => {
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = doc?.nombre || `${doc?.id}.pdf`;
+        a.download = doc?.data[0]?.Nombre || `ARCHIVO_PDF.pdf`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
