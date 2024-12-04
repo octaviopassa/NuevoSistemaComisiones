@@ -20,7 +20,7 @@ services:
     networks:
       - appnet
     volumes:
-      - ./data/gastospassa:/data/db
+      - C:/passa_gastos/data/gastospassa:/data/db
     ports:
       - "27018:27017"
 networks:

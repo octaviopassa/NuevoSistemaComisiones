@@ -624,12 +624,17 @@ Meteor.methods({
   "documentos.getXml": async (data) => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
-      conexiones.body_bdseleccionada.baseDatos = "expedientes";
-      conexiones.body_bdseleccionada.query = `SELECT 
-                'XML_FOLIO_'+ISNULL(FOLIO,'SIN_FOLIO')+'UUID'+UUID+'.XML' Nombre,
-                CAST('' AS XML).value('xs:base64Binary(sql:column("ARCHIVO_XML"))', 'NVARCHAR(MAX)') ARCHIVO_XML
-              FROM XMLS_PASSA
-              WHERE IDXML=${data.id}
+      conexiones.body_bdseleccionada.baseDatos = "CONSUMOS_PASSA";
+      // conexiones.body_bdseleccionada.query = `SELECT 
+      //           'XML_FOLIO_'+ISNULL(FOLIO,'SIN_FOLIO')+'UUID'+UUID+'.XML' Nombre,
+      //           CAST('' AS XML).value('xs:base64Binary(sql:column("ARCHIVO_XML"))', 'NVARCHAR(MAX)') ARCHIVO_XML
+      //         FROM XMLS_PASSA
+      //         WHERE IDXML=${data.id}
+      //       `;            
+      conexiones.body_bdseleccionada.query = `
+              exec MP_CONSULTA_WEB_REACT_ARCHIVO_XML_PDF               
+              @ID_GASTO_DETALLE=${data.id},
+              @TIPO_ARCHIVO='XML'
             `;
       conexiones.body_bdseleccionada.servidor = data.servidor;
 
@@ -658,13 +663,18 @@ Meteor.methods({
   "documentos.getPDF": async (data) => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
-      conexiones.body_bdseleccionada.baseDatos = "EXPEDIENTES";
-      conexiones.body_bdseleccionada.query = `SELECT 
-                  'PDF_FOLIO_'+ISNULL(FOLIO,'SIN_FOLIO')+'UUID'+UUID+'.PDF' Nombre,
-                  CAST('' AS XML).value('xs:base64Binary(sql:column("ARCHIVO_PDF"))', 'NVARCHAR(MAX)') ARCHIVO_PDF
-                FROM XMLS_PASSA 
-                WHERE IDXML=${data.id}
-          `;
+      conexiones.body_bdseleccionada.baseDatos = "CONSUMOS_PASSA";
+      // conexiones.body_bdseleccionada.query = `SELECT 
+      //             'PDF_FOLIO_'+ISNULL(FOLIO,'SIN_FOLIO')+'UUID'+UUID+'.PDF' Nombre,
+      //             CAST('' AS XML).value('xs:base64Binary(sql:column("ARCHIVO_PDF"))', 'NVARCHAR(MAX)') ARCHIVO_PDF
+      //           FROM XMLS_PASSA 
+      //           WHERE IDXML=${data.id}
+      //     `;
+      conexiones.body_bdseleccionada.query = `
+              exec MP_CONSULTA_WEB_REACT_ARCHIVO_XML_PDF               
+              @ID_GASTO_DETALLE=${data.id},
+              @TIPO_ARCHIVO='PDF'
+            `;
       conexiones.body_bdseleccionada.servidor = data.servidor;
 
       const response = await axios.get(conexiones.windows_api, {
