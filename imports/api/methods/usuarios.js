@@ -223,13 +223,38 @@ Meteor.methods({
         const respuesta = JSON.parse(response.data.data.resultado);
         const userData = respuesta[0];
 
-        // Verificar si el usuario ya existe en la base de datos de Meteor
+        // Primero verificamos si existe el usuario con la combinación específica
         let existingUser = Meteor.users.findOne({
           username: data.params.nombre_usuario,
           "profile.baseDatos": data.BASE_DATOS,
         });
 
-        if (!existingUser) {
+        // Verificamos si existe el usuario con el mismo username pero diferente base de datos
+        const userWithSameUsername = Meteor.users.findOne({
+          username: data.params.nombre_usuario,
+        });
+
+        if (!existingUser && userWithSameUsername) {
+          // Si existe el usuario pero con otra base de datos, creamos una nueva entrada
+          await Meteor.users.update(
+            { _id: userWithSameUsername._id },
+            {
+              $set: {
+                "profile.baseDatos": data.BASE_DATOS,
+                "profile.estatus": true,
+                "profile.WEB_REACT_CLIENTE_OBLIGATORIO": userData.WEB_REACT_CLIENTE_OBLIGATORIO === "1",
+                ...userData
+              }
+            }
+          );  
+          const userId = userWithSameUsername._id;
+
+          const admin_role = await Role.createRole("Admin");
+          Role.setUserRole(userId, admin_role);
+
+          existingUser = Meteor.users.findOne(userId);
+        } else if (!existingUser) {
+          // Si no existe el usuario en absoluto, lo creamos
           const userId = Accounts.createUser({
             username: data.params.nombre_usuario,
             password: data.params.contrasenia,
@@ -245,7 +270,6 @@ Meteor.methods({
           const admin_role = await Role.createRole("Admin");
           Role.setUserRole(userId, admin_role);
 
-          // Obtener el nuevo usuario creado
           existingUser = Meteor.users.findOne(userId);
         }
 
