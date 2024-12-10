@@ -87,6 +87,9 @@ export const GastosToolbar = () => {
 
       if (obtenerPlazas.length === 1) {
         setPlazaSeleccionada(obtenerPlazas[0].CODIGO);
+        await getFolio();
+      } else if (plazaSeleccionada) {
+        await getFolio();
       }
 
       setPagarA(pagarAQuien);
