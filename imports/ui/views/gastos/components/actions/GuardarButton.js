@@ -54,15 +54,16 @@ export const GuardarButton = ({ setLoading }) => {
   );
 
   const handleGrabado = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+    e.preventDefault();    
     try {
+      setLoading(true);
       const isAuthorized = await GastosService.isAuthorized({
         plaza: plazaSeleccionada,
         user: session.profile.COD_USU,
+        servidor: session.profile.servidor,
       });
 
-      if (isAuthorized.data) {
+      if (!isAuthorized.data) {
         toastr.error("No tienes permiso para registrar gastos");
         return;
       }
@@ -320,8 +321,9 @@ export const GuardarButton = ({ setLoading }) => {
       toastr.success(`${newFolio} grabado correctamente`);
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (

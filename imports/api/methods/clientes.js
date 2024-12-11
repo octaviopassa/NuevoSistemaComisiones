@@ -21,7 +21,7 @@ Meteor.methods({
   "clientes.getAllByName": async (datos) => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
-      conexiones.body_bdseleccionada.query = `Exec MP_Consulta_Clientes_Consumos_Nombre_RFC @Texto_Buscar ='${datos.search}'`;
+      conexiones.body_bdseleccionada.query = `Exec MP_Consulta_Clientes_Nombre_RFC @Texto_Buscar ='${datos.search}'`;
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
       conexiones.body_bdseleccionada.servidor = datos.servidor;
 

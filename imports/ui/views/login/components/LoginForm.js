@@ -23,7 +23,8 @@ export const LoginForm = ({ empresas }) => {
   const { setUserRol } = useUserRolStore();
 
   const handleSubmit = async (values) => {
-    const { user, password, empresa: empresaSeleccionada } = values;
+    const {user: userInput, password, empresa: empresaSeleccionada } = values;
+    const user = userInput.toLowerCase();
     const empresaData = JSON.parse(empresaSeleccionada.value);
     try {
       if (user == "roberto" || user == "jorge" || user == "ernesto") {

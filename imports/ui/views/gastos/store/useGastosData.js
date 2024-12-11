@@ -45,7 +45,7 @@ export const useGastosData = create(
       aplico: "",
       autorizo: "",
       observaciones: "",
-      propietario: false,
+      propietario: true,
       cancelado: "",
       oldFolio: false,
     },
@@ -56,7 +56,7 @@ export const useGastosData = create(
 
     resetData: () => {
       set({
-        // plazaSeleccionada: "",
+        plazaSeleccionada: "",
         isCheckedSucursal: true,
         proyectoSeleccionado: "",
         documentos: [],
@@ -71,7 +71,7 @@ export const useGastosData = create(
           aplico: "",
           autorizo: "",
           observaciones: "",
-          propietario: false,
+          propietario: true,
           cancelado: "",
           oldFolio: false,
         },
