@@ -81,9 +81,11 @@ Meteor.methods({
         throw new Error(response.data.data.mensaje);
       }
 
+      const result = JSON.parse(response.data.data.resultado)
+
       return {
         isValid: response.data.data.esValido,
-        data: JSON.parse(response.data.data.resultado) ? true : false,
+        data: result[0]?.Column1 ? true : false,
         message: response.data.data.mensaje,
       };
     } catch (error) {

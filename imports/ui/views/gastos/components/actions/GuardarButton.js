@@ -63,11 +63,7 @@ export const GuardarButton = ({ setLoading }) => {
         servidor: session.profile.servidor,
       });
 
-      // Si retorna Column1: vacio o usuario borra en array borra el primero pero si si es un array borra el segundo.
-      //! Si no retorna nada o retorna directamente 'K5' borra ambos y usa esto: !isAuthorized.data
-      console.log(isAuthorized.data)
-
-      if (!isAuthorized.data?.Column1 || !isAuthorized.data[0]?.Column1) {
+      if (!isAuthorized.data) {
         toastr.error("No tienes permiso para registrar gastos");
         return;
       }
