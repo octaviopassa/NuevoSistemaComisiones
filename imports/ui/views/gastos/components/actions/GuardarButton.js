@@ -61,6 +61,7 @@ export const GuardarButton = ({ setLoading }) => {
         plaza: plazaSeleccionada,
         user: session.profile.COD_USU,
         servidor: session.profile.servidor,
+        baseDatos: session.profile.baseDatos,
       });
 
       if (!isAuthorized.data) {
@@ -87,10 +88,10 @@ export const GuardarButton = ({ setLoading }) => {
         const dataGastoGlobal = {
           plaza: plazaSeleccionada,
           pagarA: pagarASeleccionado,
-          fecha: gastosDate,
+          fecha: new Date(gastosDate).toISOString().slice(0, 10).split('-').reverse().join('-'),
           origen: selectedIngeniero === "" ? "S" : "I",
           ingeniero: selectedIngeniero || "0",
-          gastosDate,
+          gastosDate: new Date(gastosDate).toISOString().slice(0, 10).split('-').reverse().join('-'),
           folio,
           observaciones: estatus.observaciones,
           cod_usu: session.profile.COD_USU,
@@ -173,7 +174,7 @@ export const GuardarButton = ({ setLoading }) => {
             proveedor: proveedor.value,
             tipoGasto: tipoGasto.value,
             concepto,
-            fecha,
+            fecha: new Date(fecha).toISOString().slice(0, 10).split('-').reverse().join('-'), //fecha
             folioProveedor: folio,
             subtotal: parseFloat(subtotal),
             iva: parseFloat(iva_16) + parseFloat(iva_8),
@@ -194,6 +195,8 @@ export const GuardarButton = ({ setLoading }) => {
                 : "",
             servidor: session.profile.servidor,
           };
+
+          console.log(datosDocumento);
 
           const grabarRenglon = await GastosService.grabarRenglon(
             datosDocumento

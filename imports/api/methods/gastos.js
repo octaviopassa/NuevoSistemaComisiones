@@ -69,10 +69,10 @@ Meteor.methods({
   "gastos.isAuthorized": async (data) => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
-      conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
+      conexiones.body_bdseleccionada.baseDatos = data.baseDatos;
       conexiones.body_bdseleccionada.query = `select DBO.VALIDA_DOCUMENTO_POR_USUARIO_PLAZA('${data.user}','GT','G','${data.plaza}')`;
       conexiones.body_bdseleccionada.servidor = data.servidor;
-
+     
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
       });
@@ -82,7 +82,7 @@ Meteor.methods({
       }
 
       const result = JSON.parse(response.data.data.resultado)
-
+     
       return {
         isValid: response.data.data.esValido,
         data: result[0]?.Column1 ? true : false,
