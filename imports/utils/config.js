@@ -1,10 +1,10 @@
 module.exports = {
-  windows_api: "http://26.168.101.211:49824/api/querys/ejecutar",
-  windows_api_post: "http://26.168.101.211:49824/api/querys/ejecutarPost",
+  windows_api: "http://192.168.20.154:49824/api/querys/ejecutar",
+  windows_api_post: "http://192.168.20.154:49824/api/querys/ejecutarPost",
   body_fabrica: {
     usuario: "abacoapp",
     contrasena: "S1stem@Pas5@",
-    servidor: "26.189.208.155\\SERVERR2",
+    servidor: "192.168.20.3\\SERVERR2",
     baseDatos: "FABRICA_PASSA",
     parametros: [],
     esValido: true,
@@ -14,7 +14,7 @@ module.exports = {
   body_empresas: {
     usuario: "abacoapp",
     contrasena: "S1stem@Pas5@",
-    servidor: "26.189.208.155\\SERVERR2",
+    servidor: "192.168.20.3\\SERVERR2",
     baseDatos: "EMPRESAS",
     parametros: [],
     esValido: true,
@@ -22,7 +22,7 @@ module.exports = {
     resultado: "",
   },
   body_bdseleccionada: {
-    servidor: "26.189.208.155\\SERVERR2",
+    servidor: "192.168.20.3\\SERVERR2",
     baseDatos: "",
     usuario: "abacoapp",
     contrasena: "S1stem@Pas5@",
