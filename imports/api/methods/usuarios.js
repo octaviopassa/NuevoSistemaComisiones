@@ -240,13 +240,16 @@ Meteor.methods({
             { _id: userWithSameUsername._id },
             {
               $set: {
-                "profile.baseDatos": data.BASE_DATOS,
-                "profile.estatus": true,
-                "profile.WEB_REACT_CLIENTE_OBLIGATORIO": userData.WEB_REACT_CLIENTE_OBLIGATORIO === "1",
-                ...userData
-              }
+                profile: {
+                  ...userData,
+                  baseDatos: data.BASE_DATOS,
+                  estatus: true,
+                  WEB_REACT_CLIENTE_OBLIGATORIO:
+                    userData.WEB_REACT_CLIENTE_OBLIGATORIO === "1",
+                },
+              },
             }
-          );  
+          );
           const userId = userWithSameUsername._id;
 
           const admin_role = await Role.createRole("Admin");
@@ -280,13 +283,12 @@ Meteor.methods({
         return {
           success: true,
           data: {
-            userData: userData,
+            userData,
             userId: existingUser._id,
             token: stampedLoginToken.token,
           },
         };
       } else {
-
         return {
           success: false,
           message: response.data.data.mensaje,

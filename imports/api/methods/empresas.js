@@ -3,13 +3,18 @@ import axios from "axios";
 
 Meteor.methods({
   "empresas.getAll": async () => {
-    conexiones.body_empresas.tipo = "consulta";
-    conexiones.body_empresas.query = "SELECT * FROM empresas..CAT_DB_EMPRESAS";
-    const response = await axios.get(conexiones.windows_api, {
-      data: conexiones.body_empresas,
-    });
+    try {
+      conexiones.body_empresas.tipo = "consulta";
+      conexiones.body_empresas.query =
+        "SELECT * FROM empresas..CAT_DB_EMPRESAS";
+      const response = await axios.get(conexiones.windows_api, {
+        data: conexiones.body_empresas,
+      });
 
-    return JSON.parse(response.data.data.resultado);
+      return JSON.parse(response.data.data.resultado);
+    } catch (e) {
+      console.log(e);
+    }
   },
   "plazas.getAll": async (datos) => {
     conexiones.body_bdseleccionada.tipo = "procedimiento";
