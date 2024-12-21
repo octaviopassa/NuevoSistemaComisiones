@@ -277,10 +277,7 @@ export const GuardarButton = ({ setLoading }) => {
           const grabadoArchivosGlobal =
             await DocumentosService.grabarArchivoNota({
               id_renglon: renglonId,
-              nombre_xml:
-                documento?.pdfArchivo?.nombre ||
-                xmlArchivo?.nombre ||
-                "documento.pdf",
+              nombre_pdf: documento?.pdfArchivo?.nombre || `${renglonId}.pdf`,
               archivo: documento?.pdfArchivo?.contenido,
               cod_usu: session.profile.COD_USU,
               servidor: session.profile.servidor,

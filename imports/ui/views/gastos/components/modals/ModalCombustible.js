@@ -58,16 +58,20 @@ export const ModalCombustible = ({
 
   const cargaInicial = async () => {
     if (plazaSeleccionada != "") {
-      const gasolineras = await GasolinerasService.getAll(
-        plazaSeleccionada,
-        session.profile.baseDatos
-      );
+      const gasolineras = await GasolinerasService.getAll({
+        plaza: plazaSeleccionada,
+        baseDatos: session.profile.baseDatos,
+        servidor: session.profile.servidor,
+      });
+
       const vehiculos = await VehiculosService.getAll({
         plaza: plazaSeleccionada,
+        baseDatos: session.profile.baseDatos,
         servidor: session.profile.servidor,
       });
       const conductores = await ConductoresService.getAll({
         plaza: plazaSeleccionada,
+        baseDatos: session.profile.baseDatos,
         servidor: session.profile.servidor,
       });
       const combustibles = await CombustibleService.getAll({
@@ -81,6 +85,8 @@ export const ModalCombustible = ({
         }))
       );
 
+      console.log(plazaSeleccionada);
+      
       setGasolineras(
         gasolineras.map((obj) => ({
           value: obj.Cod_Gasolinera,

@@ -95,7 +95,7 @@ export const GastosFolioInput = () => {
 
       const newDocumentos = detalle.map((doc) => {
         //REEMPLAZAMOS LA COMA PARA QUE NO MARQUE ERROR EL parseFloat DE TableCantidades
-        const ieps_fix = doc.IEPS.split(",")[0]+doc.IEPS.split(",")[1]
+        const ieps_fix = doc.IEPS.split(",")[0]+doc.IEPS.split(",")[1] 
         const iva8_fix = doc.IVA_8.split(",")[0]+doc.IVA_8.split(",")[1]
         const iva16_fix = doc.IVA_16.split(",")[0]+doc.IVA_16.split(",")[1]
         const ret_fix = doc.RETENCION.split(",")[0]+doc.RETENCION.split(",")[1]
@@ -104,7 +104,7 @@ export const GastosFolioInput = () => {
         const tua_fix = doc.TUA.split(",")[0]+doc.TUA.split(",")[1]
         
         return {
-          renglonId: doc.RENGLON_ID,
+          renglonId: doc.ID_GASTO_DETALLE,
           cliente: { label: "", value: "" },
           concepto: doc.CONCEPTO,
           descartado: !!doc.DESCARTADO,
@@ -134,7 +134,7 @@ export const GastosFolioInput = () => {
             tua: tua_fix,//doc.TUA,
           },
           pdfArchivo: doc?.IDPDF
-            ? { id: doc.IDPDF, origen: doc?.ORIGEN_PDF }
+            ? { id: doc.IDPDF, origen: doc?.ORIGEN_PDF , nombre: doc.NOMBRE_ARCHIVO_PDF}
             : "",
           proveedor: {
             label: doc.NOMBRE_PROVEEDOR_RFC,

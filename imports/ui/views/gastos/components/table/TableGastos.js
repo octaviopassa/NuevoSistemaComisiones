@@ -500,6 +500,7 @@ export const TableGastos = () => {
     }
   };
 
+  console.log(documentos);
   const handleFileDownload = async (pdfArchivo) => {    
     const doc = pdfArchivo?.contenido
       ? pdfArchivo
@@ -520,12 +521,14 @@ export const TableGastos = () => {
         }
 
         const byteArray = new Uint8Array(byteNumbers);
-        const blob = new Blob([byteArray], { type: "application/pdf" });
+        const tipoArchivo = pdfArchivo?.nombre.split(".")[1];
+        console.log(tipoArchivo);
+        const blob = new Blob([byteArray], { type: `application/${tipoArchivo}` });
 
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = doc?.data[0]?.Nombre || `ARCHIVO_PDF.pdf`;
+        a.download = pdfArchivo?.nombre || `ARCHIVO_PDF.pdf`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -666,7 +669,7 @@ export const TableGastos = () => {
 
     toastr.success("Documento agregado con éxito");
   };
-
+  
   const eliminarDocumento = async (index) => {
     if (!documentos.length) {
       toastr.warning("No hay documentos para eliminar");

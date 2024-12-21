@@ -3,7 +3,7 @@ import axios from "axios";
 
 Meteor.methods({
   "documentos.grabarArchivoXML": async (datos) => {
-    try {
+    try {      
       conexiones.body_bdseleccionada.tipo = "procedimientoAlmacenado";
       conexiones.body_bdseleccionada.baseDatos = "expedientes";
       conexiones.body_bdseleccionada.query = `dbo.MP_XML_GRABA_ARCHIVO`;
@@ -24,7 +24,7 @@ Meteor.methods({
         {
           parametro: "@ARCHIVO",
           valor: datos.archivo || "",
-          tipo: datos.archivo ? "base64" : "cadena",
+          tipo: datos.archivo ? "base64ToImagen" : "cadena",
           direccion: "entrada",
         },
         {
@@ -40,7 +40,7 @@ Meteor.methods({
           direccion: "entrada",
         },
       ];
-
+      console.log(conexiones.body_bdseleccionada);
       const response = await axios.post(
         conexiones.windows_api_post,
         conexiones.body_bdseleccionada,
@@ -69,7 +69,7 @@ Meteor.methods({
     }
   },
   "documentos.grabarArchivoPDF": async (datos) => {
-    try {
+    try {      
       conexiones.body_bdseleccionada.tipo = "procedimientoAlmacenado";
       conexiones.body_bdseleccionada.baseDatos = "expedientes";
       conexiones.body_bdseleccionada.query = `MP_GASTOS_GRABA_ARCHIVO_NOTA`;
@@ -90,7 +90,7 @@ Meteor.methods({
         {
           parametro: "@ARCHIVO",
           valor: datos.archivo || "",
-          tipo: datos.archivo ? "base64" : "cadena",
+          tipo: datos.archivo ? "base64ToImagen" : "cadena",
           direccion: "entrada",
         },
         {
@@ -132,7 +132,7 @@ Meteor.methods({
     try {
       const cadena_xml = datos.cadena_xml
         ? Buffer.from(datos.cadena_xml, "base64").toString("utf-8")
-        : "";
+        : "";      
       conexiones.body_bdseleccionada.tipo = "procedimientoAlmacenado";
       conexiones.body_bdseleccionada.baseDatos = "expedientes";
       conexiones.body_bdseleccionada.query = `dbo.MP_GASTOS_SUBIR_XML_PDF`;
@@ -147,13 +147,13 @@ Meteor.methods({
         {
           parametro: "@ARCHIVO_XML",
           valor: datos.archivo_xml || "",
-          tipo: datos.archivo_xml ? "base64" : "cadena",
+          tipo: datos.archivo_xml ? "base64ToImagen" : "cadena",
           direccion: "entrada",
         },
         {
           parametro: "@ARCHIVO_PDF",
           valor: datos.archivo_pdf || "",
-          tipo: datos.archivo_pdf ? "base64" : "cadena",
+          tipo: datos.archivo_pdf ? "base64ToImagen" : "cadena",
           direccion: "entrada",
         },
         {
@@ -204,7 +204,7 @@ Meteor.methods({
     }
   },
   "documentos.grabarArchivoNota": async (datos) => {
-    try {
+    try {      
       conexiones.body_bdseleccionada.tipo = "procedimientoAlmacenado";
       conexiones.body_bdseleccionada.baseDatos = "expedientes";
       conexiones.body_bdseleccionada.query = `dbo.MP_GASTOS_GRABA_ARCHIVO_NOTA`;
@@ -218,14 +218,14 @@ Meteor.methods({
         },
         {
           parametro: "@NOMBRE_ARCHIVO",
-          valor: datos.nombre_xml,
+          valor: datos.nombre_pdf,
           tipo: "cadena",
           direccion: "entrada",
         },
         {
           parametro: "@ARCHIVO",
           valor: datos.archivo || "",
-          tipo: datos.archivo ? "base64" : "cadena",
+          tipo: datos.archivo ? "base64ToImagen" : "cadena",
           direccion: "entrada",
         },
         {

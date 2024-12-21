@@ -5,7 +5,7 @@ Meteor.methods({
   "conductores.getAll": async (data) => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
-      conexiones.body_bdseleccionada.query = plaza
+      conexiones.body_bdseleccionada.query = data.plaza
         ? `exec SP_CAT_CONDUCTORES_Consulta @Cod_Conductor='', @Nom_Conductor='', @Estatus='', @Cod_Plaza='${data.plaza}'`
         : "exec SP_CAT_CONDUCTORES_Consulta @Cod_Conductor='', @Nom_Conductor='', @Estatus='', @Cod_Plaza=''";
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
