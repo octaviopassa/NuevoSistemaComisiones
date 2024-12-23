@@ -1,0 +1,17 @@
+services:  
+  mongo:
+    image: mongo:6.0
+    command:
+      - --storageEngine=wiredTiger
+    networks:
+      - appnet
+    volumes:
+      - C:/passa_gastos_db_mongo/gastospassa:/data/db
+    ports:
+      - "27018:27017"
+networks:
+  appnet:
+    driver: bridge
+volumes:
+  generated:
+    driver: local
