@@ -18,7 +18,7 @@ export const EstatusGasto = () => {
               <small className="text-muted">Autorizo: {estatus.autorizo}</small>
             )}
             {estatus.estatus === "CANCELADO" && (
-              <small className="text-muted">Canceló: {estatus.cancelo}</small>
+              <small className="text-muted">Canceló: {estatus.cancelado}</small>
             )}
           </div>
           <textarea
