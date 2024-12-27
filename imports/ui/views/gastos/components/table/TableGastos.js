@@ -460,14 +460,14 @@ export const TableGastos = () => {
     }
   };
 
-  const handleXmlDownload = async (xmlArchivo) => {
+  const handleXmlDownload = async (xmlArchivo) => {    
     const doc = xmlArchivo?.contenido
       ? xmlArchivo
       : await DocumentosService.getXml({
           id: xmlArchivo?.id,
           servidor: session.profile.servidor,
-        });
-    if (doc) {
+        });        
+    if (doc) {      
       const byteCharacters = atob(doc?.contenido || doc.data[0].ARCHIVO_XML);
       const byteNumbers = new Array(byteCharacters.length);
       for (let i = 0; i < byteCharacters.length; i++) {
@@ -490,7 +490,8 @@ export const TableGastos = () => {
     }
   };
 
-  const handleFileDownload = async (pdfArchivo) => {
+  console.log(documentos);
+  const handleFileDownload = async (pdfArchivo) => {    
     const doc = pdfArchivo?.contenido
       ? pdfArchivo
       : await DocumentosService.getPDF({
@@ -499,7 +500,7 @@ export const TableGastos = () => {
         });
 
     if (doc) {
-      const archivoPDFBase64 = doc?.data[0].ARCHIVO_PDF || doc?.contenido;
+      const archivoPDFBase64=doc?.data[0].ARCHIVO_PDF || doc?.contenido      
       try {
         const cleanedBase64 = archivoPDFBase64.replace(/[^A-Za-z0-9+/=]/g, "");
         const byteCharacters = atob(cleanedBase64);
@@ -510,12 +511,14 @@ export const TableGastos = () => {
         }
 
         const byteArray = new Uint8Array(byteNumbers);
-        const blob = new Blob([byteArray], { type: "application/pdf" });
+        const tipoArchivo = pdfArchivo?.nombre.split(".")[1];
+        console.log(tipoArchivo);
+        const blob = new Blob([byteArray], { type: `application/${tipoArchivo}` });
 
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = doc?.data[0]?.Nombre || `ARCHIVO_PDF.pdf`;
+        a.download = pdfArchivo?.nombre || `ARCHIVO_PDF.pdf`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
