@@ -401,7 +401,6 @@ export const TableGastos = () => {
     try {
       const file = event.target.files[0];
       const fileName = file.name;
-      const reader = new FileReader();
       const validFileTypes = [
         "application/pdf",
         "image/png",
@@ -410,34 +409,35 @@ export const TableGastos = () => {
       ];
       const maxSizeInMB = 4;
       const maxSizeInBytes = maxSizeInMB * 1024 * 1024;
-
+  
       if (!file) {
         toastr.error("Por favor, seleccione un archivo.");
         return;
       }
-
+  
       if (!validFileTypes.includes(file.type)) {
         toastr.error(
           "Por favor, seleccione un archivo PDF o una imagen válida (PNG, JPG, JPEG)."
         );
         return;
       }
-
+  
       if (file.size > maxSizeInBytes) {
         toastr.error(
           `El tamaño del archivo no debe exceder ${maxSizeInMB} MB.`
         );
         return;
       }
-      reader.onload = async (e) => {
-        const arrayBuffer = e.target.result;
-        const byteArray = new Uint8Array(arrayBuffer);
-        const base64String = btoa(String.fromCharCode.apply(null, byteArray));
+  
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const base64String = e.target.result.split(',')[1] || e.target.result;
+        
         const pdfData = {
           nombre: fileName,
           contenido: base64String,
         };
-
+  
         if (index !== undefined) {
           setDocumentos(
             documentos.map((doc, i) =>
@@ -447,14 +447,19 @@ export const TableGastos = () => {
         } else {
           setPdfTempData(pdfData);
         }
+        
         toastr.success("Archivo cargado correctamente");
       };
-
-      reader.readAsArrayBuffer(file);
-      // reader.readAsDataURL(file);
+  
+      reader.onerror = () => {
+        console.error("Error al leer el archivo");
+        toastr.error("Error al procesar el archivo");
+      };
+  
+      reader.readAsDataURL(file);
     } catch (error) {
-      console.error("Archivo inválido seleccionado");
-      toastr.error("Por favor, seleccione un archivo PDF válido");
+      console.error("Archivo inválido seleccionado:", error);
+      toastr.error("Por favor, seleccione un archivo válido");
     } finally {
       event.target.files = null;
     }
