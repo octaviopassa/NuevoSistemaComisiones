@@ -154,7 +154,7 @@ export const TableGastos = () => {
               toastr.error(
                 "La fecha del archivo XML no coincide con el mes y año actual"
               );
-              event.target.files = null;
+
               return;
             }
           }
@@ -162,7 +162,7 @@ export const TableGastos = () => {
             toastr.error(
               "El RFC del emisor no coincide con el RFC del proveedor seleccionado o no has seleccionado un proveedor"
             );
-            event.target.files = null;
+
             return;
           }
 
@@ -171,7 +171,7 @@ export const TableGastos = () => {
 
           if (!complemento) {
             toastr.error("El archivo XML no contiene un complemento");
-            event.target.files = null;
+
             return;
           }
 
@@ -192,7 +192,6 @@ export const TableGastos = () => {
 
             if (!existingInDatabase.isValid) {
               toastr.warning(existingInDatabase.message);
-              event.target.files = null;
               return;
             }
 
@@ -200,20 +199,17 @@ export const TableGastos = () => {
               toastr.warning(
                 "XML de timbre ya existe dentro de los documentos"
               );
-              event.target.files = null;
               return;
             }
 
             if (!uuidFiscal) {
               toastr.warning("XML de timbre invalido");
-              event.target.files = null;
               return;
             }
 
             uuid = uuidFiscal;
           } else {
             toastr.warning("XML de tipo invalido");
-            event.target.files = null;
             return;
           }
 
@@ -224,7 +220,6 @@ export const TableGastos = () => {
 
           if (tipo !== "I") {
             toastr.error("XML de tipo invalido, debe ser de tipo Ingreso");
-            event.target.files = null;
             return;
           }
 
@@ -232,7 +227,6 @@ export const TableGastos = () => {
             toastr.error(
               "El RFC del receptor no coincide con el RFC de la empresa con la que has iniciado sesión"
             );
-            event.target.files = null;
             return;
           }
 
@@ -240,13 +234,11 @@ export const TableGastos = () => {
             toastr.error(
               "El archivo XML no contiene un nodo 'cfdi:Comprobante'"
             );
-            event.target.files = null;
             return;
           }
 
           if (metodo !== "PUE") {
             toastr.error("XML de tipo invalido");
-            event.target.files = null;
             return;
           }
 
@@ -391,20 +383,16 @@ export const TableGastos = () => {
           } else {
             setXmlTempData(xmlData);
           }
-
           toastr.success("Archivo XML cargado y analizado correctamente");
         };
-
         reader.readAsArrayBuffer(file);
-
-        event.target.files = null;
       } else {
         toastr.error("Por favor, seleccione un archivo XML válido");
-        event.target.files = null;
       }
     } catch (error) {
       console.log(error);
       toastr.error("Ocurrio un error al cargar el archivo XML");
+    } finally {
       event.target.files = null;
     }
   };
@@ -467,17 +455,19 @@ export const TableGastos = () => {
     } catch (error) {
       console.error("Archivo inválido seleccionado");
       toastr.error("Por favor, seleccione un archivo PDF válido");
+    } finally {
+      event.target.files = null;
     }
   };
 
-  const handleXmlDownload = async (xmlArchivo) => {    
+  const handleXmlDownload = async (xmlArchivo) => {
     const doc = xmlArchivo?.contenido
       ? xmlArchivo
       : await DocumentosService.getXml({
           id: xmlArchivo?.id,
           servidor: session.profile.servidor,
-        });        
-    if (doc) {      
+        });
+    if (doc) {
       const byteCharacters = atob(doc?.contenido || doc.data[0].ARCHIVO_XML);
       const byteNumbers = new Array(byteCharacters.length);
       for (let i = 0; i < byteCharacters.length; i++) {
@@ -500,8 +490,7 @@ export const TableGastos = () => {
     }
   };
 
-  console.log(documentos);
-  const handleFileDownload = async (pdfArchivo) => {    
+  const handleFileDownload = async (pdfArchivo) => {
     const doc = pdfArchivo?.contenido
       ? pdfArchivo
       : await DocumentosService.getPDF({
@@ -510,7 +499,7 @@ export const TableGastos = () => {
         });
 
     if (doc) {
-      const archivoPDFBase64=doc?.data[0].ARCHIVO_PDF || doc?.contenido      
+      const archivoPDFBase64 = doc?.data[0].ARCHIVO_PDF || doc?.contenido;
       try {
         const cleanedBase64 = archivoPDFBase64.replace(/[^A-Za-z0-9+/=]/g, "");
         const byteCharacters = atob(cleanedBase64);
@@ -521,14 +510,12 @@ export const TableGastos = () => {
         }
 
         const byteArray = new Uint8Array(byteNumbers);
-        const tipoArchivo = pdfArchivo?.nombre.split(".")[1];
-        console.log(tipoArchivo);
-        const blob = new Blob([byteArray], { type: `application/${tipoArchivo}` });
+        const blob = new Blob([byteArray], { type: "application/pdf" });
 
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = pdfArchivo?.nombre || `ARCHIVO_PDF.pdf`;
+        a.download = doc?.data[0]?.Nombre || `ARCHIVO_PDF.pdf`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -669,7 +656,7 @@ export const TableGastos = () => {
 
     toastr.success("Documento agregado con éxito");
   };
-  
+
   const eliminarDocumento = async (index) => {
     if (!documentos.length) {
       toastr.warning("No hay documentos para eliminar");
