@@ -4,4 +4,6 @@
 Uncaught (in promise) RangeError: Maximum call stack size exceeded
     at reader.onload (TableGastos.js:435:42) :checked
 4. Se permite grabar notas cuyo total es 0, no se está validando que el total sea mayor a 0. :checked
+
+## No entendi
 5. Se grabó un reembolso con xml sin pdf, y el campo pdf muestra el botón de descargar pdf. (Aparece el ID_GASTO_DETALLE con la extensión .pfd)
