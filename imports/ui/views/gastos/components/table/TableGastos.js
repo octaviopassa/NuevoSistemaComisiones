@@ -622,6 +622,11 @@ export const TableGastos = () => {
         folio: importesData.folio,
         total: parseFloat(importesData.total) || 0,
       };
+
+      if (importesFinales.total <= 0) {
+        toastr.error("El total debe ser mayor a 0, por favor verifique su Nota.");
+        return;
+      }
     } else {
       if (!xmlTempData) {
         toastr.error(

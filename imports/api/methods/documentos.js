@@ -3,7 +3,7 @@ import axios from "axios";
 
 Meteor.methods({
   "documentos.grabarArchivoXML": async (datos) => {
-    try {      
+    try {
       conexiones.body_bdseleccionada.tipo = "procedimientoAlmacenado";
       conexiones.body_bdseleccionada.baseDatos = "expedientes";
       conexiones.body_bdseleccionada.query = `dbo.MP_XML_GRABA_ARCHIVO`;
@@ -66,10 +66,15 @@ Meteor.methods({
       };
     } catch (error) {
       console.log(error);
+      return {
+        isValid: false,
+        data: null,
+        message: error.message,
+      };
     }
   },
   "documentos.grabarArchivoPDF": async (datos) => {
-    try {      
+    try {
       conexiones.body_bdseleccionada.tipo = "procedimientoAlmacenado";
       conexiones.body_bdseleccionada.baseDatos = "expedientes";
       conexiones.body_bdseleccionada.query = `MP_GASTOS_GRABA_ARCHIVO_NOTA`;
@@ -126,13 +131,18 @@ Meteor.methods({
       };
     } catch (error) {
       console.log(error);
+      return {
+        isValid: false,
+        data: null,
+        message: error.message,
+      };
     }
   },
   "documentos.grabarArchivo": async (datos) => {
     try {
       const cadena_xml = datos.cadena_xml
         ? Buffer.from(datos.cadena_xml, "base64").toString("utf-8")
-        : "";      
+        : "";
       conexiones.body_bdseleccionada.tipo = "procedimientoAlmacenado";
       conexiones.body_bdseleccionada.baseDatos = "expedientes";
       conexiones.body_bdseleccionada.query = `dbo.MP_GASTOS_SUBIR_XML_PDF`;
@@ -201,10 +211,15 @@ Meteor.methods({
       };
     } catch (error) {
       console.log(error);
+      return {
+        isValid: false,
+        data: null,
+        message: error.message,
+      };
     }
   },
   "documentos.grabarArchivoNota": async (datos) => {
-    try {      
+    try {
       conexiones.body_bdseleccionada.tipo = "procedimientoAlmacenado";
       conexiones.body_bdseleccionada.baseDatos = "expedientes";
       conexiones.body_bdseleccionada.query = `dbo.MP_GASTOS_GRABA_ARCHIVO_NOTA`;
@@ -261,6 +276,11 @@ Meteor.methods({
       };
     } catch (error) {
       console.log(error);
+      return {
+        isValid: false,
+        data: null,
+        message: error.message,
+      };
     }
   },
   "documentos.eliminarXML": async (datos) => {
@@ -293,6 +313,11 @@ Meteor.methods({
       };
     } catch (error) {
       console.log(error);
+      return {
+        isValid: false,
+        data: null,
+        message: error.message,
+      };
     }
   },
   "documentos.getGastoGlobal": async (data) => {
@@ -361,7 +386,7 @@ Meteor.methods({
         isValid: false,
         data: null,
         message: error.message,
-      }
+      };
     }
   },
   "documentos.getResumen": async (data) => {
@@ -630,12 +655,12 @@ Meteor.methods({
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
       conexiones.body_bdseleccionada.baseDatos = "CONSUMOS_PASSA";
-      // conexiones.body_bdseleccionada.query = `SELECT 
+      // conexiones.body_bdseleccionada.query = `SELECT
       //           'XML_FOLIO_'+ISNULL(FOLIO,'SIN_FOLIO')+'UUID'+UUID+'.XML' Nombre,
       //           CAST('' AS XML).value('xs:base64Binary(sql:column("ARCHIVO_XML"))', 'NVARCHAR(MAX)') ARCHIVO_XML
       //         FROM XMLS_PASSA
       //         WHERE IDXML=${data.id}
-      //       `;            
+      //       `;
       conexiones.body_bdseleccionada.query = `
               exec MP_CONSULTA_WEB_REACT_ARCHIVO_XML_PDF               
               @ID_GASTO_DETALLE=${data.id},
@@ -669,10 +694,10 @@ Meteor.methods({
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
       conexiones.body_bdseleccionada.baseDatos = "CONSUMOS_PASSA";
-      // conexiones.body_bdseleccionada.query = `SELECT 
+      // conexiones.body_bdseleccionada.query = `SELECT
       //             'PDF_FOLIO_'+ISNULL(FOLIO,'SIN_FOLIO')+'UUID'+UUID+'.PDF' Nombre,
       //             CAST('' AS XML).value('xs:base64Binary(sql:column("ARCHIVO_PDF"))', 'NVARCHAR(MAX)') ARCHIVO_PDF
-      //           FROM XMLS_PASSA 
+      //           FROM XMLS_PASSA
       //           WHERE IDXML=${data.id}
       //     `;
       conexiones.body_bdseleccionada.query = `

@@ -19,6 +19,11 @@ export const ModalImportes = ({
       return;
     }
 
+    if (importesData.total <= 0) {
+      toastr.warning("El total debe ser mayor a 0");
+      return;
+    }
+
     toggle();
   };
 
