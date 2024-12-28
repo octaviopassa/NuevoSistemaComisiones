@@ -16,6 +16,15 @@ RUN cd /build/source && \
 # Clean image with builded app
 FROM zcloudws/meteor-node-mongodb-runtime:2.15
 
+# Install LibreOffice
+USER root
+RUN apt-get update && \
+    apt-get install -y libreoffice && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+USER zcloud
+
 COPY --from=builder /build/app-build/bundle /home/zcloud/app
 
 RUN cd /home/zcloud/app/programs/server && npm install
