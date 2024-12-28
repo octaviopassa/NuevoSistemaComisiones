@@ -357,6 +357,11 @@ Meteor.methods({
       };
     } catch (error) {
       console.log(error);
+      return {
+        isValid: false,
+        data: null,
+        message: error.message,
+      }
     }
   },
   "documentos.getResumen": async (data) => {

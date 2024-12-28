@@ -4,10 +4,13 @@ import { useUserSession } from "../../../../store";
 import { DocumentosService } from "../../../../services";
 import toastr from "toastr";
 import { format } from "date-fns";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 
 export const CancelarButton = ({ setLoading }) => {
   const { session } = useUserSession();
   const { estatus, setEstatus, folio, plazaSeleccionada } = useGastosData();
+  const MySwal = withReactContent(Swal);
 
   const handleCancelado = async () => {
     const data = {
@@ -16,18 +19,33 @@ export const CancelarButton = ({ setLoading }) => {
       servidor: session.profile.servidor,
     };
 
+    const result = await MySwal.fire({
+      title: "¿Deseas cancelar el gasto?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Si, cancelar",
+      cancelButtonText: "No",
+    });
+
+    if (!result.isConfirmed) {
+      return;
+    }
+
     try {
       setLoading(true);
       const cancelado = await DocumentosService.cancelarGasto(data);
 
       if (!cancelado.isValid) {
         toastr.error(cancelado.message || "Error al cancelar el gasto");
+        console.log(cancelado.message);
         return;
       }
 
       const gasto = await DocumentosService.getGastoGlobal({
-        plazaSeleccionada,
         ...data,
+        plaza: plazaSeleccionada,
       });
 
       setEstatus({
