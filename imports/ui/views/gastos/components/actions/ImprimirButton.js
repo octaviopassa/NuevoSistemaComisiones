@@ -7,14 +7,21 @@ import { useUserSession } from "../../../../store";
 export const ImprimirButton = () => {
   const { session } = useUserSession();
   const { plazaSeleccionada, folio } = useGastosData();
+  
   const handlePrint = async () => {
-    const data = await ReportesService.generarReporte({
+    const reporteResponse = await ReportesService.generarReporte({
       plaza: plazaSeleccionada,
       folio,
       servidor: session.profile.servidor,
     });
+
+    if (!reporteResponse.isValid) {
+      toastr.error(reporteResponse.message || "No se pudo generar el reporte");
+      return;
+    }
+
     printJS({
-      printable: data,
+      printable: reporteResponse.data,
       type: "pdf",
       documentTitle: "ConsuntosPassa",
       header: "ConsuntosPassa",

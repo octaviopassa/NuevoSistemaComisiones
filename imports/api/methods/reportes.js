@@ -5,10 +5,12 @@ import fs from "fs";
 import path from "path";
 import os from "os";
 import Docxtemplater from "docxtemplater";
-import ConvertAPI from "convertapi";
 import { format } from "date-fns";
-
-const convertapi = new ConvertAPI("secret_M2CC06K9StuPUDEz");
+import { promisify } from "util";
+import libre from "libreoffice-convert";
+const libreConvert = promisify(libre.convert);
+// import ConvertAPI from "convertapi";
+// const convertapi = new ConvertAPI("secret_M2CC06K9StuPUDEz");
 
 Meteor.methods({
   "reportes.generarReporte": async function (data) {
@@ -129,35 +131,45 @@ Meteor.methods({
 
       doc.render(reportData);
 
-      const buf = doc.getZip().generate({ type: "nodebuffer" });
-
+      // Convertir a DOCX
+      const docxBuffer = doc.getZip().generate({ type: "nodebuffer" });
       const tempDocxPath = path.join(os.tmpdir(), "tempGastosReporte.docx");
+      fs.writeFileSync(tempDocxPath, docxBuffer);
 
-      fs.writeFileSync(tempDocxPath, buf);
+      // const result = await convertapi.convert(
+      //   "pdf",
+      //   {
+      //     File: tempDocxPath,
+      //   },
+      //   "docx"
+      // );
+      // const tempPdfPath = path.join(os.tmpdir(), "tempGastosReporte.pdf");
+      // await result.file.save(tempPdfPath);
+      // const pdfBuffer = fs.readFileSync(tempPdfPath);
+      // const base64Pdf = pdfBuffer.toString("base64");
+      // fs.unlinkSync(tempDocxPath);
+      // fs.unlinkSync(tempPdfPath);
+      // return base64Pdf;
 
-      const result = await convertapi.convert(
-        "pdf",
-        {
-          File: tempDocxPath,
-        },
-        "docx"
-      );
-
-      const tempPdfPath = path.join(os.tmpdir(), "tempGastosReporte.pdf");
-
-      await result.file.save(tempPdfPath);
-
-      const pdfBuffer = fs.readFileSync(tempPdfPath);
-
+      // Convertir DOCX a PDF 
+      const pdfBuffer = await libreConvert(docxBuffer, ".pdf", undefined);
       const base64Pdf = pdfBuffer.toString("base64");
 
+      // Limpiar archivo temporal
       fs.unlinkSync(tempDocxPath);
-      fs.unlinkSync(tempPdfPath);
 
-      return base64Pdf;
+      return {
+        isValid: true,
+        data: base64Pdf,
+        message: "",
+      };
     } catch (error) {
       console.error("Error al generar el PDF:", error);
-      throw error;
+      return {
+        isValid: false,
+        data: null,
+        message: error.message,
+      };
     }
   },
 });
