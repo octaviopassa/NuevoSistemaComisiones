@@ -383,7 +383,7 @@ export const TableGastos = () => {
           } else {
             setXmlTempData(xmlData);
           }
-          toastr.success("Archivo XML cargado y analizado correctamente");
+          // toastr.success("Archivo XML cargado y analizado correctamente");
         };
         reader.readAsArrayBuffer(file);
       } else {
@@ -448,7 +448,7 @@ export const TableGastos = () => {
           setPdfTempData(pdfData);
         }
         
-        toastr.success("Archivo cargado correctamente");
+        // toastr.success("Archivo cargado correctamente");
       };
   
       reader.onerror = () => {
@@ -667,7 +667,7 @@ export const TableGastos = () => {
     setXmlTempData(null);
     setPdfTempData(null);
 
-    toastr.success("Documento agregado con éxito");
+    // toastr.success("Documento agregado con éxito");
   };
 
   const eliminarDocumento = async (index) => {
