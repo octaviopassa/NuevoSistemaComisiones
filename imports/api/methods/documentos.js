@@ -40,7 +40,7 @@ Meteor.methods({
           direccion: "entrada",
         },
       ];
-      console.log(conexiones.body_bdseleccionada);
+      
       const response = await axios.post(
         conexiones.windows_api_post,
         conexiones.body_bdseleccionada,
@@ -140,9 +140,14 @@ Meteor.methods({
   },
   "documentos.grabarArchivo": async (datos) => {
     try {
-      const cadena_xml = datos.cadena_xml
+      let cadena_xml = datos.cadena_xml
         ? Buffer.from(datos.cadena_xml, "base64").toString("utf-8")
         : "";
+      cadena_xml = cadena_xml.replace('<?xml version="1.0" encoding="utf-8"?>', "");
+      cadena_xml = cadena_xml.replace('<?xml version="1.0" encoding="UFT-8"?>', "").trim();
+
+      // console.log(cadena_xml);
+
       conexiones.body_bdseleccionada.tipo = "procedimientoAlmacenado";
       conexiones.body_bdseleccionada.baseDatos = "expedientes";
       conexiones.body_bdseleccionada.query = `dbo.MP_GASTOS_SUBIR_XML_PDF`;

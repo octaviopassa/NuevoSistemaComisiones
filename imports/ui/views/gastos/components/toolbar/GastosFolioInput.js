@@ -233,7 +233,7 @@ export const GastosFolioInput = () => {
           placeholder="Folio"
           aria-describedby="inputFolio"
           value={folio}
-          disabled={loading}
+          disabled={loading || estatus.oldFolio}
           onChange={handleFolioInputChange}
           onKeyDown={handleFolioKeyDown}
         />

@@ -3,8 +3,7 @@ import axios from "axios";
 
 Meteor.methods({
   "gasolineras.getAll": async (data) => {
-    try {
-      console.log(data);
+    try {      
       conexiones.body_bdseleccionada.tipo = "procedimiento";
       conexiones.body_bdseleccionada.query = `exec dbo.SP_Cat_Gasolineras_Consulta @Cod_Gasolinera='', @Nom_Gasolinera='', @Estatus='', @Cod_Plaza='${data.plaza}'`;
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";

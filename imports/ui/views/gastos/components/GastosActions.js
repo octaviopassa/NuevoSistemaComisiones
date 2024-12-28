@@ -39,7 +39,7 @@ export const GastosActions = () => {
           <DesautorizarButton setLoading={setLoading} />
         )}
 
-        {estatus !== "Nuevo" && estatus !== "CANCELADO" && propietario && (
+        {estatus === "GRABADO" && propietario && (
           <CancelarButton setLoading={setLoading} />
         )}
       </div>
@@ -48,7 +48,7 @@ export const GastosActions = () => {
         title=""
         message="Por favor espere..."
         isOpen={loading}
-        toggle={() => {}}
+        toggle={() => setLoading(false)}
       />
     </div>
   );

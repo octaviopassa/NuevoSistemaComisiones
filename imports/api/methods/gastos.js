@@ -142,9 +142,14 @@ Meteor.methods({
   },
   "gastos.grabarRenglon": async (datos) => {
     try {
-      const cadena_xml = datos.cadena_xml
+      let cadena_xml = datos.cadena_xml
         ? Buffer.from(datos.cadena_xml, "base64").toString("utf-8")
         : "";
+
+      cadena_xml = cadena_xml.replace('<?xml version="1.0" encoding="utf-8"?>', "");
+      cadena_xml = cadena_xml.replace('<?xml version="1.0" encoding="UFT-8"?>', "").trim();
+
+      // console.log(cadena_xml);
       conexiones.body_bdseleccionada.tipo = "procedimiento";
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
       conexiones.body_bdseleccionada.query = `
@@ -181,6 +186,10 @@ Meteor.methods({
         data: conexiones.body_bdseleccionada,
       });
 
+      if (!response.data.data.esValido) {
+        throw new Meteor.Error("error", response.data.data.mensaje);
+      }
+
       return {
         isValid: response.data.isValid,
         data: JSON.parse(response.data.data.resultado),
@@ -188,6 +197,11 @@ Meteor.methods({
       };
     } catch (e) {
       console.log(e);
+      return {
+        isValid: false,
+        data: null,
+        message: e.message,
+      };
     }
   },
   "gastos.grabarGastoCombustible": async (datos) => {
