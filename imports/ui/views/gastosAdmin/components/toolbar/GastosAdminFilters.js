@@ -6,8 +6,9 @@ import { format, subMonths } from "date-fns";
 
 const statusOptions = [
   { value: "G", label: "Grabado" },
-  { value: "U", label: "Aprobado" },
+  { value: "U", label: "Autorizado" },
   { value: "C", label: "Cancelado" },
+  { value: "A", label: "Aplicado" },
 ];
 
 const GastosAdminFilters = ({ filters, setFilters }) => {
@@ -29,7 +30,7 @@ const GastosAdminFilters = ({ filters, setFilters }) => {
 
   const getPlazas = async () => {
     try {
-      const obtenerPlazas = await PlazasService.getAll({
+      const obtenerPlazas = await PlazasService.getAllGastosAdmin({
         cod_usu: session.profile.COD_USU,
         baseDatos: session.profile.baseDatos,
         servidor: session.profile.servidor,
@@ -37,7 +38,7 @@ const GastosAdminFilters = ({ filters, setFilters }) => {
 
       setPlazas(
         obtenerPlazas?.map((plaza) => {
-          return { Codigo: plaza.CODIGO, Nombre: plaza.NOMBRE };
+          return { Codigo: plaza.Codigo, Nombre: plaza.Nombre };
         })
       );
     } catch (error) {

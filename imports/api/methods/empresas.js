@@ -34,6 +34,25 @@ Meteor.methods({
 
     return respuesta;
   },
+  "plazas.getAllGastosAdmin": async (datos) => {
+    conexiones.body_bdseleccionada.tipo = "procedimiento";
+    conexiones.body_bdseleccionada.query = `
+        EXEC MP_WEB_LOGIN_PAZAS_USUARIO
+        @Cod_Usu='${datos.cod_usu}',
+        @EsLogin=0
+      `;
+
+    conexiones.body_bdseleccionada.baseDatos = datos.baseDatos;
+    conexiones.body_bdseleccionada.servidor = datos.servidor;
+
+    const response = await axios.get(conexiones.windows_api, {
+      data: conexiones.body_bdseleccionada,
+    });
+
+    const respuesta = JSON.parse(response.data.data.resultado);
+
+    return respuesta;
+  },
   "ingenieros.getAll": async (datos) => {
     conexiones.body_bdseleccionada.tipo = "procedimiento";
     conexiones.body_bdseleccionada.query = `exec SPCB_Carga_Combo_Ingenieros @Plaza= '${datos.plaza}', @HTML = 0`;
