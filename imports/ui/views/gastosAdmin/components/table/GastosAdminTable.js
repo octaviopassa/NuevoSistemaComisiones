@@ -56,8 +56,8 @@ const GastosAdminTable = ({ gastos, plazaSeleccionada, loading }) => {
     return faSort;
   };
 
-  const handleVerGasto = (folio) => {
-    navigate("/gastos", { state: { folio, plaza: plazaSeleccionada } });
+  const handleVerGasto = (gasto) => {
+    navigate("/gastos", { state: { folio: gasto.FOLIO_GASTO, plaza: gasto.PLAZA } });
   };
 
   return (
@@ -147,7 +147,7 @@ const GastosAdminTable = ({ gastos, plazaSeleccionada, loading }) => {
               <td>
                 <button
                   className="btn btn-link"
-                  onClick={() => handleVerGasto(gasto.FOLIO_GASTO)}
+                  onClick={() => handleVerGasto(gasto)}
                 >
                   Ver
                 </button>
