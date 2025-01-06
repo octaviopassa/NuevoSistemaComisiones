@@ -1,0 +1,28 @@
+services:
+  app:
+    image: eljeque/portalgastospassa:latest
+    ports:
+      - '3010:3000'
+    environment:
+      ROOT_URL: ${APP_ROOT_URL:-http://localhost}
+      MONGO_URL: mongodb://mongo/gastosPassa
+    depends_on:
+      - mongo
+    networks:
+      - appnet
+  mongo:
+    image: mongo:6.0
+    command:
+      - --storageEngine=wiredTiger
+    networks:
+      - appnet
+    volumes:
+      - C:/Deploys/portal_gastos_react/passa_gastos_db_mongo/gastospassa:/data/db
+    ports:
+      - "27018:27017"
+networks:
+  appnet:
+    driver: bridge
+volumes:
+  generated:
+    driver: local
