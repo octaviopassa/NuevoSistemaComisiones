@@ -42,8 +42,14 @@ export const GastosToolbar = () => {
     cargaInicial();
   }, [user.profile.COD_USU, user.profile.baseDatos, reloadData, folio]);
 
+  // useEffect(() => {
+  //   getFolio();
+  // }, [plazaSeleccionada]);
+  
   useEffect(() => {
-    getFolio();
+    if (!history?.folio) {  // Solo obtener folio si no viene de navegación
+      getFolio();
+    }
   }, [plazaSeleccionada]);
 
   useEffect(() => {

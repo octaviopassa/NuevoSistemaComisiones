@@ -31,7 +31,7 @@ export const GastosFolioInput = () => {
       });
       handleFolioChange(history.folio);
     }
-  }, [plazaSeleccionada]);
+  }, [history]);//[plazaSeleccionada]);
 
   const handleFolioInputChange = (e) => {
     setFolio(e.target.value);

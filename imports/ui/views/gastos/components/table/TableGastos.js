@@ -990,10 +990,10 @@ export const TableGastos = () => {
               <th className="text-center">Detalle</th>
               <th className="text-center">
                 Cliente
-                <ModalButton
+                {/* <ModalButton
                   icon={faGear}
                   ModalComponent={ModalCatalogoClientes}
-                />
+                /> */}
               </th>
               <th
                 className="text-center"
