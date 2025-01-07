@@ -56,8 +56,8 @@ const GastosAdminTable = ({ gastos, plazaSeleccionada, loading }) => {
     return faSort;
   };
 
-  const handleVerGasto = (gasto) => {
-    navigate("/gastos", { state: { folio: gasto.FOLIO_GASTO, plaza: gasto.PLAZA } });
+  const handleVerGasto = (gasto) => {    
+    navigate("/gastos", { state: { folio: gasto.FOLIO_GASTO, plaza: gasto.PLAZA} });
   };
 
   return (

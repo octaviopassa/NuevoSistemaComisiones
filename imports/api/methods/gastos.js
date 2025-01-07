@@ -49,7 +49,7 @@ Meteor.methods({
     }
   },
   "gastos.getFolioProvisional": async (data) => {
-    try {
+    try {      
       conexiones.body_bdseleccionada.tipo = "procedimiento";
       conexiones.body_bdseleccionada.query = `exec MP_GENERA_FOLIO_SELECT @COD_DOC='GT', @MODULO='G', @PLAZA='${data.plaza}'`;
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
@@ -58,10 +58,9 @@ Meteor.methods({
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
       });
-
       const respuesta = JSON.parse(response.data.data.resultado);
 
-      return respuesta;
+      return respuesta[0]?.Folio || '';//return respuesta;
     } catch (e) {
       console.log(e);
     }
@@ -146,10 +145,8 @@ Meteor.methods({
         ? Buffer.from(datos.cadena_xml, "base64").toString("utf-8")
         : "";
 
-      cadena_xml = cadena_xml.replace('<?xml version="1.0" encoding="utf-8"?>', "");
-      cadena_xml = cadena_xml.replace('<?xml version="1.0" encoding="UFT-8"?>', "").trim();
+      cadena_xml = cadena_xml.replace(/<\?xml.*?\?>\s*/g, '').trim();
 
-      // console.log(cadena_xml);
       conexiones.body_bdseleccionada.tipo = "procedimiento";
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
       conexiones.body_bdseleccionada.query = `
@@ -181,7 +178,7 @@ Meteor.methods({
         @ROWUID_PDF_EN_SERVIBOX=''
       `;
       conexiones.body_bdseleccionada.servidor = datos.servidor;
-
+     
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
       });

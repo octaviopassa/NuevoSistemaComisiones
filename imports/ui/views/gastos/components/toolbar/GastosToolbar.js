@@ -115,7 +115,8 @@ export const GastosToolbar = () => {
         plaza: plazaSeleccionada,
         servidor: user.profile.servidor,
       });
-      setFolio(data[0]?.Folio || "");
+      
+      setFolio(data)//setFolio(data[0]?.Folio || "");
     } catch (error) {
       console.error("Error en getFolioProvisional", error);
     }

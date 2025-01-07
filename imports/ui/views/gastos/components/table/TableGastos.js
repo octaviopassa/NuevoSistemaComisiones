@@ -118,7 +118,7 @@ export const TableGastos = () => {
   const handleXmlUpload = async (event, index) => {
     const file = event.target.files[0];
     try {
-      if (file && file.name.endsWith(".xml")) {
+      if (file && file.name.toLowerCase().endsWith(".xml")) {
         const fileName = file.name;
         const reader = new FileReader();
 
@@ -146,6 +146,7 @@ export const TableGastos = () => {
           const fecha = comprobante.getAttribute("Fecha") || "";
 
           //TODO: Refactorizar IF's por funciones de validación
+          //CORREGIR ESTE IF DE IANSA/SMARTCARB
           if (
             session.profile.baseDatos === "IANSA" ||
             session.profile.baseDatos === "Smartcarb"
@@ -160,7 +161,7 @@ export const TableGastos = () => {
           }
           if (rfcEmisor !== extraerRFC(proveedorSeleccionado.label)) {
             toastr.error(
-              "El RFC del emisor no coincide con el RFC del proveedor seleccionado o no has seleccionado un proveedor"
+              `El RFC del emisor ${rfcEmisor} no coincide con el RFC del proveedor seleccionado o no has seleccionado un proveedor`
             );
 
             return;
@@ -174,11 +175,11 @@ export const TableGastos = () => {
 
             return;
           }
-
+          
           const timbreFiscal = complemento.getElementsByTagName(
             "tfd:TimbreFiscalDigital"
           )[0];
-
+          
           if (timbreFiscal) {
             const uuidFiscal = timbreFiscal.getAttribute("UUID");
             const existingDocument = documentos.some(
@@ -197,19 +198,19 @@ export const TableGastos = () => {
 
             if (existingDocument) {
               toastr.warning(
-                "XML de timbre ya existe dentro de los documentos"
+                "Ya agrego un documento con el mismo UUID a este gasto"
               );
               return;
             }
 
             if (!uuidFiscal) {
-              toastr.warning("XML de timbre invalido");
+              toastr.warning("XML no tiene UUID");
               return;
             }
 
             uuid = uuidFiscal;
-          } else {
-            toastr.warning("XML de tipo invalido");
+          } else {            
+            toastr.warning("XML no esta timbrado");
             return;
           }
 
@@ -219,13 +220,15 @@ export const TableGastos = () => {
           });
 
           if (tipo !== "I") {
-            toastr.error("XML de tipo invalido, debe ser de tipo Ingreso");
+            toastr.error(
+              `XML de tipo invalido ${tipo}, debe ser de tipo Ingreso`
+            );
             return;
           }
 
           if (rfcReceptor !== empresaRfc.rfc) {
             toastr.error(
-              "El RFC del receptor no coincide con el RFC de la empresa con la que has iniciado sesión"
+              `El RFC del receptor ${rfcReceptor} no coincide con el RFC de la empresa ${empresaRfc.rfc} con la que has iniciado sesión`
             );
             return;
           }
@@ -238,7 +241,9 @@ export const TableGastos = () => {
           }
 
           if (metodo !== "PUE") {
-            toastr.error("XML de tipo invalido");
+            toastr.error(
+              `Método de pago inválido, la factura es ${metodo}, en reembolsos sólo se permiten PUE.`
+            );
             return;
           }
 

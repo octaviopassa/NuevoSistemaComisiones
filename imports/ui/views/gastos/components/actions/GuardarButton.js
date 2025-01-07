@@ -155,7 +155,7 @@ export const GuardarButton = ({ setLoading }) => {
           fecha,
         } = importes;
 
-        let tua_desglosado;
+        let tua_desglosado = "0";
 
         if (parseFloat(tua || 0) > 0) {
           const calculoTotal =
@@ -196,8 +196,6 @@ export const GuardarButton = ({ setLoading }) => {
               : "",
           servidor: session.profile.servidor,
         };
-
-        //console.log(datosDocumento);
 
         const grabarRenglon = await GastosService.grabarRenglon(
           datosDocumento

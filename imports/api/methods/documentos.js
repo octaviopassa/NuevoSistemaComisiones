@@ -143,10 +143,8 @@ Meteor.methods({
       let cadena_xml = datos.cadena_xml
         ? Buffer.from(datos.cadena_xml, "base64").toString("utf-8")
         : "";
-      cadena_xml = cadena_xml.replace('<?xml version="1.0" encoding="utf-8"?>', "");
-      cadena_xml = cadena_xml.replace('<?xml version="1.0" encoding="UFT-8"?>', "").trim();
 
-      // console.log(cadena_xml);
+      cadena_xml = cadena_xml.replace(/<\?xml.*?\?>\s*/g, '').trim();
 
       conexiones.body_bdseleccionada.tipo = "procedimientoAlmacenado";
       conexiones.body_bdseleccionada.baseDatos = "expedientes";
