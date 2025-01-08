@@ -364,7 +364,7 @@ Meteor.methods({
               EXEC DBO.MP_CONSULTA_WEB_REACT_GASTOS_DETALLE 
               @FOLIO_GASTO='${data.folio}'
             `;
-      conexiones.body_bdseleccionada.servidor = data.servidor;
+      conexiones.body_bdseleccionada.servidor = data.servidor;      
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,

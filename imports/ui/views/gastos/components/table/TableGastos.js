@@ -31,7 +31,7 @@ import { format } from "date-fns";
 import { useUserSession } from "../../../../store";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
-import { extraerRFC, validarMesYAnio } from "../../../../../utils/utils";
+import { extraerRFC, formatToSinaloaDate, validarMesYAnio } from "../../../../../utils/utils";
 
 export const TableGastos = () => {
   const [proveedorSeleccionado, setProveedorSeleccionado] = useState("");
@@ -115,7 +115,7 @@ export const TableGastos = () => {
     return [];
   };
 
-  const handleXmlUpload = async (event, index) => {
+  const handleXmlUpload = async (event, index) => {    
     const file = event.target.files[0];
     try {
       if (file && file.name.toLowerCase().endsWith(".xml")) {
@@ -399,6 +399,7 @@ export const TableGastos = () => {
       toastr.error("Ocurrio un error al cargar el archivo XML");
     } finally {
       event.target.files = null;
+      event.target.value = "";
     }
   };
 
@@ -467,6 +468,7 @@ export const TableGastos = () => {
       toastr.error("Por favor, seleccione un archivo válido");
     } finally {
       event.target.files = null;
+      event.target.value = "";
     }
   };
 
@@ -1055,7 +1057,20 @@ export const TableGastos = () => {
                   )}
                 </td>
                 <td>
-                  {(doc.tipoGasto.label === "ATENCION A CLIENTES" ||
+                  {(doc.tipoGasto.label === "ATENCION A CLIENTES" || doc.detalleGasto?.label) && (
+                    <>
+                      {
+                        <>
+                          <strong>Cliente: </strong>
+                          <br />
+                          {doc.detalleGasto.label}
+                        </>
+                      }
+                    </>
+                  )}
+                </td>
+                {/* <td>
+                  {(doc.tipoGasto.label === "ATENCION A CLIENTES" || 
                     session.profile.WEB_REACT_CLIENTE_OBLIGATORIO) && (
                     <>
                       {doc.detalleGasto?.label && (
@@ -1067,8 +1082,14 @@ export const TableGastos = () => {
                       )}
                     </>
                   )}
-                </td>
+                </td> */}
                 <td>
+                {/* <span>
+                    <strong>Fecha: </strong>{" "}
+                    {isNaN(new Date(doc.importes?.fecha))
+                      ? doc.importes?.fecha || "N/A"
+                      : formatToSinaloaDate(doc.importes?.fecha)}
+                  </span> */}
                   <span>
                     <strong>Fecha: </strong>{" "}
                     {isNaN(new Date(doc.importes?.fecha))

@@ -8,6 +8,7 @@ import Docxtemplater from "docxtemplater";
 import { format } from "date-fns";
 import { promisify } from "util";
 import libre from "libreoffice-convert";
+import { formatToSinaloaDate } from "../../utils/utils";
 const libreConvert = promisify(libre.convert);
 // import ConvertAPI from "convertapi";
 // const convertapi = new ConvertAPI("secret_M2CC06K9StuPUDEz");
@@ -86,6 +87,19 @@ Meteor.methods({
         estatus: `${global[0].ESTATUS} - ${
           estadosReembolso[global[0].ESTATUS]
         }`,
+        // grabo: `${formatToSinaloaDate(global[0]?.FECHA)} ${
+        //   global[0]?.NOMBRE_GRABO || ""
+        // }`,
+        // aplico: global[0]?.NOMBRE_APLICO
+        //   ? `${formatToSinaloaDate(global[0]?.FECHA_APLICACION)} ${
+        //       global[0]?.NOMBRE_APLICO || ""
+        //     }`
+        //   : "",
+        // autorizo: global[0]?.NOMBRE_AUTORIZO
+        //   ? `${formatToSinaloaDate(global[0]?.FECHA_AUTORIZACION)} ${
+        //       global[0]?.NOMBRE_AUTORIZO
+        //     }`
+        //   : "",
         grabo: `${format(new Date(global[0]?.FECHA), "dd/MM/yyyy")} ${
           global[0]?.NOMBRE_GRABO || ""
         }`,

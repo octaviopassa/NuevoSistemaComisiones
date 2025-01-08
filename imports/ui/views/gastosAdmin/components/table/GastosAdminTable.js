@@ -9,6 +9,7 @@ import React from "react";
 import { Spinner, Table } from "reactstrap";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
+import { formatToSinaloaDate } from "../../../../../utils/utils";
 
 const theadClasses = "d-flex justify-content-between align-items-center";
 
@@ -118,6 +119,7 @@ const GastosAdminTable = ({ gastos, plazaSeleccionada, loading }) => {
           gastos?.map((gasto) => (
             <tr key={gasto._id}>
               <td>{gasto.FOLIO_GASTO}</td>
+              {/* <td>{formatToSinaloaDate(gasto.FECHA)}</td> */}
               <td>{format(new Date(gasto.FECHA), "dd/MM/yyyy")}</td>
               <td>{`${gasto.PLAZA} - ${gasto.NOM_PLAZA}`}</td>
               <td>

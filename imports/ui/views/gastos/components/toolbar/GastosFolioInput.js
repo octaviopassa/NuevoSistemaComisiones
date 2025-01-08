@@ -7,6 +7,7 @@ import { format } from "date-fns";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import { useLocation } from "react-router-dom";
+import { formatToSinaloaDate } from "../../../../../utils/utils";
 
 export const GastosFolioInput = () => {
   const [loading, setLoading] = useState(false);
@@ -109,8 +110,7 @@ export const GastosFolioInput = () => {
           concepto: doc.CONCEPTO,
           descartado: !!doc.DESCARTADO,
           detalleGasto:
-            doc.CODIGO_GASTO === 17 ||
-            session.profile.WEB_REACT_CLIENTE_OBLIGATORIO
+            doc.CODIGO_GASTO === 17 || doc?.CLIENTE //session.profile.WEB_REACT_CLIENTE_OBLIGATORIO
               ? { label: doc?.CLIENTE || "" }
               : doc.CODIGO_GASTO === 1
               ? {

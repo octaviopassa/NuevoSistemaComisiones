@@ -1,5 +1,6 @@
 import moment from "moment";
 import "moment-duration-format";
+import { format } from "date-fns";
 
 export function formatCurrency(value, locale = "es-MX", currency = "MXN") {
   return new Intl.NumberFormat(locale, {
@@ -24,6 +25,20 @@ export const formatDate = (dateString) => {
   } else {
     return "Sin fecha";
   }
+};
+
+export const formatToSinaloaDate = (date) => {
+  const timeZone = "America/Mazatlan"; // Zona horaria de Sinaloa
+  const options = { timeZone, year: "numeric", month: "2-digit", day: "2-digit" };
+
+  // Si es una cadena, conviértela a Date
+  const parsedDate = typeof date === "string" ? new Date(date) : date;
+
+  // Formatear la fecha a 'yyyy-MM-dd' en la zona horaria de Sinaloa
+  const formatter = new Intl.DateTimeFormat("en-CA", options); // 'en-CA' asegura 'yyyy-MM-dd'
+  const [month, day, year] = formatter.format(parsedDate).split("/");
+
+  return `${year}-${month}-${day}`;  
 };
 
 export const formatDuration = (startTime, endTime) => {
