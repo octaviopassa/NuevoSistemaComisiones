@@ -21,7 +21,7 @@ export const useUserSession = create(
 
       // Función para actualizar el estado de isLogged
       setUserSession: (usuario) => {
-        set({ session: usuario });
+        set({ session: usuario });        
       },
       resetUserSession: () => {
         set({ session: userDefault });

@@ -63,7 +63,7 @@ Meteor.methods({
           proveedor: item.NOMBRE_PROVEEDOR,
           gasto: item.NOMBRE_GASTO,
           concepto: item.CONCEPTO,
-          fecha: format(new Date(item.R_FECHA), "dd/MM/yyyy"),
+          fecha: formatToSinaloaDate(item.R_FECHA), //format(new Date(item.R_FECHA), "dd/MM/yyyy"),
           folio_proveedor: item.FOLIO_PROVEEDOR,
           subtotal: `$${item.rSUBTOTAL.toFixed(2)}`,
           iva_16: `$${item.rIVA_16.toFixed(2)}`,
@@ -87,32 +87,32 @@ Meteor.methods({
         estatus: `${global[0].ESTATUS} - ${
           estadosReembolso[global[0].ESTATUS]
         }`,
-        // grabo: `${formatToSinaloaDate(global[0]?.FECHA)} ${
-        //   global[0]?.NOMBRE_GRABO || ""
-        // }`,
-        // aplico: global[0]?.NOMBRE_APLICO
-        //   ? `${formatToSinaloaDate(global[0]?.FECHA_APLICACION)} ${
-        //       global[0]?.NOMBRE_APLICO || ""
-        //     }`
-        //   : "",
-        // autorizo: global[0]?.NOMBRE_AUTORIZO
-        //   ? `${formatToSinaloaDate(global[0]?.FECHA_AUTORIZACION)} ${
-        //       global[0]?.NOMBRE_AUTORIZO
-        //     }`
-        //   : "",
-        grabo: `${format(new Date(global[0]?.FECHA), "dd/MM/yyyy")} ${
+        grabo: `${formatToSinaloaDate(global[0]?.FECHA)} ${
           global[0]?.NOMBRE_GRABO || ""
         }`,
         aplico: global[0]?.NOMBRE_APLICO
-          ? `${format(new Date(global[0]?.FECHA_APLICACION), "dd/MM/yyyy")} ${
+          ? `${formatToSinaloaDate(global[0]?.FECHA_APLICACION)} ${
               global[0]?.NOMBRE_APLICO || ""
             }`
           : "",
         autorizo: global[0]?.NOMBRE_AUTORIZO
-          ? `${format(new Date(global[0]?.FECHA_AUTORIZACION), "dd/MM/yyyy")} ${
+          ? `${formatToSinaloaDate(global[0]?.FECHA_AUTORIZACION)} ${
               global[0]?.NOMBRE_AUTORIZO
             }`
           : "",
+        // grabo: `${format(new Date(global[0]?.FECHA), "dd/MM/yyyy")} ${
+        //   global[0]?.NOMBRE_GRABO || ""
+        // }`,
+        // aplico: global[0]?.NOMBRE_APLICO
+        //   ? `${format(new Date(global[0]?.FECHA_APLICACION), "dd/MM/yyyy")} ${
+        //       global[0]?.NOMBRE_APLICO || ""
+        //     }`
+        //   : "",
+        // autorizo: global[0]?.NOMBRE_AUTORIZO
+        //   ? `${format(new Date(global[0]?.FECHA_AUTORIZACION), "dd/MM/yyyy")} ${
+        //       global[0]?.NOMBRE_AUTORIZO
+        //     }`
+        //   : "",
         pagarA: global[0].PAGAR_A,
         rfc: global[0].RFC,
         curp: global[0].CURP,

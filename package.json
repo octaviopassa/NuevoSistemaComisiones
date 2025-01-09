@@ -25,6 +25,7 @@
     "datatables.net-responsive": "3.0.2",
     "datatables.net-responsive-dt": "3.0.2",
     "date-fns": "3.6.0",
+    "date-fns-tz": "^3.2.0",
     "docxtemplater": "^3.50.0",
     "easy-pie-chart": "2.1.7",
     "flot": "4.2.6",

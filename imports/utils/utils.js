@@ -1,6 +1,7 @@
 import moment from "moment";
 import "moment-duration-format";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
+import { formatInTimeZone  } from "date-fns-tz";
 
 export function formatCurrency(value, locale = "es-MX", currency = "MXN") {
   return new Intl.NumberFormat(locale, {
@@ -28,18 +29,25 @@ export const formatDate = (dateString) => {
 };
 
 export const formatToSinaloaDate = (date) => {
-  const timeZone = "America/Mazatlan"; // Zona horaria de Sinaloa
-  const options = { timeZone, year: "numeric", month: "2-digit", day: "2-digit" };
+  if (!date) return "";
+  
+  try {
+    const timeZone = "America/Mazatlan"; // Zona horaria de Sinaloa
+    
+    // Si es una cadena, conviértela a Date
+    const parsedDate = typeof date === "string" ? parseISO(date) : date;
 
-  // Si es una cadena, conviértela a Date
-  const parsedDate = typeof date === "string" ? new Date(date) : date;
-
-  // Formatear la fecha a 'yyyy-MM-dd' en la zona horaria de Sinaloa
-  const formatter = new Intl.DateTimeFormat("en-CA", options); // 'en-CA' asegura 'yyyy-MM-dd'
-  const [month, day, year] = formatter.format(parsedDate).split("/");
-
-  return `${year}-${month}-${day}`;  
+    console.log("Fecha original:", parsedDate);
+    
+    // Formatear la fecha directamente en la zona horaria de Sinaloa
+    return formatInTimeZone(parsedDate, timeZone, "dd/MM/yyyy");
+  } catch (error) {
+    console.error("Error al formatear fecha:", error);
+    return date; // Retornar la fecha original si hay error
+  }
 };
+
+
 
 export const formatDuration = (startTime, endTime) => {
   if (!startTime || !endTime) return "Duración no disponible";
@@ -106,3 +114,26 @@ export function validarMesYAnio(fechaVariable, fechaAValidar) {
     fecha1.getFullYear() === fecha2.getFullYear()
   );
 }
+
+export const validarMesXMLs = (xmlsExistentes, nuevoXML) => {
+  if (!xmlsExistentes || xmlsExistentes.length === 0) return true;
+  
+  // Obtener el mes y año del nuevo XML
+  const fechaNuevoXML = moment(nuevoXML.fecha);
+  const mesNuevoXML = fechaNuevoXML.month();
+  const anioNuevoXML = fechaNuevoXML.year();
+  
+  // Crear un Map con los UUIDs y fechas de los XMLs existentes
+  const xmlMap = new Map(
+    xmlsExistentes.map(xml => [xml.uuid, moment(xml.fecha)])
+  );
+  
+  // Verificar que todas las fechas sean del mismo mes y año
+  for (const fecha of xmlMap.values()) {
+    if (fecha.month() !== mesNuevoXML || fecha.year() !== anioNuevoXML) {
+      return false;
+    }
+  }
+  
+  return true;
+};

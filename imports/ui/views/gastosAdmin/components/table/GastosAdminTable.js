@@ -119,8 +119,8 @@ const GastosAdminTable = ({ gastos, plazaSeleccionada, loading }) => {
           gastos?.map((gasto) => (
             <tr key={gasto._id}>
               <td>{gasto.FOLIO_GASTO}</td>
-              {/* <td>{formatToSinaloaDate(gasto.FECHA)}</td> */}
-              <td>{format(new Date(gasto.FECHA), "dd/MM/yyyy")}</td>
+              <td>{formatToSinaloaDate(gasto.FECHA)}</td>
+              {/* <td>{format(new Date(gasto.FECHA), "dd/MM/yyyy")}</td> */}
               <td>{`${gasto.PLAZA} - ${gasto.NOM_PLAZA}`}</td>
               <td>
                 {gasto.Registró.match(/<b>Usuario:<\/b>\s*([A-Z_]+)/)?.[1]

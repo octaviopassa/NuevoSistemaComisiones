@@ -93,13 +93,13 @@ export const Header = () => {
                   <img
                     src="/img/user.png"
                     className="rounded-circle profile-image"
-                    alt={user.profile ? user.profile.nombreCompleto : ""}
+                    alt={user.username ? user.username : ""}
                     width={100}
                   />
                 </span>
                 <div className="info-card-text">
                   <div className="fs-lg text-truncate text-truncate-lg">
-                    {user.profile ? user.profile.nombreCompleto : ""}
+                    {user.username ? user.username : ""}
                   </div>
                   <span className="text-truncate text-truncate-md opacity-80">
                     {user ? user.rol : ""}

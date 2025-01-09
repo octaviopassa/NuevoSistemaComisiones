@@ -31,7 +31,7 @@ import { format } from "date-fns";
 import { useUserSession } from "../../../../store";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
-import { extraerRFC, formatToSinaloaDate, validarMesYAnio } from "../../../../../utils/utils";
+import { extraerRFC, formatToSinaloaDate, validarMesXMLs } from "../../../../../utils/utils";
 
 export const TableGastos = () => {
   const [proveedorSeleccionado, setProveedorSeleccionado] = useState("");
@@ -115,7 +115,7 @@ export const TableGastos = () => {
     return [];
   };
 
-  const handleXmlUpload = async (event, index) => {    
+  const handleXmlUpload = async (event, index) => {
     const file = event.target.files[0];
     try {
       if (file && file.name.toLowerCase().endsWith(".xml")) {
@@ -144,21 +144,6 @@ export const TableGastos = () => {
             .getElementsByTagName("cfdi:Emisor")[0]
             .getAttribute("Rfc");
           const fecha = comprobante.getAttribute("Fecha") || "";
-
-          //TODO: Refactorizar IF's por funciones de validación
-          //CORREGIR ESTE IF DE IANSA/SMARTCARB
-          if (
-            session.profile.baseDatos === "IANSA" ||
-            session.profile.baseDatos === "Smartcarb"
-          ) {
-            if (validarMesYAnio(fecha, gastosDate)) {
-              toastr.error(
-                "La fecha del archivo XML no coincide con el mes y año actual"
-              );
-
-              return;
-            }
-          }
           if (rfcEmisor !== extraerRFC(proveedorSeleccionado.label)) {
             toastr.error(
               `El RFC del emisor ${rfcEmisor} no coincide con el RFC del proveedor seleccionado o no has seleccionado un proveedor`
@@ -175,11 +160,11 @@ export const TableGastos = () => {
 
             return;
           }
-          
+
           const timbreFiscal = complemento.getElementsByTagName(
             "tfd:TimbreFiscalDigital"
           )[0];
-          
+
           if (timbreFiscal) {
             const uuidFiscal = timbreFiscal.getAttribute("UUID");
             const existingDocument = documentos.some(
@@ -209,9 +194,30 @@ export const TableGastos = () => {
             }
 
             uuid = uuidFiscal;
-          } else {            
+          } else {
             toastr.warning("XML no esta timbrado");
             return;
+          }
+
+          if (
+            session.profile.baseDatos === "IANSA" ||
+            session.profile.baseDatos === "Smartcarb"
+          ) {
+            // Obtener los XMLs existentes de la tabla
+            const xmlsExistentes = documentos ? documentos.map(doc => ({
+              uuid: doc.xmlArchivo.uuid,
+              fecha: doc.importes.fecha
+            })) : [];
+
+            if (xmlsExistentes) {
+              // Validar que el nuevo XML sea del mismo mes que los existentes
+              if (!validarMesXMLs(xmlsExistentes, { uuid: uuid, fecha })) {
+                toastr.error(
+                  `La fecha del archivo XML ${fecha} no coincide con el mes y año de los XMLs previamente agregados.`
+                );
+                return;
+              }
+            }
           }
 
           const [empresaRfc] = await EmpresasService.getRFC({
@@ -350,11 +356,11 @@ export const TableGastos = () => {
 
           datos.impuesto = parseFloat(
             datos.ieps +
-              datos.iva_16 +
-              datos.iva_8 +
-              datos.ish +
-              datos.tua +
-              datos.ret
+            datos.iva_16 +
+            datos.iva_8 +
+            datos.ish +
+            datos.tua +
+            datos.ret
           ).toFixed(2);
 
           for (let key in datos) {
@@ -378,10 +384,10 @@ export const TableGastos = () => {
               documentos.map((doc, i) =>
                 i === index
                   ? {
-                      ...doc,
-                      xmlArchivo: xmlData.archivo,
-                      importes: xmlData.importes,
-                    }
+                    ...doc,
+                    xmlArchivo: xmlData.archivo,
+                    importes: xmlData.importes,
+                  }
                   : doc
               )
             );
@@ -415,35 +421,35 @@ export const TableGastos = () => {
       ];
       const maxSizeInMB = 4;
       const maxSizeInBytes = maxSizeInMB * 1024 * 1024;
-  
+
       if (!file) {
         toastr.error("Por favor, seleccione un archivo.");
         return;
       }
-  
+
       if (!validFileTypes.includes(file.type)) {
         toastr.error(
           "Por favor, seleccione un archivo PDF o una imagen válida (PNG, JPG, JPEG)."
         );
         return;
       }
-  
+
       if (file.size > maxSizeInBytes) {
         toastr.error(
           `El tamaño del archivo no debe exceder ${maxSizeInMB} MB.`
         );
         return;
       }
-  
+
       const reader = new FileReader();
       reader.onload = (e) => {
         const base64String = e.target.result.split(',')[1] || e.target.result;
-        
+
         const pdfData = {
           nombre: fileName,
           contenido: base64String,
         };
-  
+
         if (index !== undefined) {
           setDocumentos(
             documentos.map((doc, i) =>
@@ -453,15 +459,15 @@ export const TableGastos = () => {
         } else {
           setPdfTempData(pdfData);
         }
-        
+
         // toastr.success("Archivo cargado correctamente");
       };
-  
+
       reader.onerror = () => {
         console.error("Error al leer el archivo");
         toastr.error("Error al procesar el archivo");
       };
-  
+
       reader.readAsDataURL(file);
     } catch (error) {
       console.error("Archivo inválido seleccionado:", error);
@@ -472,14 +478,14 @@ export const TableGastos = () => {
     }
   };
 
-  const handleXmlDownload = async (xmlArchivo) => {    
+  const handleXmlDownload = async (xmlArchivo) => {
     const doc = xmlArchivo?.contenido
       ? xmlArchivo
       : await DocumentosService.getXml({
-          id: xmlArchivo?.id,
-          servidor: session.profile.servidor,
-        });        
-    if (doc) {      
+        id: xmlArchivo?.id,
+        servidor: session.profile.servidor,
+      });
+    if (doc) {
       const byteCharacters = atob(doc?.contenido || doc.data[0].ARCHIVO_XML);
       const byteNumbers = new Array(byteCharacters.length);
       for (let i = 0; i < byteCharacters.length; i++) {
@@ -503,16 +509,16 @@ export const TableGastos = () => {
   };
 
   console.log(documentos);
-  const handleFileDownload = async (pdfArchivo) => {    
+  const handleFileDownload = async (pdfArchivo) => {
     const doc = pdfArchivo?.contenido
       ? pdfArchivo
       : await DocumentosService.getPDF({
-          id: pdfArchivo?.id,
-          servidor: session.profile.servidor,
-        });
+        id: pdfArchivo?.id,
+        servidor: session.profile.servidor,
+      });
 
     if (doc) {
-      const archivoPDFBase64=doc?.data[0].ARCHIVO_PDF || doc?.contenido      
+      const archivoPDFBase64 = doc?.data[0].ARCHIVO_PDF || doc?.contenido
       try {
         const cleanedBase64 = archivoPDFBase64.replace(/[^A-Za-z0-9+/=]/g, "");
         const byteCharacters = atob(cleanedBase64);
@@ -853,12 +859,11 @@ export const TableGastos = () => {
                 {tipoGastoSeleccionado?.value === 1 && (
                   <ModalButton
                     color=""
-                    buttonClasses={`px-2 py-2 btn btn-sm btn-secondary d-flex align-items-center justify-content-center w-100 ${
-                      estatus.estatus !== "Nuevo" &&
-                      estatus.estatus !== "GRABADO"
+                    buttonClasses={`px-2 py-2 btn btn-sm btn-secondary d-flex align-items-center justify-content-center w-100 ${estatus.estatus !== "Nuevo" &&
+                        estatus.estatus !== "GRABADO"
                         ? "disabled"
                         : ""
-                    }`}
+                      }`}
                     text={detalleGasto ? `Editar Gasto` : "Agregar Gasto"}
                     ModalComponent={ModalCombustible}
                     setDetalleGasto={setDetalleGasto}
@@ -869,19 +874,19 @@ export const TableGastos = () => {
               <th className="text-center" style={{ minWidth: "105px" }}>
                 {(tipoGastoSeleccionado?.value === 17 ||
                   session.profile.WEB_REACT_CLIENTE_OBLIGATORIO) && (
-                  <AsyncSelect
-                    id="atencionCliente"
-                    loadOptions={clientesOptions}
-                    onChange={handleSelectAtencionCliente}
-                    placeholder="Seleccione cliente"
-                    isDisabled={
-                      estatus.estatus !== "Nuevo" &&
-                      estatus.estatus !== "GRABADO"
-                    }
-                    value={atencionClienteSeleccionado}
-                    styles={customStyles}
-                  />
-                )}
+                    <AsyncSelect
+                      id="atencionCliente"
+                      loadOptions={clientesOptions}
+                      onChange={handleSelectAtencionCliente}
+                      placeholder="Seleccione cliente"
+                      isDisabled={
+                        estatus.estatus !== "Nuevo" &&
+                        estatus.estatus !== "GRABADO"
+                      }
+                      value={atencionClienteSeleccionado}
+                      styles={customStyles}
+                    />
+                  )}
               </th>
               <th className="text-center" style={{ minWidth: "105px" }}>
                 {tipoDocumento.value === "Nota" && (
@@ -892,12 +897,11 @@ export const TableGastos = () => {
                         ? "Editar Importe"
                         : "Agregar Importe"
                     }
-                    buttonClasses={`px-2 py-2 btn btn-sm btn-info d-flex align-items-center justify-content-center w-100 ${
-                      estatus.estatus !== "Nuevo" &&
-                      estatus.estatus !== "GRABADO"
+                    buttonClasses={`px-2 py-2 btn btn-sm btn-info d-flex align-items-center justify-content-center w-100 ${estatus.estatus !== "Nuevo" &&
+                        estatus.estatus !== "GRABADO"
                         ? "disabled"
                         : ""
-                    }`}
+                      }`}
                     ModalComponent={ModalImportes}
                     importesData={importesData}
                     setImportesData={setImportesData}
@@ -991,11 +995,18 @@ export const TableGastos = () => {
               <th className="text-center">Concepto</th>
               <th className="text-center">Detalle</th>
               <th className="text-center">
-                Cliente
-                {/* <ModalButton
-                  icon={faGear}
-                  ModalComponent={ModalCatalogoClientes}
-                /> */}
+                <span id="clienteHeader">
+                  Cliente
+                </span>  
+                <FontAwesomeIcon
+                  icon={faInfoCircle}
+                  className="ml-1"
+                  style={{ color: "grey", cursor: "pointer" }}
+                  id="clienteInfo"
+                />              
+                <UncontrolledTooltip placement="top" target="clienteInfo">
+                  Para dar de alta un cliente nuevo, deberá hacerlo desde el catálogo de clientes de Abaco
+                </UncontrolledTooltip>                
               </th>
               <th
                 className="text-center"
@@ -1084,7 +1095,7 @@ export const TableGastos = () => {
                   )}
                 </td> */}
                 <td>
-                {/* <span>
+                  {/* <span>
                     <strong>Fecha: </strong>{" "}
                     {isNaN(new Date(doc.importes?.fecha))
                       ? doc.importes?.fecha || "N/A"
@@ -1094,7 +1105,8 @@ export const TableGastos = () => {
                     <strong>Fecha: </strong>{" "}
                     {isNaN(new Date(doc.importes?.fecha))
                       ? doc.importes?.fecha || "N/A"
-                      : format(new Date(doc.importes?.fecha), "dd/MM/yyyy")}
+                      : //format(new Date(doc.importes?.fecha), "dd/MM/yyyy")}
+                      formatToSinaloaDate(doc.importes?.fecha)}
                   </span>
                   <br />
                   <span>
@@ -1225,28 +1237,28 @@ export const TableGastos = () => {
                 </td>
                 {(estatus.estatus === "Nuevo" ||
                   estatus.estatus === "GRABADO") && (
-                  <td className="text-center">
-                    {estatus.estatus === "GRABADO" && doc.renglonId && (
-                      <>
-                        {doc.descartado ? (
-                          <i
-                            className="fal fa-check mr-2 text-success cursor-pointer font-weight-bold"
-                            onClick={() => handleHabilitar(doc)}
-                          ></i>
-                        ) : (
-                          <i
-                            className="fal fa-ban mr-2 text-danger cursor-pointer font-weight-bold"
-                            onClick={() => handleDescartar(doc)}
-                          ></i>
-                        )}
-                      </>
-                    )}
-                    <i
-                      className="fal fa-trash-alt text-danger cursor-pointer font-weight-bold"
-                      onClick={() => eliminarDocumento(i)}
-                    ></i>
-                  </td>
-                )}
+                    <td className="text-center">
+                      {estatus.estatus === "GRABADO" && doc.renglonId && (
+                        <>
+                          {doc.descartado ? (
+                            <i
+                              className="fal fa-check mr-2 text-success cursor-pointer font-weight-bold"
+                              onClick={() => handleHabilitar(doc)}
+                            ></i>
+                          ) : (
+                            <i
+                              className="fal fa-ban mr-2 text-danger cursor-pointer font-weight-bold"
+                              onClick={() => handleDescartar(doc)}
+                            ></i>
+                          )}
+                        </>
+                      )}
+                      <i
+                        className="fal fa-trash-alt text-danger cursor-pointer font-weight-bold"
+                        onClick={() => eliminarDocumento(i)}
+                      ></i>
+                    </td>
+                  )}
               </tr>
             ))}
           </tbody>

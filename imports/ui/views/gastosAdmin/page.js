@@ -8,6 +8,7 @@ import { GastosService } from "../../services";
 import { useUserSession } from "../../store";
 import toastr from "toastr";
 import { format, subMonths } from "date-fns";
+import { formatToSinaloaDate } from "../../../utils/utils";
 
 const initialFilters = {
   estatus: "",
@@ -43,8 +44,10 @@ const GastosAdmin = () => {
     const data = {
       ...filters,
       vendedor: filters.vendedor || "0",
-      fechaInicio: format(new Date(filters.fechaInicio + "T12:00:00"), "dd/MM/yyyy") || null, //filters.fechaInicio || null,
-      fechaFin: format(new Date(filters.fechaFin + "T12:00:00"), "dd/MM/yyyy") || null, //filters.fechaFin || null,
+      fechaInicio: formatToSinaloaDate(filters.fechaInicio) || null,
+      fechaFin: formatToSinaloaDate(filters.fechaFin) || null,
+      // fechaInicio: format(new Date(filters.fechaInicio + "T12:00:00"), "dd/MM/yyyy") || null, //filters.fechaInicio || null,
+      // fechaFin: format(new Date(filters.fechaFin + "T12:00:00"), "dd/MM/yyyy") || null, //filters.fechaFin || null,
       cod_usu: session.profile.TIENE_ACCESO_VER_TODOS_GASTOS
         ? "0"
         : session.profile.COD_USU,

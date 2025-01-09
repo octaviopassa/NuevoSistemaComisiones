@@ -139,7 +139,7 @@ export const Aside = ({ isOpen, toggleSidebar, setIsSidebarOpen }) => {
           <div className="profile-details">
             <div className="name-job">
               <div className="name" style={{ fontSize: "8pt" }}>
-                {user?.profile ? user.profile.nombreCompleto : "Usuario"}
+                {user?.username ? user.username : "Usuario"}
               </div>
               <div className="name">
                 {user?.rol != undefined ? user.rol : "Perfil"}

@@ -73,8 +73,8 @@ export const LoginForm = ({ empresas }) => {
           setUserLenguage(localUser?.profile?.idioma);
 
           i18n.changeLanguage(localUser.profile.idioma);
-
-          toastr.success("Bienvenido", localUser.profile.nombreCompleto);
+          
+          toastr.success("Bienvenido", localUser.username);
         });
       } else {
         const empresa = {
@@ -126,10 +126,10 @@ export const LoginForm = ({ empresas }) => {
                 servidor: empresaData.SERVIDOR,
               },
             });
-            setAllowedModules(allowedModules);
+            setAllowedModules(allowedModules);            
             toastr.success(
               "Bienvenido",
-              respuesta.data.userData.NOMBRE_COMPLETO
+              respuesta.data.userData.NOM
             );
           }
         });
