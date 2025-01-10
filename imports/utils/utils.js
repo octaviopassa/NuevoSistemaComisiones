@@ -30,15 +30,10 @@ export const formatDate = (dateString) => {
 
 export const formatToSinaloaDate = (date) => {
   if (!date) return "";
-  
   try {
-    const timeZone = "America/Mazatlan"; // Zona horaria de Sinaloa
-    
-    // Si es una cadena, conviértela a Date
+    const timeZone = "America/Mazatlan"; // Zona horaria de Sinaloa       
+    // Si es una cadena, convierte a Date
     const parsedDate = typeof date === "string" ? parseISO(date) : date;
-
-    console.log("Fecha original:", parsedDate);
-    
     // Formatear la fecha directamente en la zona horaria de Sinaloa
     return formatInTimeZone(parsedDate, timeZone, "dd/MM/yyyy");
   } catch (error) {
@@ -46,8 +41,6 @@ export const formatToSinaloaDate = (date) => {
     return date; // Retornar la fecha original si hay error
   }
 };
-
-
 
 export const formatDuration = (startTime, endTime) => {
   if (!startTime || !endTime) return "Duración no disponible";
@@ -115,7 +108,7 @@ export function validarMesYAnio(fechaVariable, fechaAValidar) {
   );
 }
 
-export const validarMesXMLs = (xmlsExistentes, nuevoXML) => {
+export const validarMismoMesAnioDocumentosIANSA = (xmlsExistentes, nuevoXML) => {
   if (!xmlsExistentes || xmlsExistentes.length === 0) return true;
   
   // Obtener el mes y año del nuevo XML

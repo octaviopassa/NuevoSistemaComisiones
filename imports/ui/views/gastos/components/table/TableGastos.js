@@ -31,7 +31,7 @@ import { format } from "date-fns";
 import { useUserSession } from "../../../../store";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
-import { extraerRFC, formatToSinaloaDate, validarMesXMLs } from "../../../../../utils/utils";
+import { extraerRFC, formatToSinaloaDate, validarMismoMesAnioDocumentosIANSA } from "../../../../../utils/utils";
 
 export const TableGastos = () => {
   const [proveedorSeleccionado, setProveedorSeleccionado] = useState("");
@@ -202,16 +202,16 @@ export const TableGastos = () => {
           if (
             session.profile.baseDatos === "IANSA" ||
             session.profile.baseDatos === "Smartcarb"
-          ) {
+          ) {            
             // Obtener los XMLs existentes de la tabla
             const xmlsExistentes = documentos ? documentos.map(doc => ({
-              uuid: doc.xmlArchivo.uuid,
+              uuid: doc.xmlArchivo?.uuid,
               fecha: doc.importes.fecha
             })) : [];
-
+            
             if (xmlsExistentes) {
               // Validar que el nuevo XML sea del mismo mes que los existentes
-              if (!validarMesXMLs(xmlsExistentes, { uuid: uuid, fecha })) {
+              if (!validarMismoMesAnioDocumentosIANSA(xmlsExistentes, { uuid: uuid, fecha })) {
                 toastr.error(
                   `La fecha del archivo XML ${fecha} no coincide con el mes y año de los XMLs previamente agregados.`
                 );
@@ -1094,19 +1094,12 @@ export const TableGastos = () => {
                     </>
                   )}
                 </td> */}
-                <td>
-                  {/* <span>
-                    <strong>Fecha: </strong>{" "}
-                    {isNaN(new Date(doc.importes?.fecha))
-                      ? doc.importes?.fecha || "N/A"
-                      : formatToSinaloaDate(doc.importes?.fecha)}
-                  </span> */}
+                <td>                  
                   <span>
                     <strong>Fecha: </strong>{" "}
                     {isNaN(new Date(doc.importes?.fecha))
                       ? doc.importes?.fecha || "N/A"
-                      : //format(new Date(doc.importes?.fecha), "dd/MM/yyyy")}
-                      formatToSinaloaDate(doc.importes?.fecha)}
+                      : formatToSinaloaDate(new Date(doc.importes?.fecha))}
                   </span>
                   <br />
                   <span>

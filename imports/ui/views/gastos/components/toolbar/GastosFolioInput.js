@@ -163,29 +163,17 @@ export const GastosFolioInput = () => {
         empresa: gastos.EMPRESA,
         estatus: {
           estatus: gastos.NOM_ESTATUS,
-          grabo: `${gastos.NOM_USU_GRABO} ${format(
-            new Date(gastos.FECHA),
-            "dd/MM/yyyy"
-          )}`,
+          grabo: `${gastos.NOM_USU_GRABO} ${formatToSinaloaDate(new Date(gastos.FECHA))}`,
           aplico: gastos.NOM_USU_APLICO
-            ? `${gastos.NOM_USU_APLICO} ${format(
-                new Date(gastos.FECHA_APLICACION),
-                "dd/MM/yyyy"
-              )}`
+            ? `${gastos.NOM_USU_APLICO} ${formatToSinaloaDate(new Date(gastos.FECHA_APLICACION))}`
             : "",
           autorizo: gastos.NOM_USU_AUTORIZO
-            ? `${gastos.NOM_USU_AUTORIZO} ${format(
-                new Date(gastos.FECHA_AUTORIZACION),
-                "dd/MM/yyyy"
-              )}`
+            ? `${gastos.NOM_USU_AUTORIZO} ${formatToSinaloaDate(new Date(gastos.FECHA_AUTORIZACION))}`
             : "",
           observaciones: gastos?.OBSERVACION || "",
           propietario: gastos.EsPropietario,
           cancelado: gastos.NOM_USU_CANCELO
-            ? `${gastos.NOM_USU_CANCELO} ${format(
-                new Date(gastos.FECHA_CANCELACION),
-                "dd/MM/yyyy"
-              )}`
+            ? `${gastos.NOM_USU_CANCELO} ${formatToSinaloaDate(new Date(gastos.FECHA_CANCELACION))}`
             : "",
           oldFolio: true,
         },

@@ -4,6 +4,7 @@ import { useUserSession } from "../../../../store";
 import { DocumentosService } from "../../../../services";
 import { format } from "date-fns";
 import toastr from "toastr";
+import { formatToSinaloaDate } from "../../../../../utils/utils";
 
 export const AutorizarButton = ({ setLoading }) => {
   const { session } = useUserSession();
@@ -32,9 +33,8 @@ export const AutorizarButton = ({ setLoading }) => {
       setEstatus({
         ...estatus,
         estatus: "AUTORIZADO",
-        autorizo: `${gasto.data[0].NOM_USU_AUTORIZO} ${format(
-          new Date(gasto.data[0].FECHA_AUTORIZACION),
-          "dd/MM/yyyy"
+        autorizo: `${gasto.data[0].NOM_USU_AUTORIZO} ${formatToSinaloaDate(
+          new Date(gasto.data[0].FECHA_AUTORIZACION)
         )}`,
       });
       toastr.success("Se ha autorizado el gasto");

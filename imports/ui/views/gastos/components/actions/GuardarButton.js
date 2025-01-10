@@ -8,6 +8,7 @@ import {
 } from "../../../../services";
 import toastr from "toastr";
 import { format } from "date-fns";
+import { formatToSinaloaDate } from "../../../../../utils/utils";
 
 export const GuardarButton = ({ setLoading }) => {
   const {
@@ -175,7 +176,7 @@ export const GuardarButton = ({ setLoading }) => {
           proveedor: proveedor.value,
           tipoGasto: tipoGasto.value,
           concepto,
-          fecha: new Date(fecha).toISOString().slice(0, 10).split('-').reverse().join('-'), //fecha          
+          fecha: formatToSinaloaDate(fecha),//new Date(fecha).toISOString().slice(0, 10).split('-').reverse().join('-'),
           folioProveedor: folio,
           subtotal: parseFloat(subtotal),
           iva: parseFloat(iva_16) + parseFloat(iva_8),
@@ -196,8 +197,6 @@ export const GuardarButton = ({ setLoading }) => {
               : "",
           servidor: session.profile.servidor,
         };
-
-        console.log("borrar",datosDocumento.fecha);
 
         const grabarRenglon = await GastosService.grabarRenglon(
           datosDocumento
@@ -315,9 +314,8 @@ export const GuardarButton = ({ setLoading }) => {
         setEstatus({
           ...estatus,
           estatus: gastoGlobalData.data[0].NOM_ESTATUS,
-          grabo: `${gastoGlobalData.data[0].NOM_USU_GRABO} ${format(
-            new Date(gastoGlobalData.data[0].FECHA),
-            "dd/MM/yyyy"
+          grabo: `${gastoGlobalData.data[0].NOM_USU_GRABO} ${formatToSinaloaDate(
+            new Date(gastoGlobalData.data[0].FECHA)
           )}`,
           observaciones: gastoGlobalData.data[0].OBSERVACION,
           propietario: !!gastoGlobalData.data[0].EsPropietario,

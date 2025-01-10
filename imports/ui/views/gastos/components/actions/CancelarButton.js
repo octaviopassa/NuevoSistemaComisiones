@@ -6,6 +6,7 @@ import toastr from "toastr";
 import { format } from "date-fns";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
+import { formatToSinaloaDate } from "../../../../../utils/utils";
 
 export const CancelarButton = ({ setLoading }) => {
   const { session } = useUserSession();
@@ -51,9 +52,8 @@ export const CancelarButton = ({ setLoading }) => {
       setEstatus({
         ...estatus,
         estatus: "CANCELADO",
-        cancelo: `${gasto.data[0].NOM_USU_CANCELO} - ${format(
-          new Date(gasto.data[0].FECHA_CANCELACION),
-          "dd/MM/yyyy"
+        cancelo: `${gasto.data[0].NOM_USU_CANCELO} - ${formatToSinaloaDate(
+          new Date(gasto.data[0].FECHA_CANCELACION)
         )}`,
       });
       toastr.success("Se ha cancelado el gasto");

@@ -3,21 +3,22 @@ import { useGastosData } from "../store";
 
 export const EstatusGasto = () => {
   const { estatus, setEstatus } = useGastosData();
-
   return (
     <div className="col-sm-3">
       <div className="card">
         <div className="card-body">
           <h5 className="card-title">Estatus: {estatus.estatus}</h5>
           <div className="d-flex flex-column">
-            <small className="text-muted">Grabó: {estatus.grabo}</small>
+            {estatus.grabo && (
+              <small className="text-muted">Grabó: {estatus.grabo}</small>
+            )}
             {estatus.aplico && (
-              <small className="text-muted">Aplico: {estatus.aplico}</small>
+              <small className="text-muted">Aplicó: {estatus.aplico}</small>
             )}
-            {estatus.estatus === "AUTORIZADO" && (
-              <small className="text-muted">Autorizo: {estatus.autorizo}</small>
+            {estatus.autorizo && (
+              <small className="text-muted">Autorizó: {estatus.autorizo}</small>
             )}
-            {estatus.estatus === "CANCELADO" && (
+            {estatus.cancelado && (
               <small className="text-muted">Canceló: {estatus.cancelado}</small>
             )}
           </div>
