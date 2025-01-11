@@ -4,3 +4,4 @@ export * from "./CancelarButton";
 export * from "./ImprimirButton";
 export * from "./DesautorizarButton";
 export * from "./NuevoButton";
+export * from "./GastosActions";

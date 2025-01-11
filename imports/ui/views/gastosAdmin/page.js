@@ -44,8 +44,8 @@ const GastosAdmin = () => {
     const data = {
       ...filters,
       vendedor: filters.vendedor || "0",
-      fechaInicio: formatToSinaloaDate(filters.fechaInicio) || null,
-      fechaFin: formatToSinaloaDate(filters.fechaFin) || null,
+      fechaInicio: formatToSinaloaDate(new Date(filters.fechaInicio)) || null,
+      fechaFin: formatToSinaloaDate(new Date(filters.fechaFin)) || null,
       cod_usu: session.profile.TIENE_ACCESO_VER_TODOS_GASTOS
         ? "0"
         : session.profile.COD_USU,

@@ -54,7 +54,7 @@ export const ModalCombustible = ({
       setConductores([]);
       setVehiculos([]);
     };
-  }, [plazaSeleccionada]);
+  }, []); //[plazaSeleccionada]
 
   const cargaInicial = async () => {
     if (plazaSeleccionada != "") {
@@ -84,8 +84,6 @@ export const ModalCombustible = ({
           label: obj.Nom_Vehiculo,
         }))
       );
-
-      console.log(plazaSeleccionada);
       
       setGasolineras(
         gasolineras.map((obj) => ({
@@ -220,6 +218,7 @@ export const ModalCombustible = ({
               icon={faGear}
               ModalComponent={ModalCatalogoConductores}
               reloadDataCombustible={cargaInicial}
+              plaza={plazaSeleccionada}
             />
           </label>
           <AsyncSelect

@@ -10,7 +10,7 @@ import toastr from "toastr";
 import { format } from "date-fns";
 import { formatToSinaloaDate } from "../../../../../utils/utils";
 
-export const GuardarButton = ({ setLoading }) => {
+export const GuardarButton = ({ setLoading, loading }) => {
   const {
     documentos,
     setDocumentos,
@@ -53,6 +53,8 @@ export const GuardarButton = ({ setLoading }) => {
       ret: 0,
     }
   );
+
+  //console.log("SISTEMAS", documentos);
 
   const handleGrabado = async (e) => {
     e.preventDefault();
@@ -127,9 +129,11 @@ export const GuardarButton = ({ setLoading }) => {
         }
 
         newFolio = grabadoGlobal.data[0].Column1;
-      }
+      }      
 
       let hasError = false;
+      const updatedDocumentos = [...documentos];
+
       await Promise.all(documentos.map(async (documento, index) => {
         if (documento.renglonId) {
           return;
@@ -210,13 +214,10 @@ export const GuardarButton = ({ setLoading }) => {
           //return;
         }
 
+        console.log("SISTEMAS 2", grabarRenglon.data[0].Column1);
+
         const renglonId = grabarRenglon.data[0].Column1;
-
-        // Agregar id: renglonId al documento
-        const updatedDocumentos = [...documentos];
         updatedDocumentos[index] = { ...updatedDocumentos[index], renglonId };
-
-        setDocumentos(updatedDocumentos);
 
         // GRABAR COMBUSTIBLE SI ES COMBUSTIBLE
         if (tipoGasto.value === 1) {
@@ -328,6 +329,10 @@ export const GuardarButton = ({ setLoading }) => {
         // }
       }));
 
+      setDocumentos(updatedDocumentos);
+      // console.log("SISTEMAS U", updatedDocumentos);
+      // console.log("SISTEMAS D", documentos);
+
       if (!hasError) {
         toastr.success(`${newFolio} grabado correctamente`);
       }
@@ -340,6 +345,7 @@ export const GuardarButton = ({ setLoading }) => {
 
   return (
     <button
+      disabled={loading}
       type="button"
       className="btn btn-success waves-effect waves-themed"
       onClick={handleGrabado}

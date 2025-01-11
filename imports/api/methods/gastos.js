@@ -59,8 +59,8 @@ Meteor.methods({
         data: conexiones.body_bdseleccionada,
       });
       const respuesta = JSON.parse(response.data.data.resultado);
-
-      return respuesta[0]?.Folio || '';//return respuesta;
+      
+      return respuesta;
     } catch (e) {
       console.log(e);
     }

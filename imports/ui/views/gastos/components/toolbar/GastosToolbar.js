@@ -9,7 +9,7 @@ import { useGastosData } from "../../store";
 import { useUserSession } from "../../../../store";
 import { ModalCuentas } from "../modals/ModalCuentas";
 import { GastosFolioInput } from "./GastosFolioInput";
-import { useLocation } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 
 export const GastosToolbar = () => {
   const [plazas, setPlazas] = useState([]);
@@ -17,7 +17,10 @@ export const GastosToolbar = () => {
   const [ingenieros, setIngenieros] = useState([]);
   const [proyectos, setProyectos] = useState([]);
   const [reloadData, setReloadData] = useState(false);
-  const history = useLocation()?.state;
+  // const history = useLocation()?.state;
+  const [searchParams] = useSearchParams();
+  const folioParam = searchParams.get('folio');
+  const plazaParam = searchParams.get('plaza');
 
   const { session: user } = useUserSession();
   const {
@@ -47,7 +50,7 @@ export const GastosToolbar = () => {
   // }, [plazaSeleccionada]);
   
   useEffect(() => {
-    if (!history?.folio) {  // Solo obtener folio si no viene de navegación
+    if (!folioParam) {  // Solo obtener folio si no viene de navegación
       getFolio();
     }
   }, [plazaSeleccionada]);
@@ -58,7 +61,7 @@ export const GastosToolbar = () => {
 
   const cargaInicial = async () => {
     try {
-      const isConsulta = (history?.plaza && history?.folio) || estatus.oldFolio;
+      const isConsulta = (folioParam && plazaParam) || estatus.oldFolio;
 
       const plazasPromise = PlazasService.getAll({
         cod_usu: user.profile.COD_USU,
@@ -121,8 +124,7 @@ export const GastosToolbar = () => {
         plaza: plazaSeleccionada,
         servidor: user.profile.servidor,
       });
-      
-      setFolio(data)//setFolio(data[0]?.Folio || "");
+      setFolio(data?.[0]?.Folio || "");
     } catch (error) {
       console.error("Error en getFolioProvisional", error);
     }

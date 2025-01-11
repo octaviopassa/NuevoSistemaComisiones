@@ -35,10 +35,10 @@ export const ModalConductores = ({
   );
 
   const plazas = data.map((plaza) => ({
-    value: plaza.Codigo,
-    label: plaza.Nombre,
+    value: plaza.CODIGO,
+    label: plaza.NOMBRE,
   }));
-
+  
   const initialValues = {
     codigo: conductor ? conductor.Cod_Conductor : "#",
     nombre: conductor ? conductor.Nom_Conductor : "",

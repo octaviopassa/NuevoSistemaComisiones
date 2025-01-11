@@ -6,13 +6,17 @@ import { DocumentosService } from "../../../../services";
 import { format } from "date-fns";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { formatToSinaloaDate } from "../../../../../utils/utils";
 
 export const GastosFolioInput = () => {
   const [loading, setLoading] = useState(false);
-  const history = useLocation()?.state;
+  // const history = useLocation()?.state;
+  const [searchParams] = useSearchParams();
+  const folioParam = searchParams.get('folio');
+  const plazaParam = searchParams.get('plaza');
   const { session } = useUserSession();
+  const navigate = useNavigate();
   const {
     folio,
     setFolio,
@@ -23,16 +27,21 @@ export const GastosFolioInput = () => {
     empresa,
   } = useGastosData();
   const MySwal = withReactContent(Swal);
-
+  
+  console.log("fuera", plazaSeleccionada);
   useEffect(() => {
-    if (history?.folio && history?.plaza) {
-      setMultiple({
-        plazaSeleccionada: history.plaza,
-        folio: history.folio,
-      });
-      handleFolioChange(history.folio);
+    if (folioParam && plazaParam) {
+      const loadFolioData = async () => {
+        setMultiple({
+          plazaSeleccionada: Number(plazaParam),
+          folio: folioParam,
+        });
+        await handleFolioChange(folioParam);
+      };
+      
+      loadFolioData();
     }
-  }, [history]);//[plazaSeleccionada]);
+  }, []);//[history]);//[plazaSeleccionada]);
 
   const handleFolioInputChange = (e) => {
     setFolio(e.target.value);
@@ -45,7 +54,7 @@ export const GastosFolioInput = () => {
   };
 
   const handleFolioChange = async (newFolio) => {
-    if (!plazaSeleccionada && !history?.plaza) {
+    if (!plazaSeleccionada && !plazaParam) {
       toastr.error("Por favor, seleccione una plaza");
       return;
     }
@@ -200,10 +209,12 @@ export const GastosFolioInput = () => {
       .toString()
       .padStart(numericPart.length, "0")}`;
 
-    if (history?.plaza && history?.folio) {
-      history.folio = null;
-      history.plaza = null;
-    }
+    // if (history?.plaza || history?.folio) {
+    //   history.folio = null;
+    //   history.plaza = null;
+    // }
+    if (folioParam || plazaParam) navigate("/gastos");
+
     await handleFolioChange(newFolio);
   };
 

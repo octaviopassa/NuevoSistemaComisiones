@@ -2,4 +2,4 @@ export * from "./modals";
 export * from "./toolbar";
 export * from "./table";
 export * from './EstatusGasto';
-export * from './GastosActions'
+export * from './actions';

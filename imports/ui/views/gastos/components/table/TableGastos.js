@@ -23,7 +23,6 @@ import {
   ModalButton,
   ModalImportes,
   ModalCombustible,
-  ModalCatalogoClientes,
 } from "../modals";
 import { useFetchData } from "../../../../hooks";
 import { useGastosData } from "../../store";
@@ -508,7 +507,6 @@ export const TableGastos = () => {
     }
   };
 
-  console.log(documentos);
   const handleFileDownload = async (pdfArchivo) => {
     const doc = pdfArchivo?.contenido
       ? pdfArchivo

@@ -27,24 +27,24 @@ export const ModalCatalogoConductores = ({
   isModalOpen,
   toggle,
   reloadDataCombustible,
+  plaza,
 }) => {
   const { session } = useUserSession();
   const {
     isLoading,
     data: conductores,
     reloadData,
-  } = useFetchData(ConductoresService.getAll, [session.profile.baseDatos]);
+  } = useFetchData(ConductoresService.getAll, [{ servidor: session.profile.servidor, plaza }]);
   const { searchText, setSearchText, filteredData } = useSearch(
     conductores || []
   );
   const { paginatedData, PaginationComponent, PaginationSelector } =
     useClientPagination(filteredData);
-
+  
   const reloadAllData = () => {
     reloadData();
     reloadDataCombustible();
   };
-
   return (
     <Modal
       isOpen={isModalOpen}

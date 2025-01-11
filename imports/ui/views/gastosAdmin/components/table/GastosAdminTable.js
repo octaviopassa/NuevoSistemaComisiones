@@ -57,8 +57,12 @@ const GastosAdminTable = ({ gastos, plazaSeleccionada, loading }) => {
     return faSort;
   };
 
-  const handleVerGasto = (gasto) => {    
-    navigate("/gastos", { state: { folio: gasto.FOLIO_GASTO, plaza: gasto.PLAZA} });
+  // const handleVerGasto = (gasto) => {    
+  //   navigate("/gastos", { state: { folio: gasto.FOLIO_GASTO, plaza: gasto.PLAZA} });
+  // };
+
+  const handleVerGasto = (gasto) => {
+    navigate(`/gastos?folio=${gasto.FOLIO_GASTO}&plaza=${gasto.PLAZA}`);
   };
 
   return (
@@ -117,7 +121,7 @@ const GastosAdminTable = ({ gastos, plazaSeleccionada, loading }) => {
           </tr>
         ) : (
           gastos?.map((gasto) => (
-            <tr key={gasto._id}>
+            <tr key={gasto.ID_GASTO_GLOBAL}>
               <td>{gasto.FOLIO_GASTO}</td>
               <td>{formatToSinaloaDate(gasto.FECHA)}</td>
               {/* <td>{format(new Date(gasto.FECHA), "dd/MM/yyyy")}</td> */}

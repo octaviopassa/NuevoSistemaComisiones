@@ -22,20 +22,21 @@ import { ModalButton } from "../ModalButton";
 import { VehiculosService } from "../../../../../services";
 import { ModalVehiculos } from "./ModalVehiculos";
 import { useGastosData } from "../../../store";
+import { useUserSession } from "../../../../../store";
 
 export const ModalCatalogoVehiculos = ({
   isModalOpen,
   toggle,
   reloadDataCombustible,
 }) => {
+  const { session } = useUserSession();
   const { plazaSeleccionada } = useGastosData();
   const {
     isLoading,
     data: vehiculos,
     reloadData,
   } = useFetchData(VehiculosService.getAll, [
-    plazaSeleccionada,
-    session.profile.baseDatos,
+    { servidor: session.profile.servidor, plaza: plazaSeleccionada },
   ]);
   const { searchText, setSearchText, filteredData } = useSearch(
     vehiculos || []

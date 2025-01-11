@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ModalLoading } from "../../../components/global/ModalLoading";
+import { ModalLoading } from "../../../../components/global/ModalLoading";
 import {
   AutorizarButton,
   CancelarButton,
@@ -7,10 +7,10 @@ import {
   GuardarButton,
   ImprimirButton,
   NuevoButton,
-} from "./actions";
-import { useGastosData } from "../store";
-import { ConsultarButton } from "./actions/ConsultarButton";
-import { useUserSession } from "../../../store";
+} from ".";
+import { useGastosData } from "../../store";
+import { ConsultarButton } from "./ConsultarButton";
+import { useUserSession } from "../../../../store";
 
 export const GastosActions = () => {
   const { estatus: estatusGastos } = useGastosData();
@@ -26,7 +26,7 @@ export const GastosActions = () => {
         <NuevoButton />
 
         {(estatus === "Nuevo" || estatus === "GRABADO") && propietario && (
-          <GuardarButton setLoading={setLoading} />
+          <GuardarButton setLoading={setLoading} loading={loading} />
         )}
 
         {estatus !== "Nuevo" && <ImprimirButton />}
