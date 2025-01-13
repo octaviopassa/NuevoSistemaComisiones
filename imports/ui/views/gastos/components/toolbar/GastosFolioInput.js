@@ -28,7 +28,7 @@ export const GastosFolioInput = () => {
   } = useGastosData();
   const MySwal = withReactContent(Swal);
   
-  console.log("fuera", plazaSeleccionada);
+  // console.log("SISTEMAS", plazaSeleccionada);
   useEffect(() => {
     if (folioParam && plazaParam) {
       const loadFolioData = async () => {

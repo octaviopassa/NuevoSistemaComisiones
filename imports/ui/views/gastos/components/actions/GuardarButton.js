@@ -195,12 +195,14 @@ export const GuardarButton = ({ setLoading, loading }) => {
           uuid: xmlArchivo?.uuid || "",
           tua_desglosado,
           cliente:
-            tipoGasto.value === 17 ||
-              session.profile.WEB_REACT_CLIENTE_OBLIGATORIO
+            tipoGasto.value === 17 || documento.detalleGasto.label
               ? documento.detalleGasto.label
               : "",
           servidor: session.profile.servidor,
         };
+
+        //console.log("SISTEMAS", documento.detalleGasto.label);
+        //console.log("SISTEMAS", datosDocumento);
 
         const grabarRenglon = await GastosService.grabarRenglon(
           datosDocumento
@@ -214,7 +216,7 @@ export const GuardarButton = ({ setLoading, loading }) => {
           //return;
         }
 
-        console.log("SISTEMAS 2", grabarRenglon.data[0].Column1);
+        // console.log("SISTEMAS 2", grabarRenglon.data[0].Column1);
 
         const renglonId = grabarRenglon.data[0].Column1;
         updatedDocumentos[index] = { ...updatedDocumentos[index], renglonId };
