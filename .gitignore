@@ -54,3 +54,9 @@ Thumbs.db
 imports/utils/config.js
 DockerFile
 docker-compose.yml
+
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
