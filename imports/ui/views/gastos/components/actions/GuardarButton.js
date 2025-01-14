@@ -60,6 +60,10 @@ export const GuardarButton = ({ setLoading, loading }) => {
     e.preventDefault();
     try {
       setLoading(true);
+      if (!plazaSeleccionada) {
+        toastr.warning("Por favor, seleccione una plaza.");
+        return;
+      }
       const isAuthorized = await GastosService.isAuthorized({
         plaza: plazaSeleccionada,
         user: session.profile.COD_USU,
@@ -71,13 +75,18 @@ export const GuardarButton = ({ setLoading, loading }) => {
         toastr.error("No tienes permiso para registrar gastos");
         return;
       }
-
+      
       if (documentos.length === 0) {
         toastr.error("No hay documentos para registrar");
         return;
       }
-      if (!plazaSeleccionada || !pagarASeleccionado || !gastosDate) {
-        toastr.warning("Por favor, llene todos los campos requeridos.");
+      
+      if (!pagarASeleccionado) {
+        toastr.warning("Por favor, seleccione la cuenta a la que se hará el reembolso.");
+        return;
+      }
+      if (!gastosDate) {
+        toastr.warning("Por favor, seleccione una fecha.");
         return;
       }
       let newFolio = folio;
@@ -117,7 +126,11 @@ export const GuardarButton = ({ setLoading, loading }) => {
         }
 
         if (session.profile.MOSTRAR_COMBO_PROYECTO) {
-          dataGastoGlobal.proyecto = proyectoSeleccionado || "0";
+          if (!proyectoSeleccionado) {
+            toastr.warning("Por favor, seleccione un proyecto.");
+            return;
+          }
+          dataGastoGlobal.proyecto = proyectoSeleccionado;
         }
 
         // console.log("SISTEMAS", dataGastoGlobal.proyecto);
