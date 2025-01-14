@@ -120,6 +120,8 @@ export const GuardarButton = ({ setLoading, loading }) => {
           dataGastoGlobal.proyecto = proyectoSeleccionado || "0";
         }
 
+        // console.log("SISTEMAS", dataGastoGlobal.proyecto);
+
         const grabadoGlobal = await GastosService.grabar(dataGastoGlobal);
 
         if (!grabadoGlobal.isValid) {

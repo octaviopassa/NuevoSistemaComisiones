@@ -120,11 +120,13 @@ Meteor.methods({
         @TUA=${datos.tua},
         @OBSERVACION='${datos.observaciones}',
         @ACCION='INSERTAR',
-        ${datos.proyecto ? `@CODIGO_PROYECTO =${datos.proyecto},` : ""}
+        ${datos.proyecto ? `@CODIGO_PROYECTO='${datos.proyecto}',` : ""}
         @EsWeb=1,
         @RFC_RECEPTOR='${datos.rfc}'
       `;
       conexiones.body_bdseleccionada.servidor = datos.servidor;
+
+      // console.log("SISTEMAS GRABAR GASTO", conexiones.body_bdseleccionada.query);
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
