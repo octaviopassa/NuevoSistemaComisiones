@@ -9,10 +9,14 @@ import {
   TableResumen,
 } from "./components";
 import { useGastosData } from "./store";
+import { useSearchParams } from "react-router-dom";
 
 const Gastos = () => {
   const [clientesVisible, setClientesVisible] = useState(false);
-  const { resetData } = useGastosData(); // Extrae la función resetData
+  const { resetData } = useGastosData(); 
+  const [searchParams] = useSearchParams();
+  const folioParam = searchParams.get("folio");
+  const plazaParam = searchParams.get("plaza");
 
   useEffect(() => {
     // Llama a resetData al montar el componente para limpiar el estado

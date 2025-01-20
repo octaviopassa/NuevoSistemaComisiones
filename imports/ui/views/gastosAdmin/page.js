@@ -7,20 +7,12 @@ import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { GastosService } from "../../services";
 import { useUserSession } from "../../store";
 import toastr from "toastr";
-import { format, subMonths } from "date-fns";
 import { formatToSinaloaDate } from "../../../utils/utils";
-
-const initialFilters = {
-  estatus: "",
-  plaza: "",
-  vendedor: "",
-  fechaInicio: format(subMonths(new Date(), 1), "yyyy-MM-dd"),
-  fechaFin: format(new Date(), "yyyy-MM-dd"),
-};
+import { useFiltersStore } from "./store";
 
 const GastosAdmin = () => {
   const [gastos, setGastos] = useState([]);
-  const [filters, setFilters] = useState(initialFilters);
+  const { filters } = useFiltersStore();
   const [loading, setLoading] = useState(false);
   const { session } = useUserSession();
   const { searchText, setSearchText, filteredData } = useSearch(gastos || []);
@@ -66,7 +58,7 @@ const GastosAdmin = () => {
 
   return (
     <div className="container-fluid px-4">
-      <GastosAdminFilters setFilters={setFilters} filters={filters} />
+      <GastosAdminFilters />
 
       <h4 className="m-0 d-flex align-items-center justify-content-left bg-primary p-3 text-white">
         Gastos

@@ -26,11 +26,10 @@ import {
 } from "../modals";
 import { useFetchData } from "../../../../hooks";
 import { useGastosData } from "../../store";
-import { format } from "date-fns";
 import { useUserSession } from "../../../../store";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
-import { extraerRFC, formatToSinaloaDate, validarMismoMesAnioDocumentosIANSA } from "../../../../../utils/utils";
+import { extraerRFC, formatDate, validarMismoMesAnioDocumentosIANSA } from "../../../../../utils/utils";
 
 export const TableGastos = () => {
   const [proveedorSeleccionado, setProveedorSeleccionado] = useState("");
@@ -1095,9 +1094,9 @@ export const TableGastos = () => {
                 <td>                  
                   <span>
                     <strong>Fecha: </strong>{" "}
-                    {isNaN(new Date(doc.importes?.fecha))
-                      ? doc.importes?.fecha || "N/A"
-                      : formatToSinaloaDate(new Date(doc.importes?.fecha))}
+                    {doc.importes?.fecha
+                      ? formatDate(doc.importes?.fecha)
+                      : "N/A"}
                   </span>
                   <br />
                   <span>

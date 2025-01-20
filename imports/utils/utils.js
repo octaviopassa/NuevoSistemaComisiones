@@ -1,7 +1,7 @@
 import moment from "moment";
 import "moment-duration-format";
 import { format, parseISO } from "date-fns";
-import { formatInTimeZone  } from "date-fns-tz";
+import { formatInTimeZone } from "date-fns-tz";
 
 export function formatCurrency(value, locale = "es-MX", currency = "MXN") {
   return new Intl.NumberFormat(locale, {
@@ -10,7 +10,7 @@ export function formatCurrency(value, locale = "es-MX", currency = "MXN") {
   }).format(value);
 }
 
-export const formatDate = (dateString) => {
+export const formatDateUser = (dateString) => {
   if (dateString) {
     const options = {
       year: "2-digit",
@@ -28,6 +28,11 @@ export const formatDate = (dateString) => {
   }
 };
 
+/**
+ * Formatea una fecha en formato "yyyy-MM-dd" a la zona horaria de Sinaloa (America/Mazatlan)
+ * @param {*} date 
+ * @returns 
+ */
 export const formatToSinaloaDate = (date) => {
   if (!date) return "";
   try {
@@ -42,6 +47,33 @@ export const formatToSinaloaDate = (date) => {
   }
 };
 
+export const formatDate = (dateString) => {
+  if (!dateString) return "Sin fecha";
+
+  // Formatos que queremos intentar parsear
+  const formatos = [
+    "YYYY-MM-DD",
+    "DD/MM/YYYY"
+  ];
+
+  // Intentar parsear la fecha con los diferentes formatos
+  const fechaMoment = moment(dateString, formatos, true);
+
+  // Si la fecha es válida, la formateamos al formato deseado
+  if (fechaMoment.isValid()) {
+    return fechaMoment.format("DD/MM/YYYY");
+  }
+
+  // Si no se pudo parsear con ningún formato, retornamos un mensaje de error
+  console.error("Error al formatear fecha:", dateString);
+  return "Formato inválido";
+};
+
+/**
+ * Recibe dos fechas en formato "yyyy-MM-dd HH:mm:ss" y devuelve la duración en horas, minutos y segundos
+ * @param {*} startTime 
+ * @param {*} endTime 
+ */
 export const formatDuration = (startTime, endTime) => {
   if (!startTime || !endTime) return "Duración no disponible";
 
@@ -110,23 +142,23 @@ export function validarMesYAnio(fechaVariable, fechaAValidar) {
 
 export const validarMismoMesAnioDocumentosIANSA = (xmlsExistentes, nuevoXML) => {
   if (!xmlsExistentes || xmlsExistentes.length === 0) return true;
-  
+
   // Obtener el mes y año del nuevo XML
   const fechaNuevoXML = moment(nuevoXML.fecha);
   const mesNuevoXML = fechaNuevoXML.month();
   const anioNuevoXML = fechaNuevoXML.year();
-  
+
   // Crear un Map con los UUIDs y fechas de los XMLs existentes
   const xmlMap = new Map(
     xmlsExistentes.map(xml => [xml.uuid, moment(xml.fecha)])
   );
-  
+
   // Verificar que todas las fechas sean del mismo mes y año
   for (const fecha of xmlMap.values()) {
     if (fecha.month() !== mesNuevoXML || fecha.year() !== anioNuevoXML) {
       return false;
     }
   }
-  
+
   return true;
 };

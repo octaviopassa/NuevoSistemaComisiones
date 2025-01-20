@@ -12,7 +12,7 @@ import { showModal } from "../../components/global/Modal";
 import Page from "../../components/global/Page";
 import { useUserSession } from "../../store";
 import { Link } from "react-router-dom";
-import { formatDate, formatDuration } from "../../../utils/utils";
+import { formatDateUser, formatDuration } from "../../../utils/utils";
 
 const Usuarios = () => {
   const { t } = useTranslation();
@@ -49,7 +49,7 @@ const Usuarios = () => {
           {usuario.profile.fechaUltimaSesion ? (
             <div>
               <span className="badge badge-primary">
-                {formatDate(usuario.profile.fechaUltimaSesion)}{" "}
+                {formatDateUser(usuario.profile.fechaUltimaSesion)}{" "}
               </span>
               <br />
 

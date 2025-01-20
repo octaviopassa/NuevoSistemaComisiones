@@ -195,7 +195,7 @@ export const GuardarButton = ({ setLoading, loading }) => {
           proveedor: proveedor.value,
           tipoGasto: tipoGasto.value,
           concepto,
-          fecha: formatToSinaloaDate(fecha),//new Date(fecha).toISOString().slice(0, 10).split('-').reverse().join('-'),
+          fecha: new Date(fecha).toISOString().slice(0, 10).split('-').reverse().join('-'), // formatToSinaloaDate(fecha)
           folioProveedor: folio,
           subtotal: parseFloat(subtotal),
           iva: parseFloat(iva_16) + parseFloat(iva_8),

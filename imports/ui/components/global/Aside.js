@@ -32,7 +32,7 @@ export const Aside = ({ isOpen, toggleSidebar, setIsSidebarOpen }) => {
 
   const user = {
     ...session,
-    rol: rol,
+    rol,
   };
 
   useEffect(() => {
@@ -86,14 +86,14 @@ export const Aside = ({ isOpen, toggleSidebar, setIsSidebarOpen }) => {
           />
         </div>
         <ul className="nav-list items-center">
-          <li>
+          {/* <li>
             <Link className="" data-filter-tags="Home" to="/">
               <FontAwesomeIcon icon={faHome} className="icono1" />
 
               <span className="linkname">Inicio</span>
             </Link>
             <span className="tooltip">Inicio</span>
-          </li>
+          </li> */}
           <ProtectModule method="remove" page="Roles" module="view">
             <li>
               <Link className="" data-filter-tags="Roles" to="/roles">
@@ -139,7 +139,7 @@ export const Aside = ({ isOpen, toggleSidebar, setIsSidebarOpen }) => {
           <div className="profile-details">
             <div className="name-job">
               <div className="name" style={{ fontSize: "8pt" }}>
-                {user?.username ? user.username : "Usuario"}
+                {user?.username ? user.username : "Usuario"} - {user.profile.servidor}
               </div>
               <div className="name">
                 {user?.rol != undefined ? user.rol : "Perfil"}

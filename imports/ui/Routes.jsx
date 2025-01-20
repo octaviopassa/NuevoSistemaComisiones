@@ -13,7 +13,7 @@ export default function RoutesTree() {
     <BrowserRouter>
       <Routes>
         <Route element={<Layout />}>
-          <Route path="/" element={<Home />} />
+          {/* <Route path="/" element={<Home />} /> */}
           <Route path="roles" element={<Roles />} />
           <Route path="pages" element={<Pages />} />
           <Route path="usuarios" element={<Usuarios />} />

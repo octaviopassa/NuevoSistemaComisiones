@@ -3,6 +3,7 @@ import { IngenierosService, PlazasService } from "../../../../services";
 import { useUserSession } from "../../../../store";
 import { Input } from "reactstrap";
 import { format, subMonths } from "date-fns";
+import { useFiltersStore } from "../../store";
 
 const statusOptions = [
   { value: "G", label: "Grabado" },
@@ -11,11 +12,12 @@ const statusOptions = [
   { value: "A", label: "Aplicado" },
 ];
 
-const GastosAdminFilters = ({ filters, setFilters }) => {
+const GastosAdminFilters = () => {
   const [plazas, setPlazas] = useState([]);
   const [plazaSeleccionada, setPlazaSeleccionada] = useState();
   const [vendedores, setVendedores] = useState([]);
   const [dateFilterVisible, setDateFilterVisible] = useState(true);
+  const { filters, setFilters } = useFiltersStore();
   const { session } = useUserSession();
 
   useEffect(() => {
@@ -67,17 +69,17 @@ const GastosAdminFilters = ({ filters, setFilters }) => {
       const fechaActual = new Date();
       const fechaInicio = subMonths(new Date(), 1);
 
-      setFilters((prevFilters) => ({
-        ...prevFilters,
+      setFilters({
+        ...filters,
         fechaInicio: format(fechaInicio, "yyyy-MM-dd"),
         fechaFin: format(fechaActual, "yyyy-MM-dd"),
-      }));
+      });
     } else {
-      setFilters((prevFilters) => ({
-        ...prevFilters,
+      setFilters({
+        ...filters,
         fechaInicio: "",
         fechaFin: "",
-      }));
+      });
     }
   };
 
@@ -94,12 +96,7 @@ const GastosAdminFilters = ({ filters, setFilters }) => {
             <select
               className="custom-select"
               id="statusSelect"
-              onChange={(e) =>
-                setFilters((prevFilters) => ({
-                  ...prevFilters,
-                  estatus: e.target.value,
-                }))
-              }
+              onChange={(e) => setFilters({ ...filters, estatus: e.target.value })}
               value={filters.estatus}
             >
               <option value="">Seleccione un estatus</option>
@@ -121,10 +118,7 @@ const GastosAdminFilters = ({ filters, setFilters }) => {
               className="custom-select"
               id="plazaSelect"
               onChange={(e) => {
-                setFilters((prevFilters) => ({
-                  ...prevFilters,
-                  plaza: e.target.value,
-                }));
+                setFilters({ ...filters, plaza: e.target.value });
                 setPlazaSeleccionada(e.target.value);
               }}
               value={filters.plaza}
@@ -147,12 +141,7 @@ const GastosAdminFilters = ({ filters, setFilters }) => {
             <select
               className="custom-select"
               id="vendedorSelect"
-              onChange={(e) => {
-                setFilters((prevFilters) => ({
-                  ...prevFilters,
-                  vendedor: e.target.value,
-                }));
-              }}
+              onChange={(e) => setFilters({ ...filters, vendedor: e.target.value })}
               value={filters.vendedor}
             >
               <option value="">Seleccione un vendedor</option>
@@ -197,10 +186,7 @@ const GastosAdminFilters = ({ filters, setFilters }) => {
                 className="w-100"
                 value={filters.fechaInicio}
                 onChange={(e) =>
-                  setFilters((prevFilters) => ({
-                    ...prevFilters,
-                    fechaInicio: e.target.value,
-                  }))
+                  setFilters({ ...filters, fechaInicio: e.target.value })
                 }
               />
             </div>
@@ -216,10 +202,7 @@ const GastosAdminFilters = ({ filters, setFilters }) => {
                 id="fechaFin"
                 value={filters.fechaFin}
                 onChange={(e) =>
-                  setFilters((prevFilters) => ({
-                    ...prevFilters,
-                    fechaFin: e.target.value,
-                  }))
+                  setFilters({ ...filters, fechaFin: e.target.value })
                 }
               />
             </div>

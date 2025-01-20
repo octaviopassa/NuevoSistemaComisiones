@@ -6,39 +6,38 @@ import { DocumentosService } from "../../../../services";
 import { format } from "date-fns";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { formatToSinaloaDate } from "../../../../../utils/utils";
 
 export const GastosFolioInput = () => {
   const [loading, setLoading] = useState(false);
   // const history = useLocation()?.state;
   const [searchParams] = useSearchParams();
-  const folioParam = searchParams.get('folio');
-  const plazaParam = searchParams.get('plaza');
+  const folioParam = searchParams.get("folio");
+  const plazaParam = searchParams.get("plaza");
   const { session } = useUserSession();
   const navigate = useNavigate();
   const {
     folio,
     setFolio,
     plazaSeleccionada,
+    setPlazaSeleccionada,
     documentos,
     setMultiple,
     estatus,
     empresa,
   } = useGastosData();
   const MySwal = withReactContent(Swal);
-  
-  // console.log("SISTEMAS", plazaSeleccionada);
+
   useEffect(() => {
     if (folioParam && plazaParam) {
+      setPlazaSeleccionada(plazaParam ? plazaParam : "");
+      setFolio(folioParam);
       const loadFolioData = async () => {
-        setMultiple({
-          plazaSeleccionada: Number(plazaParam),
-          folio: folioParam,
-        });
+        console.log("si hay", folioParam, plazaParam);
         await handleFolioChange(folioParam);
       };
-      
+
       loadFolioData();
     }
   }, []);//[history]);//[plazaSeleccionada]);
@@ -64,11 +63,9 @@ export const GastosFolioInput = () => {
         title: "¿Deseas cambiar el folio?",
         confirmButtonText: "Continuar",
         showCancelButton: true,
-        text: `Tienes ${documentos.length} documento${
-          documentos.length > 1 ? "s" : ""
-        } guardado${
-          documentos.length > 1 ? "s" : ""
-        }. Si cambias el folio se borrarán.`,
+        text: `Tienes ${documentos.length} documento${documentos.length > 1 ? "s" : ""
+          } guardado${documentos.length > 1 ? "s" : ""
+          }. Si cambias el folio se borrarán.`,
         cancelButtonText: "Cancelar",
         reverseButtons: true,
         icon: "warning",
@@ -81,6 +78,13 @@ export const GastosFolioInput = () => {
 
     try {
       setLoading(true);
+
+      console.log({
+        folio: newFolio,
+        plaza: plazaSeleccionada,
+        cod_usu: session.profile.COD_USU,
+        servidor: session.profile.servidor,
+      });
 
       const [gastosData, detalleData, resumenData] = await Promise.all([
         DocumentosService.getGastoGlobal({
@@ -99,20 +103,21 @@ export const GastosFolioInput = () => {
         }),
       ]);
 
-      const gastos = gastosData.data[0];
+      console.log(gastosData);
+      const gastos = gastosData.data[0] || {};
       const detalle = detalleData.data;
       const resumen = resumenData.data;
 
       const newDocumentos = detalle.map((doc) => {
         //REEMPLAZAMOS LA COMA PARA QUE NO MARQUE ERROR EL parseFloat DE TableCantidades
-        const ieps_fix = doc.IEPS.split(",")[0]+doc.IEPS.split(",")[1] 
-        const iva8_fix = doc.IVA_8.split(",")[0]+doc.IVA_8.split(",")[1]
-        const iva16_fix = doc.IVA_16.split(",")[0]+doc.IVA_16.split(",")[1]
-        const ret_fix = doc.RETENCION.split(",")[0]+doc.RETENCION.split(",")[1]
-        const subtotal_fix = doc.SUBTOTAL.split(",")[0]+doc.SUBTOTAL.split(",")[1]
-        const total_fix = doc.TOTAL.split(",")[0]+doc.TOTAL.split(",")[1]
-        const tua_fix = doc.TUA.split(",")[0]+doc.TUA.split(",")[1]
-        
+        const ieps_fix = doc.IEPS.split(",")[0] + doc.IEPS.split(",")[1]
+        const iva8_fix = doc.IVA_8.split(",")[0] + doc.IVA_8.split(",")[1]
+        const iva16_fix = doc.IVA_16.split(",")[0] + doc.IVA_16.split(",")[1]
+        const ret_fix = doc.RETENCION.split(",")[0] + doc.RETENCION.split(",")[1]
+        const subtotal_fix = doc.SUBTOTAL.split(",")[0] + doc.SUBTOTAL.split(",")[1]
+        const total_fix = doc.TOTAL.split(",")[0] + doc.TOTAL.split(",")[1]
+        const tua_fix = doc.TUA.split(",")[0] + doc.TUA.split(",")[1]
+
         return {
           renglonId: doc.ID_GASTO_DETALLE,
           cliente: { label: "", value: "" },
@@ -122,7 +127,7 @@ export const GastosFolioInput = () => {
             doc.CODIGO_GASTO === 17 || doc?.CLIENTE //session.profile.WEB_REACT_CLIENTE_OBLIGATORIO
               ? { label: doc?.CLIENTE || "" }
               : doc.CODIGO_GASTO === 1
-              ? {
+                ? {
                   combustible: { label: doc.NOM_TIPO_COMBUSTIBLE },
                   conductor: { label: doc.NOM_USUARIO_VEHICULO },
                   litros: doc.LITROS,
@@ -130,7 +135,7 @@ export const GastosFolioInput = () => {
                   vehiculo: { label: doc.NOMBRE_VEHICULO_PLACAS },
                   gasolinera: { label: doc.NOMBRE_GASOLINERA },
                 }
-              : " ",
+                : " ",
           importes: {
             fecha: doc.FECHA,
             folio: doc.FOLIO_PROVEEDOR,
@@ -143,7 +148,7 @@ export const GastosFolioInput = () => {
             tua: tua_fix,//doc.TUA,
           },
           pdfArchivo: doc?.IDPDF
-            ? { id: doc.IDPDF, origen: doc?.ORIGEN_PDF , nombre: doc.NOMBRE_ARCHIVO_PDF}
+            ? { id: doc.IDPDF, origen: doc?.ORIGEN_PDF, nombre: doc.NOMBRE_ARCHIVO_PDF }
             : "",
           proveedor: {
             label: doc.NOMBRE_PROVEEDOR_RFC,
@@ -161,8 +166,6 @@ export const GastosFolioInput = () => {
         toastr.error("No se encontraron registros para el folio");
         return;
       }
-
-      // console.log("SISTEMAS",gastos.CODIGO_PROYECTO);
 
       setMultiple({
         plazaSeleccionada: gastos.PLAZA,
