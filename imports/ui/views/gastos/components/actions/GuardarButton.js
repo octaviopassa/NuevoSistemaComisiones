@@ -91,7 +91,7 @@ export const GuardarButton = ({ setLoading, loading }) => {
       }
       let newFolio = folio;
 
-      if (estatus.estatus === "Nuevo") {
+      if (estatus.estatus === "Nuevo" || estatus.estatus === "GRABADO") {
         const [rfc] = await EmpresasService.getRFC({
           baseDatos: session.profile.baseDatos,
           servidor: session.profile.servidor,
@@ -112,6 +112,7 @@ export const GuardarButton = ({ setLoading, loading }) => {
           rfc: rfc.rfc,
           ...totalImportes,
           servidor: session.profile.servidor,
+          accion: estatus.estatus === "Nuevo" ? "INSERTAR" : "ACTUALIZAR",
         };
 
         const { observaciones, ...dataToValidate } = dataGastoGlobal;
