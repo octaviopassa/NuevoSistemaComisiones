@@ -89,7 +89,7 @@ export const GastosFolioInput = () => {
       const [gastosData, detalleData, resumenData] = await Promise.all([
         DocumentosService.getGastoGlobal({
           folio: newFolio,
-          plaza: plazaSeleccionada,
+          plaza: plazaParam || plazaSeleccionada,
           cod_usu: session.profile.COD_USU,
           servidor: session.profile.servidor,
         }),

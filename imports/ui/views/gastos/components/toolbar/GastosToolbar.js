@@ -9,7 +9,7 @@ import { useGastosData } from "../../store";
 import { useUserSession } from "../../../../store";
 import { ModalCuentas } from "../modals/ModalCuentas";
 import { GastosFolioInput } from "./GastosFolioInput";
-import { useLocation, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 
 export const GastosToolbar = () => {
   const [plazas, setPlazas] = useState([]);

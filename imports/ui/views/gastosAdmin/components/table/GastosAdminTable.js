@@ -7,7 +7,6 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { Spinner, Table } from "reactstrap";
-import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { formatToSinaloaDate } from "../../../../../utils/utils";
 
