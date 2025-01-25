@@ -34,7 +34,6 @@ export const GastosFolioInput = () => {
       setPlazaSeleccionada(plazaParam ? plazaParam : "");
       setFolio(folioParam);
       const loadFolioData = async () => {
-        console.log("si hay", folioParam, plazaParam);
         await handleFolioChange(folioParam);
       };
 
@@ -79,13 +78,6 @@ export const GastosFolioInput = () => {
     try {
       setLoading(true);
 
-      console.log({
-        folio: newFolio,
-        plaza: plazaSeleccionada,
-        cod_usu: session.profile.COD_USU,
-        servidor: session.profile.servidor,
-      });
-
       const [gastosData, detalleData, resumenData] = await Promise.all([
         DocumentosService.getGastoGlobal({
           folio: newFolio,
@@ -103,7 +95,6 @@ export const GastosFolioInput = () => {
         }),
       ]);
 
-      console.log(gastosData);
       const gastos = gastosData.data[0] || {};
       const detalle = detalleData.data;
       const resumen = resumenData.data;

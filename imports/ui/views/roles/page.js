@@ -107,7 +107,6 @@ function Roles(props) {
       };
 
       const id = await RolesService.save(dataSaveRole);
-      console.log(id);
       if (id != null) {
         toastr.success("Actualizado correctamente", "Permisos");
       }

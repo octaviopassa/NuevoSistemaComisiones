@@ -81,7 +81,7 @@ export const ModalCombustible = ({
       setVehiculos(
         vehiculos.map((obj) => ({
           value: obj.Cod_Vehiculo,
-          label: obj.Nom_Vehiculo,
+          label: obj.Nom_Vehiculo_Placa,
         }))
       );
       

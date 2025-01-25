@@ -527,7 +527,6 @@ export const TableGastos = () => {
 
         const byteArray = new Uint8Array(byteNumbers);
         const tipoArchivo = pdfArchivo?.nombre.split(".")[1];
-        console.log(tipoArchivo);
         const blob = new Blob([byteArray], { type: `application/${tipoArchivo}` });
 
         const url = URL.createObjectURL(blob);

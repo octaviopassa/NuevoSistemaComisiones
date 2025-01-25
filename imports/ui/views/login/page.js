@@ -2,9 +2,11 @@ import React, { useEffect, useState } from "react";
 import toastr from "toastr";
 import { EmpresasService } from "../../services";
 import { LoginForm } from "./components";
+import { useUserLoggedStore } from "../../store";
 
 function Login() {
   const [empresas, setEmpresas] = useState([]);
+  const { isLogged } = useUserLoggedStore();
 
   useEffect(() => {
     EmpresasService.getAll()
@@ -16,6 +18,10 @@ function Login() {
         toastr.error(error.reason);
       });
   }, []);
+
+  // if (isLogged) {
+  //   window.location.href = "/gastos";
+  // }
 
   return (
     <div>

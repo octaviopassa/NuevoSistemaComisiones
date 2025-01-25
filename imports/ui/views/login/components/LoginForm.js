@@ -13,6 +13,7 @@ import {
   useUserSession,
 } from "../../../store";
 import { LoginSchema } from "../schemas";
+import { useNavigate } from "react-router-dom";
 
 export const LoginForm = ({ empresas }) => {
   const { i18n } = useTranslation();
@@ -21,6 +22,7 @@ export const LoginForm = ({ empresas }) => {
   const { setUserLogged } = useUserLoggedStore();
   const { setUserSession } = useUserSession();
   const { setUserRol } = useUserRolStore();
+  const navigate = useNavigate();
 
   const handleSubmit = async (values) => {
     const {user: userInput, password, empresa: empresaSeleccionada } = values;
@@ -134,6 +136,9 @@ export const LoginForm = ({ empresas }) => {
           }
         });
       }
+
+      // Redirigir a la pantalla de gastos
+      navigate("/gastos");
     } catch (e) {
       toastr.error("Aviso", e.reason);
     }

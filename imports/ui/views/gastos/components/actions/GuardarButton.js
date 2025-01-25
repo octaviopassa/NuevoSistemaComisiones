@@ -154,7 +154,6 @@ export const GuardarButton = ({ setLoading, loading }) => {
         if (documento.renglonId) {
           return;
         }
-        //try {
         const {
           tipoDocumento,
           proveedor,
@@ -341,10 +340,6 @@ export const GuardarButton = ({ setLoading, loading }) => {
           oldFolio: true,
         });
         setResumen(resumenData.data);
-        // } catch (error) {
-        //   console.log("golazo");
-        //   console.log(error);
-        // }
       }));
 
       setDocumentos(updatedDocumentos);

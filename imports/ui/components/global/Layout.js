@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Aside } from "./Aside";
 import { Header } from "./Header";
 import { Outlet } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import useUserLoggedStore from "../../store/userLogged";
 
 export default function Layout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -9,6 +11,7 @@ export default function Layout() {
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
+
 
   return (
     <>

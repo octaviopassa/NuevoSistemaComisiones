@@ -70,7 +70,7 @@ export const GastosToolbar = () => {
       });
 
       const pagarAPromise = GastosService.pagarA({
-        cod_usu: isConsulta ? "" : user.profile.COD_USU,
+        cod_usu: estatus.propietario || !isConsulta ? user.profile.COD_USU : "",
         baseDatos: user.profile.baseDatos,
         servidor: user.profile.servidor,
       });
@@ -262,7 +262,8 @@ export const GastosToolbar = () => {
               className="custom-select"
               id="selectPagarA"
               disabled={
-                estatus.estatus !== "Nuevo" && estatus.estatus !== "GRABADO"
+                (estatus.estatus !== "Nuevo" && estatus.estatus !== "GRABADO") ||
+                !estatus.propietario
               }
               value={pagarASeleccionado}
               onChange={(e) => setPagarASeleccionado(e.target.value)}
