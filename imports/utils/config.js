@@ -4,7 +4,7 @@ module.exports = {
   body_fabrica: {
     usuario: "abacoapp",
     contrasena: "S1stem@Pas5@",
-    servidor: "192.168.20.202\\SQL12",
+    servidor: "192.168.20.3\\SERVERR2",
     baseDatos: "FABRICA_PASSA",
     parametros: [],
     esValido: true,
@@ -14,7 +14,7 @@ module.exports = {
   body_empresas: {
     usuario: "abacoapp",
     contrasena: "S1stem@Pas5@",
-    servidor: "192.168.20.202\\SQL12",
+    servidor: "192.168.20.3\\SERVERR2",
     baseDatos: "EMPRESAS",
     parametros: [],
     esValido: true,
@@ -22,7 +22,7 @@ module.exports = {
     resultado: "",
   },
   body_bdseleccionada: {
-    servidor: "192.168.20.202\\SQL12",
+    servidor: "192.168.20.3\\SERVERR2",
     baseDatos: "",
     usuario: "abacoapp",
     contrasena: "S1stem@Pas5@",
