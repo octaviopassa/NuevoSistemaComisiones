@@ -30,14 +30,14 @@ export const ModalCatalogoGasolineras = ({
   reloadDataCombustible,
 }) => {
   const { session } = useUserSession();
-  const { plazaSeleccionada: plaza } = useGastosData();
+  //const { plazaSeleccionada: plaza } = useGastosData();
+  const { plazaSeleccionada } = useGastosData();
   const {
     isLoading,
     data: gasolineras,
     reloadData,
   } = useFetchData(GasolinerasService.getAll, [
-    plaza,
-    session.profile.baseDatos,
+    { plaza: plazaSeleccionada, servidor: session.profile.servidor},
   ]);
   const { searchText, setSearchText, filteredData } = useSearch(
     gasolineras || []
