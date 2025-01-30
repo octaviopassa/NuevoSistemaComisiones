@@ -647,6 +647,11 @@ export const TableGastos = () => {
       xmlArchivoFinal = xmlTempData.archivo;
     }
 
+    if(tipoGastoSeleccionado.value === 1 && detalleGasto === ""){      
+        toastr.error("Por favor, detalle el gasto de gasolina con el botón 'Agregar Gasto'.");
+        return;      
+    }
+
     // Asegurarse de que todos los valores numéricos sean números y tengan dos decimales
     for (let key in importesFinales) {
       if (key !== "fecha" && key !== "folio") {

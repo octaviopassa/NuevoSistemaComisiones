@@ -6,7 +6,7 @@ import toastr from "toastr";
 import { format } from "date-fns";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
-import { formatToSinaloaDate } from "../../../../../utils/utils";
+import { formatDate, formatToSinaloaDate } from "../../../../../utils/utils";
 
 export const CancelarButton = ({ setLoading }) => {
   const { session } = useUserSession();
@@ -45,16 +45,16 @@ export const CancelarButton = ({ setLoading }) => {
       }
 
       const gasto = await DocumentosService.getGastoGlobal({
-        ...data,
+        folio: data.folio,
         plaza: plazaSeleccionada,
+        cod_usu: session.profile.COD_USU,
+        servidor: session.profile.servidor
       });
 
       setEstatus({
         ...estatus,
         estatus: "CANCELADO",
-        cancelo: `${gasto.data[0].NOM_USU_CANCELO} - ${formatToSinaloaDate(
-          new Date(gasto.data[0].FECHA_CANCELACION)
-        )}`,
+        cancelado: `${gasto.data[0].NOM_USU_CANCELO} ${formatDate(gasto.data[0].FECHA_CANCELACION)}`,
       });
       toastr.success("Se ha cancelado el gasto");
     } catch (error) {

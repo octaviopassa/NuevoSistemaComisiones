@@ -8,7 +8,7 @@ import Docxtemplater from "docxtemplater";
 import { format } from "date-fns";
 import { promisify } from "util";
 import libre from "libreoffice-convert";
-import { formatToSinaloaDate } from "../../utils/utils";
+import { formatDate, formatToSinaloaDate } from "../../utils/utils";
 const libreConvert = promisify(libre.convert);
 // import ConvertAPI from "convertapi";
 // const convertapi = new ConvertAPI("secret_M2CC06K9StuPUDEz");
@@ -63,7 +63,7 @@ Meteor.methods({
           proveedor: item.NOMBRE_PROVEEDOR,
           gasto: item.NOMBRE_GASTO,
           concepto: item.CONCEPTO,
-          fecha: formatToSinaloaDate(item.R_FECHA), //format(new Date(item.R_FECHA), "dd/MM/yyyy"),
+          fecha: formatDate(item.R_FECHA), //format(new Date(item.R_FECHA), "dd/MM/yyyy"),
           folio_proveedor: item.FOLIO_PROVEEDOR,
           subtotal: `$${item.rSUBTOTAL.toFixed(2)}`,
           iva_16: `$${item.rIVA_16.toFixed(2)}`,
@@ -87,16 +87,16 @@ Meteor.methods({
         estatus: `${global[0].ESTATUS} - ${
           estadosReembolso[global[0].ESTATUS]
         }`,
-        grabo: `${formatToSinaloaDate(global[0]?.FECHA)} ${
+        grabo: `${formatDate(global[0]?.FECHA)} ${
           global[0]?.NOMBRE_GRABO || ""
         }`,
         aplico: global[0]?.NOMBRE_APLICO
-          ? `${formatToSinaloaDate(global[0]?.FECHA_APLICACION)} ${
+          ? `${formatDate(global[0]?.FECHA_APLICACION)} ${
               global[0]?.NOMBRE_APLICO || ""
             }`
           : "",
         autorizo: global[0]?.NOMBRE_AUTORIZO
-          ? `${formatToSinaloaDate(global[0]?.FECHA_AUTORIZACION)} ${
+          ? `${formatDate(global[0]?.FECHA_AUTORIZACION)} ${
               global[0]?.NOMBRE_AUTORIZO
             }`
           : "",

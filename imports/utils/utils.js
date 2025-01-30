@@ -10,6 +10,13 @@ export function formatCurrency(value, locale = "es-MX", currency = "MXN") {
   }).format(value);
 }
 
+export function formatNumConComas(value, locale = 'es-MX', decimals = 2) {
+  return new Intl.NumberFormat(locale, {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  }).format(value);
+}
+
 export const formatDateUser = (dateString) => {
   if (dateString) {
     const options = {
@@ -52,6 +59,11 @@ export const formatDate = (dateString) => {
 
   // Formatos que queremos intentar parsear
   const formatos = [
+    "YYYY-MM-DDTHH:mm:ss",
+    "YYYY-MM-DDTHH:mm:ss.S",
+    "YYYY-MM-DDTHH:mm:ss.SS",
+    "YYYY-MM-DDTHH:mm:ss.SSS",
+    "YYYY-MM-DD:HH:mm:ss",
     "YYYY-MM-DD",
     "DD/MM/YYYY"
   ];

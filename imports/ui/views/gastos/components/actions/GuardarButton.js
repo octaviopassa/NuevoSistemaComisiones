@@ -8,7 +8,7 @@ import {
 } from "../../../../services";
 import toastr from "toastr";
 import { format } from "date-fns";
-import { formatToSinaloaDate } from "../../../../../utils/utils";
+import { formatDate, formatToSinaloaDate } from "../../../../../utils/utils";
 
 export const GuardarButton = ({ setLoading, loading }) => {
   const {
@@ -114,7 +114,7 @@ export const GuardarButton = ({ setLoading, loading }) => {
           servidor: session.profile.servidor,
           accion: estatus.estatus === "Nuevo" ? "INSERTAR" : "ACTUALIZAR",
         };
-
+        
         const { observaciones, ...dataToValidate } = dataGastoGlobal;
 
         const areFieldsValid = Object.values(dataToValidate).every(
@@ -195,7 +195,7 @@ export const GuardarButton = ({ setLoading, loading }) => {
           proveedor: proveedor.value,
           tipoGasto: tipoGasto.value,
           concepto,
-          fecha: new Date(fecha).toISOString().slice(0, 10).split('-').reverse().join('-'), // formatToSinaloaDate(fecha)
+          fecha:formatDate(fecha), //new Date(fecha).toISOString().slice(0, 10).split('-').reverse().join('-'), 
           folioProveedor: folio,
           subtotal: parseFloat(subtotal),
           iva: parseFloat(iva_16) + parseFloat(iva_8),
@@ -241,7 +241,7 @@ export const GuardarButton = ({ setLoading, loading }) => {
           const { detalleGasto } = documento;
           const datosGasolina = {
             folio,
-            fecha,
+            fecha: formatDate(fecha),
             vehiculo: detalleGasto.vehiculo.value,
             conductor: detalleGasto.conductor.value,
             importe: parseFloat(total),
@@ -332,8 +332,8 @@ export const GuardarButton = ({ setLoading, loading }) => {
         setEstatus({
           ...estatus,
           estatus: gastoGlobalData.data[0].NOM_ESTATUS,
-          grabo: `${gastoGlobalData.data[0].NOM_USU_GRABO} ${formatToSinaloaDate(
-            new Date(gastoGlobalData.data[0].FECHA)
+          grabo: `${gastoGlobalData.data[0].NOM_USU_GRABO} ${formatDate(
+            gastoGlobalData.data[0].FECHA
           )}`,
           observaciones: gastoGlobalData.data[0].OBSERVACION,
           propietario: !!gastoGlobalData.data[0].EsPropietario,

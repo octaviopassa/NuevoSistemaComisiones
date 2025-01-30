@@ -7,7 +7,7 @@ import { format } from "date-fns";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { formatToSinaloaDate } from "../../../../../utils/utils";
+import { formatDate, formatToSinaloaDate } from "../../../../../utils/utils";
 
 export const GastosFolioInput = () => {
   const [loading, setLoading] = useState(false);
@@ -169,17 +169,17 @@ export const GastosFolioInput = () => {
         empresa: gastos.EMPRESA,
         estatus: {
           estatus: gastos.NOM_ESTATUS,
-          grabo: `${gastos.NOM_USU_GRABO} ${formatToSinaloaDate(new Date(gastos.FECHA))}`,
+          grabo: `${gastos.NOM_USU_GRABO} ${formatDate(gastos.FECHA)}`,
           aplico: gastos.NOM_USU_APLICO
-            ? `${gastos.NOM_USU_APLICO} ${formatToSinaloaDate(new Date(gastos.FECHA_APLICACION))}`
+            ? `${gastos.NOM_USU_APLICO} ${formatDate(gastos.FECHA_APLICACION)}`
             : "",
           autorizo: gastos.NOM_USU_AUTORIZO
-            ? `${gastos.NOM_USU_AUTORIZO} ${formatToSinaloaDate(new Date(gastos.FECHA_AUTORIZACION))}`
+            ? `${gastos.NOM_USU_AUTORIZO} ${formatDate(gastos.FECHA_AUTORIZACION)}`
             : "",
           observaciones: gastos?.OBSERVACION || "",
           propietario: gastos.EsPropietario,
           cancelado: gastos.NOM_USU_CANCELO
-            ? `${gastos.NOM_USU_CANCELO} ${formatToSinaloaDate(new Date(gastos.FECHA_CANCELACION))}`
+            ? `${gastos.NOM_USU_CANCELO} ${formatDate(gastos.FECHA_CANCELACION)}`
             : "",
           oldFolio: true,
         },

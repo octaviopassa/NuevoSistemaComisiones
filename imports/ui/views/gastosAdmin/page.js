@@ -7,7 +7,7 @@ import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { GastosService } from "../../services";
 import { useUserSession } from "../../store";
 import toastr from "toastr";
-import { formatToSinaloaDate } from "../../../utils/utils";
+import { formatDate, formatToSinaloaDate } from "../../../utils/utils";
 import { useFiltersStore } from "./store";
 
 const GastosAdmin = () => {
@@ -36,8 +36,8 @@ const GastosAdmin = () => {
     const data = {
       ...filters,
       vendedor: filters.vendedor || "0",
-      fechaInicio: formatToSinaloaDate(new Date(filters.fechaInicio)) || null,
-      fechaFin: formatToSinaloaDate(new Date(filters.fechaFin)) || null,
+      fechaInicio: formatDate(filters.fechaInicio) || null,
+      fechaFin: formatDate(filters.fechaFin) || null,
       cod_usu: session.profile.TIENE_ACCESO_VER_TODOS_GASTOS
         ? "0"
         : session.profile.COD_USU,

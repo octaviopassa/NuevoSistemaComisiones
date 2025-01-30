@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { Spinner, Table } from "reactstrap";
 import { useNavigate } from "react-router-dom";
-import { formatToSinaloaDate } from "../../../../../utils/utils";
+import { formatDate, formatToSinaloaDate } from "../../../../../utils/utils";
 
 const theadClasses = "d-flex justify-content-between align-items-center";
 
@@ -122,7 +122,7 @@ const GastosAdminTable = ({ gastos, plazaSeleccionada, loading }) => {
           gastos?.map((gasto) => (
             <tr key={gasto.ID_GASTO_GLOBAL}>
               <td>{gasto.FOLIO_GASTO}</td>
-              <td>{formatToSinaloaDate(gasto.FECHA)}</td>
+              <td>{formatDate(gasto.FECHA)}</td>
               {/* <td>{format(new Date(gasto.FECHA), "dd/MM/yyyy")}</td> */}
               <td>{`${gasto.PLAZA} - ${gasto.NOM_PLAZA}`}</td>
               <td>

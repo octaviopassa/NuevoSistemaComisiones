@@ -4,7 +4,7 @@ import { useUserSession } from "../../../../store";
 import { DocumentosService } from "../../../../services";
 import { format } from "date-fns";
 import toastr from "toastr";
-import { formatToSinaloaDate } from "../../../../../utils/utils";
+import { formatDate, formatToSinaloaDate } from "../../../../../utils/utils";
 
 export const AutorizarButton = ({ setLoading }) => {
   const { session } = useUserSession();
@@ -26,17 +26,18 @@ export const AutorizarButton = ({ setLoading }) => {
       }
 
       const gasto = await DocumentosService.getGastoGlobal({
-        plazaSeleccionada,
-        ...data,
+        folio: data.folio,
+        plaza: plazaSeleccionada,
+        cod_usu: session.profile.COD_USU,
+        servidor: session.profile.servidor
       });
-
+      
       setEstatus({
         ...estatus,
         estatus: "AUTORIZADO",
-        autorizo: `${gasto.data[0].NOM_USU_AUTORIZO} ${formatToSinaloaDate(
-          new Date(gasto.data[0].FECHA_AUTORIZACION)
-        )}`,
+        autorizo: `${gasto.data[0].NOM_USU_AUTORIZO} ${formatDate(gasto.data[0].FECHA_AUTORIZACION)}`,
       });
+
       toastr.success("Se ha autorizado el gasto");
     } catch (error) {
       console.log(error, error?.message);

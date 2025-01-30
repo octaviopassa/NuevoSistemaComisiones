@@ -1,5 +1,6 @@
 import React from "react";
 import { useGastosData } from "../../store";
+import { formatNumConComas } from "../../../../../utils/utils";
 
 export const TableCantidades = () => {
   const { documentos } = useGastosData();
@@ -71,7 +72,7 @@ export const TableCantidades = () => {
                   <th className="text-left">Subtotal:</th>
                   <th className="text-right">
                     <span className="badge badge-primary">
-                      ${totalImportes.subtotal.toFixed(2)}
+                      ${formatNumConComas(totalImportes.subtotal)}
                     </span>
                   </th>
                 </tr>
@@ -89,7 +90,7 @@ export const TableCantidades = () => {
                   <td className="text-left">IVA_16:</td>
                   <td className="text-right">
                     <span className="badge badge-primary">
-                      ${totalImportes.iva_16.toFixed(2)}
+                      ${formatNumConComas(totalImportes.iva_16)}
                     </span>
                   </td>
                 </tr>
@@ -97,7 +98,7 @@ export const TableCantidades = () => {
                   <td className="text-left">IVA_8:</td>
                   <td className="text-right">
                     <span className="badge badge-primary">
-                      ${totalImportes.iva_8.toFixed(2)}
+                      ${formatNumConComas(totalImportes.iva_8)}
                     </span>
                   </td>
                 </tr>
@@ -105,7 +106,7 @@ export const TableCantidades = () => {
                   <td className="text-left">IEPS:</td>
                   <td className="text-right">
                     <span className="badge badge-primary">
-                      ${totalImportes.ieps.toFixed(2)}
+                      ${formatNumConComas(totalImportes.ieps)}
                     </span>
                   </td>
                 </tr>
@@ -113,7 +114,7 @@ export const TableCantidades = () => {
                   <td className="text-left">ISH:</td>
                   <td className="text-right">
                     <span className="badge badge-primary">
-                      ${totalImportes.ish.toFixed(2)}
+                      ${formatNumConComas(totalImportes.ish)}
                     </span>
                   </td>
                 </tr>
@@ -121,7 +122,7 @@ export const TableCantidades = () => {
                   <td className="text-left">TUA:</td>
                   <td className="text-right">
                     <span className="badge badge-primary">
-                      ${totalImportes.tua.toFixed(2)}
+                      ${formatNumConComas(totalImportes.tua)}
                     </span>
                   </td>
                 </tr>
@@ -129,7 +130,7 @@ export const TableCantidades = () => {
                   <th className="text-left">Retención:</th>
                   <td className="text-right">
                     <span className="badge badge-danger">
-                      ${totalImportes.ret.toFixed(2)}
+                      ${formatNumConComas(totalImportes.ret)}
                     </span>
                   </td>
                 </tr>
@@ -137,7 +138,7 @@ export const TableCantidades = () => {
                   <th className="text-left">Total:</th>
                   <td className="text-right">
                     <span className="badge badge-success">
-                      ${totalImportes.total.toFixed(2)}
+                      ${formatNumConComas(totalImportes.total)}
                     </span>
                   </td>
                 </tr>
@@ -162,7 +163,7 @@ export const TableCantidades = () => {
                   <td className="text-left">Importe:</td>
                   <td className="text-right">
                     <span className="badge badge-primary">
-                      ${totalByType.facturas.total.toFixed(2)}
+                      ${formatNumConComas(totalByType.facturas.total)}
                     </span>
                   </td>
                 </tr>
@@ -182,7 +183,7 @@ export const TableCantidades = () => {
                   <td className="text-left">Importe:</td>
                   <td className="text-right">
                     <span className="badge badge-primary">
-                      ${totalByType.notas.total.toFixed(2)}
+                      ${formatNumConComas(totalByType.notas.total)}
                     </span>
                   </td>
                 </tr>
