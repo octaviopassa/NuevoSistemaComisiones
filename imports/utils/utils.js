@@ -174,3 +174,7 @@ export const validarMismoMesAnioDocumentosIANSA = (xmlsExistentes, nuevoXML) => 
 
   return true;
 };
+
+export const version = () => {
+  return "1.0.0";
+};

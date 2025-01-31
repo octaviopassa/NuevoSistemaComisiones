@@ -21,6 +21,7 @@ import {
 } from "../../store";
 import { Link } from "react-router-dom";
 import { useGastosData } from "../../views/gastos/store";
+import { version } from "../../../utils/utils";
 
 export const Aside = ({ isOpen, toggleSidebar, setIsSidebarOpen }) => {
   const { resetAllowedModules } = useUserModulesStore();
@@ -142,7 +143,7 @@ export const Aside = ({ isOpen, toggleSidebar, setIsSidebarOpen }) => {
                 {user?.username ? user.username : "Usuario"} - {user.profile.servidor}
               </div>
               <div className="name">
-                {user?.rol != undefined ? user.rol : "Perfil"}
+                {user?.rol != undefined ? user.rol : "Perfil"} - {"Versión: " + version()}
               </div>
             </div>
           </div>
