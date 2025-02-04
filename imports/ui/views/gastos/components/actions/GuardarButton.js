@@ -75,14 +75,16 @@ export const GuardarButton = ({ setLoading, loading }) => {
         toastr.error("No tienes permiso para registrar gastos");
         return;
       }
-      
+
       if (documentos.length === 0) {
         toastr.error("No hay documentos para registrar");
         return;
       }
-      
+
       if (!pagarASeleccionado) {
-        toastr.warning("Por favor, seleccione la cuenta a la que se hará el reembolso.");
+        toastr.warning(
+          "Por favor, seleccione la cuenta a la que se hará el reembolso."
+        );
         return;
       }
       if (!gastosDate) {
@@ -100,10 +102,20 @@ export const GuardarButton = ({ setLoading, loading }) => {
         const dataGastoGlobal = {
           plaza: plazaSeleccionada,
           pagarA: pagarASeleccionado,
-          fecha: new Date(gastosDate).toISOString().slice(0, 10).split('-').reverse().join('-'),
+          fecha: new Date(gastosDate)
+            .toISOString()
+            .slice(0, 10)
+            .split("-")
+            .reverse()
+            .join("-"),
           origen: selectedIngeniero === "" ? "S" : "I",
           ingeniero: selectedIngeniero || "0",
-          gastosDate: new Date(gastosDate).toISOString().slice(0, 10).split('-').reverse().join('-'),
+          gastosDate: new Date(gastosDate)
+            .toISOString()
+            .slice(0, 10)
+            .split("-")
+            .reverse()
+            .join("-"),
           folio,
           observaciones: estatus.observaciones,
           cod_usu: session.profile.COD_USU,
@@ -112,9 +124,9 @@ export const GuardarButton = ({ setLoading, loading }) => {
           rfc: rfc.rfc,
           ...totalImportes,
           servidor: session.profile.servidor,
-          accion: estatus.estatus === "Nuevo" ? "INSERTAR" : "ACTUALIZAR",
+          accion: estatus.estatus === "GRABADO" ? "ACTUALIZAR" : "INSERTAR",
         };
-        
+
         const { observaciones, ...dataToValidate } = dataGastoGlobal;
 
         const areFieldsValid = Object.values(dataToValidate).every(
@@ -145,202 +157,205 @@ export const GuardarButton = ({ setLoading, loading }) => {
         }
 
         newFolio = grabadoGlobal.data[0].Column1;
-      }      
+      }
 
       let hasError = false;
       const updatedDocumentos = [...documentos];
 
-      await Promise.all(documentos.map(async (documento, index) => {
-        if (documento.renglonId) {
-          return;
-        }
-        const {
-          tipoDocumento,
-          proveedor,
-          tipoGasto,
-          concepto,
-          importes,
-          xmlArchivo,
-        } = documento;
-        const {
-          subtotal,
-          iva_16,
-          iva_8,
-          ieps,
-          ish,
-          ret,
-          total,
-          tua,
-          folio,
-          fecha,
-        } = importes;
-
-        let tua_desglosado = "0";
-
-        if (parseFloat(tua || 0) > 0) {
-          const calculoTotal =
-            parseFloat(subtotal) +
-            parseFloat(iva_16) +
-            parseFloat(iva_8) +
-            parseFloat(ieps) +
-            parseFloat(ish) -
-            parseFloat(ret);
-
-          tua_desglosado = calculoTotal === parseFloat(total) ? "0" : "1";
-        }
-
-        const datosDocumento = {
-          folio: newFolio,
-          tipoDocumento,
-          proveedor: proveedor.value,
-          tipoGasto: tipoGasto.value,
-          concepto,
-          fecha:formatDate(fecha), //new Date(fecha).toISOString().slice(0, 10).split('-').reverse().join('-'), 
-          folioProveedor: folio,
-          subtotal: parseFloat(subtotal),
-          iva: parseFloat(iva_16) + parseFloat(iva_8),
-          iva_16: parseFloat(iva_16),
-          iva_8: parseFloat(iva_8),
-          ieps: parseFloat(ieps),
-          retencion: parseFloat(ret),
-          total: parseFloat(total),
-          ish: parseFloat(ish),
-          tua: parseFloat(tua),
-          cadena_xml: xmlArchivo?.contenido || "",
-          uuid: xmlArchivo?.uuid || "",
-          tua_desglosado,
-          cliente:
-            tipoGasto.value === 17 || documento.detalleGasto.label
-              ? documento.detalleGasto.label
-              : "",
-          servidor: session.profile.servidor,
-        };
-
-        //console.log("SISTEMAS", documento.detalleGasto.label);
-        //console.log("SISTEMAS", datosDocumento);
-
-        const grabarRenglon = await GastosService.grabarRenglon(
-          datosDocumento
-        );
-
-        if (!grabarRenglon.isValid) {
-          hasError = true;
-          console.error(grabarRenglon);
-          toastr.error("No se pudo grabar el detalle del gasto");
-          throw new Error("No se pudo grabar el detalle del gasto");
-          //return;
-        }
-
-        // console.log("SISTEMAS 2", grabarRenglon.data[0].Column1);
-
-        const renglonId = grabarRenglon.data[0].Column1;
-        updatedDocumentos[index] = { ...updatedDocumentos[index], renglonId };
-
-        // GRABAR COMBUSTIBLE SI ES COMBUSTIBLE
-        if (tipoGasto.value === 1) {
-          const { detalleGasto } = documento;
-          const datosGasolina = {
+      await Promise.all(
+        documentos.map(async (documento, index) => {
+          if (documento.renglonId) {
+            return;
+          }
+          const {
+            tipoDocumento,
+            proveedor,
+            tipoGasto,
+            concepto,
+            importes,
+            xmlArchivo,
+          } = documento;
+          const {
+            subtotal,
+            iva_16,
+            iva_8,
+            ieps,
+            ish,
+            ret,
+            total,
+            tua,
             folio,
-            fecha: formatDate(fecha),
-            vehiculo: detalleGasto.vehiculo.value,
-            conductor: detalleGasto.conductor.value,
-            importe: parseFloat(total),
-            litros: parseInt(detalleGasto.litros),
-            km: parseInt(detalleGasto.kilometraje),
-            combustible: detalleGasto.combustible.value,
-            cod_usu: session.profile.COD_USU,
-            gasolinera: detalleGasto.gasolinera.value,
-            plaza: plazaSeleccionada,
-            folioGasto: newFolio,
+            fecha,
+          } = importes;
+
+          let tua_desglosado = "0";
+
+          if (parseFloat(tua || 0) > 0) {
+            const calculoTotal =
+              parseFloat(subtotal) +
+              parseFloat(iva_16) +
+              parseFloat(iva_8) +
+              parseFloat(ieps) +
+              parseFloat(ish) -
+              parseFloat(ret);
+
+            tua_desglosado = calculoTotal === parseFloat(total) ? "0" : "1";
+          }
+
+          const datosDocumento = {
+            folio: newFolio,
+            tipoDocumento,
+            proveedor: proveedor.value,
+            tipoGasto: tipoGasto.value,
+            concepto,
+            fecha: formatDate(fecha), //new Date(fecha).toISOString().slice(0, 10).split('-').reverse().join('-'),
+            folioProveedor: folio,
+            subtotal: parseFloat(subtotal),
+            iva: parseFloat(iva_16) + parseFloat(iva_8),
+            iva_16: parseFloat(iva_16),
+            iva_8: parseFloat(iva_8),
+            ieps: parseFloat(ieps),
+            retencion: parseFloat(ret),
+            total: parseFloat(total),
+            ish: parseFloat(ish),
+            tua: parseFloat(tua),
+            cadena_xml: xmlArchivo?.contenido || "",
+            uuid: xmlArchivo?.uuid || "",
+            tua_desglosado,
+            cliente:
+              tipoGasto.value === 17 || documento.detalleGasto.label
+                ? documento.detalleGasto.label
+                : "",
             servidor: session.profile.servidor,
           };
 
-          const grabarGastoCombustible =
-            await GastosService.grabarGastoCombustible(datosGasolina);
+          //console.log("SISTEMAS", documento.detalleGasto.label);
+          //console.log("SISTEMAS", datosDocumento);
 
-          if (!grabarGastoCombustible.isValid) {
-            console.error(grabarGastoCombustible);
+          const grabarRenglon = await GastosService.grabarRenglon(
+            datosDocumento
+          );
+
+          if (!grabarRenglon.isValid) {
+            hasError = true;
+            console.error(grabarRenglon);
+            toastr.error("No se pudo grabar el detalle del gasto");
+            throw new Error("No se pudo grabar el detalle del gasto");
+            //return;
           }
-        }
 
-        // TODO: GRABAR PDF Y XML
-        const xmlGrabo = await DocumentosService.grabarArchivoXML({
-          id_renglon: renglonId,
-          nombre_xml: xmlArchivo?.nombre || "",
-          archivo: xmlArchivo?.contenido || "",
-          cod_usu: session.profile.COD_USU,
-          servidor: session.profile.servidor,
-        });
+          // console.log("SISTEMAS 2", grabarRenglon.data[0].Column1);
 
-        if (!xmlGrabo?.isValid) console.error(xmlGrabo);
+          const renglonId = grabarRenglon.data[0].Column1;
+          updatedDocumentos[index] = { ...updatedDocumentos[index], renglonId };
 
-        if (documento.pdfArchivo || documento?.pdfArchivo?.contenido) {
-          const pdfGrabo = await DocumentosService.grabarArchivoPDF({
+          // GRABAR COMBUSTIBLE SI ES COMBUSTIBLE
+          if (tipoGasto.value === 1) {
+            const { detalleGasto } = documento;
+            const datosGasolina = {
+              folio,
+              fecha: formatDate(fecha),
+              vehiculo: detalleGasto.vehiculo.value,
+              conductor: detalleGasto.conductor.value,
+              importe: parseFloat(total),
+              litros: parseInt(detalleGasto.litros),
+              km: parseInt(detalleGasto.kilometraje),
+              combustible: detalleGasto.combustible.value,
+              cod_usu: session.profile.COD_USU,
+              gasolinera: detalleGasto.gasolinera.value,
+              plaza: plazaSeleccionada,
+              folioGasto: newFolio,
+              servidor: session.profile.servidor,
+            };
+
+            const grabarGastoCombustible =
+              await GastosService.grabarGastoCombustible(datosGasolina);
+
+            if (!grabarGastoCombustible.isValid) {
+              console.error(grabarGastoCombustible);
+            }
+          }
+
+          // TODO: GRABAR PDF Y XML
+          const xmlGrabo = await DocumentosService.grabarArchivoXML({
             id_renglon: renglonId,
-            nombre_pdf: documento?.pdfArchivo?.nombre || "",
-            archivo: documento?.pdfArchivo?.contenido,
+            nombre_xml: xmlArchivo?.nombre || "",
+            archivo: xmlArchivo?.contenido || "",
             cod_usu: session.profile.COD_USU,
             servidor: session.profile.servidor,
           });
 
-          if (!pdfGrabo?.isValid) console.error(pdfGrabo);
-        }
+          if (!xmlGrabo?.isValid) console.error(xmlGrabo);
 
-        if (documento.tipoDocumento === "Factura") {
-          // Checar archivos
-          const grabarDocGlobal = await DocumentosService.grabarArchivo({
-            folio: newFolio,
-            archivo_xml: xmlArchivo?.contenido || "",
-            archivo_pdf: documento?.pdfArchivo?.contenido || "",
-            cadena_xml: xmlArchivo?.contenido,
-            cod_usu: session.profile.COD_USU,
-            servidor: session.profile.servidor,
-          });
-
-          if (!grabarDocGlobal?.isValid) console.error(grabarDocGlobal);
-        } else if (documento.tipoDocumento === "Nota") {
           if (documento.pdfArchivo || documento?.pdfArchivo?.contenido) {
-            const grabadoArchivosGlobal =
-              await DocumentosService.grabarArchivoNota({
-                id_renglon: renglonId,
-                nombre_pdf: documento?.pdfArchivo?.nombre || `${renglonId}.pdf`,
-                archivo: documento?.pdfArchivo?.contenido,
-                cod_usu: session.profile.COD_USU,
-                servidor: session.profile.servidor,
-              });
+            const pdfGrabo = await DocumentosService.grabarArchivoPDF({
+              id_renglon: renglonId,
+              nombre_pdf: documento?.pdfArchivo?.nombre || "",
+              archivo: documento?.pdfArchivo?.contenido,
+              cod_usu: session.profile.COD_USU,
+              servidor: session.profile.servidor,
+            });
 
-            if (!grabadoArchivosGlobal?.isValid)
-              console.error(grabadoArchivosGlobal);
+            if (!pdfGrabo?.isValid) console.error(pdfGrabo);
           }
-        }
 
-        const [resumenData, gastoGlobalData] = await Promise.all([
-          DocumentosService.getResumen({
-            folio: newFolio,
-            servidor: session.profile.servidor,
-          }),
-          DocumentosService.getGastoGlobal({
-            folio: newFolio,
-            plaza: plazaSeleccionada,
-            cod_usu: session.profile.COD_USU,
-            servidor: session.profile.servidor,
-          }),
-        ]);
+          if (documento.tipoDocumento === "Factura") {
+            // Checar archivos
+            const grabarDocGlobal = await DocumentosService.grabarArchivo({
+              folio: newFolio,
+              archivo_xml: xmlArchivo?.contenido || "",
+              archivo_pdf: documento?.pdfArchivo?.contenido || "",
+              cadena_xml: xmlArchivo?.contenido,
+              cod_usu: session.profile.COD_USU,
+              servidor: session.profile.servidor,
+            });
 
-        if (!resumenData?.isValid) console.error(resumenData);
+            if (!grabarDocGlobal?.isValid) console.error(grabarDocGlobal);
+          } else if (documento.tipoDocumento === "Nota") {
+            if (documento.pdfArchivo || documento?.pdfArchivo?.contenido) {
+              const grabadoArchivosGlobal =
+                await DocumentosService.grabarArchivoNota({
+                  id_renglon: renglonId,
+                  nombre_pdf:
+                    documento?.pdfArchivo?.nombre || `${renglonId}.pdf`,
+                  archivo: documento?.pdfArchivo?.contenido,
+                  cod_usu: session.profile.COD_USU,
+                  servidor: session.profile.servidor,
+                });
 
-        setEstatus({
-          ...estatus,
-          estatus: gastoGlobalData.data[0].NOM_ESTATUS,
-          grabo: `${gastoGlobalData.data[0].NOM_USU_GRABO} ${formatDate(
-            gastoGlobalData.data[0].FECHA
-          )}`,
-          observaciones: gastoGlobalData.data[0].OBSERVACION,
-          propietario: !!gastoGlobalData.data[0].EsPropietario,
-          oldFolio: true,
-        });
-        setResumen(resumenData.data);
-      }));
+              if (!grabadoArchivosGlobal?.isValid)
+                console.error(grabadoArchivosGlobal);
+            }
+          }
+
+          const [resumenData, gastoGlobalData] = await Promise.all([
+            DocumentosService.getResumen({
+              folio: newFolio,
+              servidor: session.profile.servidor,
+            }),
+            DocumentosService.getGastoGlobal({
+              folio: newFolio,
+              plaza: plazaSeleccionada,
+              cod_usu: session.profile.COD_USU,
+              servidor: session.profile.servidor,
+            }),
+          ]);
+
+          if (!resumenData?.isValid) console.error(resumenData);
+
+          setEstatus({
+            ...estatus,
+            estatus: gastoGlobalData.data[0].NOM_ESTATUS,
+            grabo: `${gastoGlobalData.data[0].NOM_USU_GRABO} ${formatDate(
+              gastoGlobalData.data[0].FECHA
+            )}`,
+            observaciones: gastoGlobalData.data[0].OBSERVACION,
+            propietario: !!gastoGlobalData.data[0].EsPropietario,
+            oldFolio: true,
+          });
+          setResumen(resumenData.data);
+        })
+      );
 
       setDocumentos(updatedDocumentos);
       // console.log("SISTEMAS U", updatedDocumentos);
@@ -348,6 +363,12 @@ export const GuardarButton = ({ setLoading, loading }) => {
 
       if (!hasError) {
         toastr.success(`${newFolio} grabado correctamente`);
+
+        // Probar agregar hook arriba de const navigate = useNavigate();
+        // navigate(`/gastos?folio=${gasto.FOLIO_GASTO}&plaza=${plazaSeleccionada}`);
+        // Y pones este hook arriba y lo usas justo aqui donde esta solo lo descomentas y ajustas los campos.
+        // NO SE TE OLVIDE USAR EL plazaParam en todos los lados donde se use la plazaSeleccionada como ternario
+        // Si usas esto del navigate comenta el setResumen y el setEstatus y el setDocumentos
       }
     } catch (error) {
       console.log(error);
