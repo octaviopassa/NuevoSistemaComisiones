@@ -39,7 +39,7 @@ export const GastosFolioInput = () => {
 
       loadFolioData();
     }
-  }, []);//[history]);//[plazaSeleccionada]);
+  }, [plazaParam, folioParam]);//[history]);//[plazaSeleccionada]);
 
   const handleFolioInputChange = (e) => {
     setFolio(e.target.value);

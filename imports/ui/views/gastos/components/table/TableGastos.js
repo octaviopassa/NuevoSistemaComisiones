@@ -200,18 +200,18 @@ export const TableGastos = () => {
           if (
             session.profile.baseDatos === "IANSA" ||
             session.profile.baseDatos === "Smartcarb"
-          ) {            
-            // Obtener los XMLs existentes de la tabla
-            const xmlsExistentes = documentos ? documentos.map(doc => ({
-              uuid: doc.xmlArchivo?.uuid,
+          ) {
+            // Obtener los documentos existentes de la tabla
+            const documentosExistentes = documentos ? documentos.map(doc => ({
+              id: doc.xmlArchivo?.id,
               fecha: doc.importes.fecha
             })) : [];
-            
-            if (xmlsExistentes) {
+
+            if (documentosExistentes) {
               // Validar que el nuevo XML sea del mismo mes que los existentes
-              if (!validarMismoMesAnioDocumentosIANSA(xmlsExistentes, { uuid: uuid, fecha })) {
+              if (!validarMismoMesAnioDocumentosIANSA(documentosExistentes, formatDate(fecha))) {
                 toastr.error(
-                  `La fecha del archivo XML ${fecha} no coincide con el mes y año de los XMLs previamente agregados.`
+                  `La fecha del archivo XML ${fecha} no coincide con el mes y año de los documentos previamente agregados.`
                 );
                 return;
               }
@@ -636,6 +636,29 @@ export const TableGastos = () => {
         toastr.error("El total debe ser mayor a 0, por favor verifique su Nota.");
         return;
       }
+
+      if (
+        session.profile.baseDatos === "IANSA" ||
+        session.profile.baseDatos === "Smartcarb"
+      ) {
+
+        // Obtener los documentos existentes de la tabla
+        const documentosExistentes = documentos ? documentos.map(doc => ({
+          id: doc.importes.folio,
+          fecha: doc.importes.fecha
+        })) : [];
+
+        if (documentosExistentes) {
+          // Validar que el nuevo XML sea del mismo mes que los existentes
+          if (!validarMismoMesAnioDocumentosIANSA(documentosExistentes, formatDate(importesFinales.fecha))) {
+            toastr.error(
+              `La fecha de la nota que intenta agregar, ${importesFinales.fecha}, no coincide con el mes y año de los documentos previamente agregados.`
+            );
+            return;
+          }
+        }
+      }
+
     } else {
       if (!xmlTempData) {
         toastr.error(
@@ -647,9 +670,9 @@ export const TableGastos = () => {
       xmlArchivoFinal = xmlTempData.archivo;
     }
 
-    if(tipoGastoSeleccionado.value === 1 && detalleGasto === ""){      
-        toastr.error("Por favor, detalle el gasto de gasolina con el botón 'Agregar Gasto'.");
-        return;      
+    if (tipoGastoSeleccionado.value === 1 && detalleGasto === "") {
+      toastr.error("Por favor, detalle el gasto de gasolina con el botón 'Agregar Gasto'.");
+      return;
     }
 
     // Asegurarse de que todos los valores numéricos sean números y tengan dos decimales
@@ -861,9 +884,9 @@ export const TableGastos = () => {
                   <ModalButton
                     color=""
                     buttonClasses={`px-2 py-2 btn btn-sm btn-secondary d-flex align-items-center justify-content-center w-100 ${estatus.estatus !== "Nuevo" &&
-                        estatus.estatus !== "GRABADO"
-                        ? "disabled"
-                        : ""
+                      estatus.estatus !== "GRABADO"
+                      ? "disabled"
+                      : ""
                       }`}
                     text={detalleGasto ? `Editar Gasto` : "Agregar Gasto"}
                     ModalComponent={ModalCombustible}
@@ -899,9 +922,9 @@ export const TableGastos = () => {
                         : "Agregar Importe"
                     }
                     buttonClasses={`px-2 py-2 btn btn-sm btn-info d-flex align-items-center justify-content-center w-100 ${estatus.estatus !== "Nuevo" &&
-                        estatus.estatus !== "GRABADO"
-                        ? "disabled"
-                        : ""
+                      estatus.estatus !== "GRABADO"
+                      ? "disabled"
+                      : ""
                       }`}
                     ModalComponent={ModalImportes}
                     importesData={importesData}
@@ -998,16 +1021,16 @@ export const TableGastos = () => {
               <th className="text-center">
                 <span id="clienteHeader">
                   Cliente
-                </span>  
+                </span>
                 <FontAwesomeIcon
                   icon={faInfoCircle}
                   className="ml-1"
                   style={{ color: "grey", cursor: "pointer" }}
                   id="clienteInfo"
-                />              
+                />
                 <UncontrolledTooltip placement="top" target="clienteInfo">
                   Para dar de alta un cliente nuevo, deberá hacerlo desde el catálogo de clientes de Abaco
-                </UncontrolledTooltip>                
+                </UncontrolledTooltip>
               </th>
               <th
                 className="text-center"
@@ -1095,7 +1118,7 @@ export const TableGastos = () => {
                     </>
                   )}
                 </td> */}
-                <td>                  
+                <td>
                   <span>
                     <strong>Fecha: </strong>{" "}
                     {doc.importes?.fecha

@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useGastosData } from "../../store";
 import { useUserSession } from "../../../../store";
 import {
@@ -10,7 +11,7 @@ import toastr from "toastr";
 import { format } from "date-fns";
 import { formatDate, formatToSinaloaDate } from "../../../../../utils/utils";
 
-export const GuardarButton = ({ setLoading, loading }) => {
+export const GuardarButton = () => {
   const {
     documentos,
     setDocumentos,
@@ -53,17 +54,20 @@ export const GuardarButton = ({ setLoading, loading }) => {
       ret: 0,
     }
   );
+  const [loading, setLoading] = React.useState(false);
 
   //console.log("SISTEMAS", documentos);
 
   const handleGrabado = async (e) => {
     e.preventDefault();
+    if (loading) return;
     try {
       setLoading(true);
       if (!plazaSeleccionada) {
         toastr.warning("Por favor, seleccione una plaza.");
         return;
       }
+      await new Promise((resolve) => setTimeout(resolve, 100));
       const isAuthorized = await GastosService.isAuthorized({
         plaza: plazaSeleccionada,
         user: session.profile.COD_USU,
@@ -277,16 +281,21 @@ export const GuardarButton = ({ setLoading, loading }) => {
           }
 
           // TODO: GRABAR PDF Y XML
-          const xmlGrabo = await DocumentosService.grabarArchivoXML({
-            id_renglon: renglonId,
-            nombre_xml: xmlArchivo?.nombre || "",
-            archivo: xmlArchivo?.contenido || "",
-            cod_usu: session.profile.COD_USU,
-            servidor: session.profile.servidor,
-          });
+          //FALTA VALIDAR QUE HAGA ESTO SOLO SI ES FACTURA
+          //MP_XML_GRABA_ARCHIVO
+          if (documento.tipoDocumento === "Factura") {
+            const xmlGrabo = await DocumentosService.grabarArchivoXML({
+              id_renglon: renglonId,
+              nombre_xml: xmlArchivo?.nombre || "",
+              archivo: xmlArchivo?.contenido || "",
+              cod_usu: session.profile.COD_USU,
+              servidor: session.profile.servidor,
+            });
 
-          if (!xmlGrabo?.isValid) console.error(xmlGrabo);
+            if (!xmlGrabo?.isValid) console.error(xmlGrabo);
+          }
 
+          //MP_GASTOS_GRABA_ARCHIVO_NOTA
           if (documento.pdfArchivo || documento?.pdfArchivo?.contenido) {
             const pdfGrabo = await DocumentosService.grabarArchivoPDF({
               id_renglon: renglonId,
@@ -301,6 +310,7 @@ export const GuardarButton = ({ setLoading, loading }) => {
 
           if (documento.tipoDocumento === "Factura") {
             // Checar archivos
+            //MP_GASTOS_SUBIR_XML_PDF
             const grabarDocGlobal = await DocumentosService.grabarArchivo({
               folio: newFolio,
               archivo_xml: xmlArchivo?.contenido || "",
@@ -313,6 +323,7 @@ export const GuardarButton = ({ setLoading, loading }) => {
             if (!grabarDocGlobal?.isValid) console.error(grabarDocGlobal);
           } else if (documento.tipoDocumento === "Nota") {
             if (documento.pdfArchivo || documento?.pdfArchivo?.contenido) {
+              //MP_GASTOS_GRABA_ARCHIVO_NOTA
               const grabadoArchivosGlobal =
                 await DocumentosService.grabarArchivoNota({
                   id_renglon: renglonId,
@@ -353,7 +364,7 @@ export const GuardarButton = ({ setLoading, loading }) => {
             propietario: !!gastoGlobalData.data[0].EsPropietario,
             oldFolio: true,
           });
-          setResumen(resumenData.data);
+          // setResumen(resumenData.data);
         })
       );
 
@@ -365,7 +376,7 @@ export const GuardarButton = ({ setLoading, loading }) => {
         toastr.success(`${newFolio} grabado correctamente`);
 
         // Probar agregar hook arriba de const navigate = useNavigate();
-        // navigate(`/gastos?folio=${gasto.FOLIO_GASTO}&plaza=${plazaSeleccionada}`);
+        // navigate(/gastos?folio=${gasto.FOLIO_GASTO}&plaza=${plazaSeleccionada});
         // Y pones este hook arriba y lo usas justo aqui donde esta solo lo descomentas y ajustas los campos.
         // NO SE TE OLVIDE USAR EL plazaParam en todos los lados donde se use la plazaSeleccionada como ternario
         // Si usas esto del navigate comenta el setResumen y el setEstatus y el setDocumentos

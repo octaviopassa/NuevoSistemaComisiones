@@ -152,26 +152,31 @@ export function validarMesYAnio(fechaVariable, fechaAValidar) {
   );
 }
 
-export const validarMismoMesAnioDocumentosIANSA = (xmlsExistentes, nuevoXML) => {
-  if (!xmlsExistentes || xmlsExistentes.length === 0) return true;
+export const validarMismoMesAnioDocumentosIANSA = (documentosExistentes, fechaFormateada) => {
+  if (!documentosExistentes || documentosExistentes.length === 0) return true;
 
-  // Obtener el mes y año del nuevo XML
-  const fechaNuevoXML = moment(nuevoXML.fecha);
-  const mesNuevoXML = fechaNuevoXML.month();
-  const anioNuevoXML = fechaNuevoXML.year();
+  const [diaVar, mesVar, anioVar] = fechaFormateada.split("/").map(Number);
+  const fechaNuevoXML = new Date(anioVar, mesVar - 1, diaVar); // -1 porque los meses en JavaScript van de 0 a 11  
+  const mesNuevoXML = fechaNuevoXML.getMonth();
+  const anioNuevoXML = fechaNuevoXML.getFullYear();
 
-  // Crear un Map con los UUIDs y fechas de los XMLs existentes
-  const xmlMap = new Map(
-    xmlsExistentes.map(xml => [xml.uuid, moment(xml.fecha)])
-  );
+  // Ordenamos documentosExistentes por ID en orden ascendente
+  const sortedDocumentos = documentosExistentes.slice().sort((a, b) => a.id - b.id);
 
-  // Verificar que todas las fechas sean del mismo mes y año
-  for (const fecha of xmlMap.values()) {
-    if (fecha.month() !== mesNuevoXML || fecha.year() !== anioNuevoXML) {
-      return false;
-    }
+  // Crear un Map con los ids y fechas de los documentos existentes
+  const documentoMap = new Map(sortedDocumentos.map(documento => [documento.id, formatDate(documento.fecha)]));
+
+  //Sacamos la primera entrada del map para comparar
+  const firstEntry = documentoMap.entries().next().value;
+  const [diaVal, mesVal, anioVal] = firstEntry[1].split("/").map(Number);
+  const fechaValida = new Date(anioVal, mesVal - 1, diaVal);
+  const mesValido = fechaValida.getMonth();
+  const anioValido = fechaValida.getFullYear();
+
+  // Verificar que el mes y año del documento que intentan subir sea igual al mes y año de los documentos existentes
+  if (mesValido !== mesNuevoXML || anioValido !== anioNuevoXML) {
+    return false;
   }
-
   return true;
 };
 
