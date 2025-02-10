@@ -40,7 +40,7 @@ Meteor.methods({
           direccion: "entrada",
         },
       ];
-      
+
       const response = await axios.post(
         conexiones.windows_api_post,
         conexiones.body_bdseleccionada,
@@ -144,7 +144,7 @@ Meteor.methods({
         ? Buffer.from(datos.cadena_xml, "base64").toString("utf-8")
         : "";
 
-      cadena_xml = cadena_xml.replace(/<\?xml.*?\?>\s*/g, '').trim();
+      cadena_xml = cadena_xml.replace(/<\?xml.*?\?>\s*/g, '').replace(/'/g, '').trim();
 
       conexiones.body_bdseleccionada.tipo = "procedimientoAlmacenado";
       conexiones.body_bdseleccionada.baseDatos = "expedientes";
@@ -364,7 +364,7 @@ Meteor.methods({
               EXEC DBO.MP_CONSULTA_WEB_REACT_GASTOS_DETALLE 
               @FOLIO_GASTO='${data.folio}'
             `;
-      conexiones.body_bdseleccionada.servidor = data.servidor;      
+      conexiones.body_bdseleccionada.servidor = data.servidor;
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
