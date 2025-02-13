@@ -181,5 +181,5 @@ export const validarMismoMesAnioDocumentosIANSA = (documentosExistentes, fechaFo
 };
 
 export const version = () => {
-  return "1.0.1";
+  return "1.0.2";
 };
