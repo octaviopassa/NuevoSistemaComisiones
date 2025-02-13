@@ -388,9 +388,13 @@ export const GuardarButton = () => {
     }
   };
 
+  if (error) {
+    return <></>;
+  }
+
   return (
     <button
-      disabled={loading || error}
+      disabled={loading}
       type="button"
       className="btn btn-success waves-effect waves-themed"
       onClick={handleGrabado}
