@@ -382,6 +382,10 @@ export const GuardarButton = () => {
       }
       toastr.success(`${newFolio} grabado correctamente`);
     } catch (error) {
+      setError(true);
+      toastr.error(
+        "Hubo un error al grabar los documentos, por favor reconsulte el folio y verifique los documentos."
+      );
       console.log(error);
     } finally {
       setLoading(false);
