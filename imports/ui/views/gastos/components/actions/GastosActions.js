@@ -26,7 +26,7 @@ export const GastosActions = () => {
         <NuevoButton />
 
         {(estatus === "Nuevo" || estatus === "GRABADO") && propietario && (
-          <GuardarButton setLoading={setLoading} loading={loading} />
+          <GuardarButton />
         )}
 
         {estatus !== "Nuevo" && <ImprimirButton />}
@@ -44,12 +44,12 @@ export const GastosActions = () => {
         )}
       </div>
 
-      <ModalLoading
+      {/* <ModalLoading
         title=""
         message="Por favor espere..."
         isOpen={loading}
         toggle={() => setLoading(false)}
-      />
+      /> */}
     </div>
   );
 };

@@ -1,5 +1,4 @@
 import React from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
 import { useGastosData } from "../../store";
 import { useUserSession } from "../../../../store";
 import {
@@ -8,10 +7,11 @@ import {
   GastosService,
 } from "../../../../services";
 import toastr from "toastr";
-import { format } from "date-fns";
-import { formatDate, formatToSinaloaDate } from "../../../../../utils/utils";
+import { formatDate } from "../../../../../utils/utils";
 
 export const GuardarButton = () => {
+  const [error, setError] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
   const {
     documentos,
     setDocumentos,
@@ -54,9 +54,6 @@ export const GuardarButton = () => {
       ret: 0,
     }
   );
-  const [loading, setLoading] = React.useState(false);
-
-  //console.log("SISTEMAS", documentos);
 
   const handleGrabado = async (e) => {
     e.preventDefault();
@@ -233,9 +230,6 @@ export const GuardarButton = () => {
             servidor: session.profile.servidor,
           };
 
-          //console.log("SISTEMAS", documento.detalleGasto.label);
-          //console.log("SISTEMAS", datosDocumento);
-
           const grabarRenglon = await GastosService.grabarRenglon(
             datosDocumento
           );
@@ -245,10 +239,7 @@ export const GuardarButton = () => {
             console.error(grabarRenglon);
             toastr.error("No se pudo grabar el detalle del gasto");
             throw new Error("No se pudo grabar el detalle del gasto");
-            //return;
           }
-
-          // console.log("SISTEMAS 2", grabarRenglon.data[0].Column1);
 
           const renglonId = grabarRenglon.data[0].Column1;
           updatedDocumentos[index] = { ...updatedDocumentos[index], renglonId };
@@ -276,6 +267,7 @@ export const GuardarButton = () => {
               await GastosService.grabarGastoCombustible(datosGasolina);
 
             if (!grabarGastoCombustible.isValid) {
+              hasError = true;
               console.error(grabarGastoCombustible);
             }
           }
@@ -292,7 +284,10 @@ export const GuardarButton = () => {
               servidor: session.profile.servidor,
             });
 
-            if (!xmlGrabo?.isValid) console.error(xmlGrabo);
+            if (!xmlGrabo?.isValid) {
+              hasError = true;
+              console.error(xmlGrabo);
+            }
           }
 
           //MP_GASTOS_GRABA_ARCHIVO_NOTA
@@ -305,7 +300,10 @@ export const GuardarButton = () => {
               servidor: session.profile.servidor,
             });
 
-            if (!pdfGrabo?.isValid) console.error(pdfGrabo);
+            if (!pdfGrabo?.isValid) {
+              hasError = true;
+              console.error(pdfGrabo);
+            }
           }
 
           if (documento.tipoDocumento === "Factura") {
@@ -320,7 +318,10 @@ export const GuardarButton = () => {
               servidor: session.profile.servidor,
             });
 
-            if (!grabarDocGlobal?.isValid) console.error(grabarDocGlobal);
+            if (!grabarDocGlobal?.isValid) {
+              hasError = true;
+              console.error(grabarDocGlobal);
+            }
           } else if (documento.tipoDocumento === "Nota") {
             if (documento.pdfArchivo || documento?.pdfArchivo?.contenido) {
               //MP_GASTOS_GRABA_ARCHIVO_NOTA
@@ -334,8 +335,10 @@ export const GuardarButton = () => {
                   servidor: session.profile.servidor,
                 });
 
-              if (!grabadoArchivosGlobal?.isValid)
+              if (!grabadoArchivosGlobal?.isValid) {
+                hasError = true;
                 console.error(grabadoArchivosGlobal);
+              }
             }
           }
 
@@ -364,23 +367,20 @@ export const GuardarButton = () => {
             propietario: !!gastoGlobalData.data[0].EsPropietario,
             oldFolio: true,
           });
-          // setResumen(resumenData.data);
+          setResumen(resumenData.data);
         })
       );
 
       setDocumentos(updatedDocumentos);
-      // console.log("SISTEMAS U", updatedDocumentos);
-      // console.log("SISTEMAS D", documentos);
 
-      if (!hasError) {
-        toastr.success(`${newFolio} grabado correctamente`);
-
-        // Probar agregar hook arriba de const navigate = useNavigate();
-        // navigate(/gastos?folio=${gasto.FOLIO_GASTO}&plaza=${plazaSeleccionada});
-        // Y pones este hook arriba y lo usas justo aqui donde esta solo lo descomentas y ajustas los campos.
-        // NO SE TE OLVIDE USAR EL plazaParam en todos los lados donde se use la plazaSeleccionada como ternario
-        // Si usas esto del navigate comenta el setResumen y el setEstatus y el setDocumentos
+      if (hasError) {
+        setError(true);
+        toastr.error(
+          "Hubo un error al grabar los documentos, por favor reconsulte el folio y verifique los documentos."
+        );
+        return;
       }
+      toastr.success(`${newFolio} grabado correctamente`);
     } catch (error) {
       console.log(error);
     } finally {
@@ -390,7 +390,7 @@ export const GuardarButton = () => {
 
   return (
     <button
-      disabled={loading}
+      disabled={loading || error}
       type="button"
       className="btn btn-success waves-effect waves-themed"
       onClick={handleGrabado}
