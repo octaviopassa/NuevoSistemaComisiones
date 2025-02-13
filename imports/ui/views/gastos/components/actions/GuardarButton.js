@@ -376,7 +376,7 @@ export const GuardarButton = () => {
       if (hasError) {
         setError(true);
         toastr.error(
-          "Hubo un error al grabar los documentos, por favor reconsulte el folio y verifique los documentos."
+          "Hubo un error al grabar los documentos, por favor reconsulte este folio y verifique. Contacte al departamento de sistemas."
         );
         return;
       }
@@ -384,7 +384,7 @@ export const GuardarButton = () => {
     } catch (error) {
       setError(true);
       toastr.error(
-        "Hubo un error al grabar los documentos, por favor reconsulte el folio y verifique los documentos."
+        "Hubo un error al grabar los documentos, por favor reconsulte este folio y verifique. Contacte al departamento de sistemas."
       );
       console.log(error);
     } finally {
