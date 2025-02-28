@@ -686,8 +686,17 @@ export const TableGastos = () => {
         );
         return;
       }
+
+      if (!pdfTempData) {
+        toastr.error(
+          "Por favor, adjunte un archivo PDF para este tipo de documento."
+        );
+        return;
+      }
+
       importesFinales = xmlTempData.importes;
       xmlArchivoFinal = xmlTempData.archivo;
+      pdfArchivoFinal = pdfTempData;
     }
 
     if (tipoGastoSeleccionado.value === 1 && detalleGasto === "") {
@@ -705,9 +714,9 @@ export const TableGastos = () => {
     }
 
     // Manejar el archivo PDF
-    if (pdfTempData) {
-      pdfArchivoFinal = pdfTempData;
-    }
+    // if (pdfTempData) {
+    //   pdfArchivoFinal = pdfTempData;
+    // }
 
     const nuevoDocumento = {
       tipoDocumento: tipoDocumento.value,
