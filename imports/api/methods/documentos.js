@@ -293,7 +293,7 @@ Meteor.methods({
       conexiones.body_bdseleccionada.servidor = datos.servidor;
       conexiones.body_bdseleccionada.query = `
               exec dbo.MP_GASTOS_INSERTAR_RENGLON_ELIMINADO
-              @UUID='null',
+              @UUID=NULL,
               @ID_Gasto_Detalle='${datos.id}'
             `;
 
