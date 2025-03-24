@@ -208,9 +208,9 @@ export const TableGastos = () => {
             // Obtener los documentos existentes de la tabla
             const documentosExistentes = documentos
               ? documentos.map((doc) => ({
-                id: doc.xmlArchivo?.id,
-                fecha: doc.importes.fecha,
-              }))
+                  id: doc.xmlArchivo?.id,
+                  fecha: doc.importes.fecha,
+                }))
               : [];
 
             if (documentosExistentes) {
@@ -365,11 +365,11 @@ export const TableGastos = () => {
 
           datos.impuesto = parseFloat(
             datos.ieps +
-            datos.iva_16 +
-            datos.iva_8 +
-            datos.ish +
-            datos.tua +
-            datos.ret
+              datos.iva_16 +
+              datos.iva_8 +
+              datos.ish +
+              datos.tua +
+              datos.ret
           ).toFixed(2);
 
           for (let key in datos) {
@@ -393,10 +393,10 @@ export const TableGastos = () => {
               documentos.map((doc, i) =>
                 i === index
                   ? {
-                    ...doc,
-                    xmlArchivo: xmlData.archivo,
-                    importes: xmlData.importes,
-                  }
+                      ...doc,
+                      xmlArchivo: xmlData.archivo,
+                      importes: xmlData.importes,
+                    }
                   : doc
               )
             );
@@ -491,9 +491,9 @@ export const TableGastos = () => {
     const doc = xmlArchivo?.contenido
       ? xmlArchivo
       : await DocumentosService.getXml({
-        id: xmlArchivo?.id,
-        servidor: session.profile.servidor,
-      });
+          id: xmlArchivo?.id,
+          servidor: session.profile.servidor,
+        });
     if (doc) {
       const byteCharacters = atob(doc?.contenido || doc.data[0].ARCHIVO_XML);
       const byteNumbers = new Array(byteCharacters.length);
@@ -521,9 +521,9 @@ export const TableGastos = () => {
     const doc = pdfArchivo?.contenido
       ? pdfArchivo
       : await DocumentosService.getPDF({
-        id: pdfArchivo?.id,
-        servidor: session.profile.servidor,
-      });
+          id: pdfArchivo?.id,
+          servidor: session.profile.servidor,
+        });
 
     if (doc) {
       const archivoPDFBase64 = doc?.data[0].ARCHIVO_PDF || doc?.contenido;
@@ -661,9 +661,9 @@ export const TableGastos = () => {
         // Obtener los documentos existentes de la tabla
         const documentosExistentes = documentos
           ? documentos.map((doc) => ({
-            id: doc.importes.folio,
-            fecha: doc.importes.fecha,
-          }))
+              id: doc.importes.folio,
+              fecha: doc.importes.fecha,
+            }))
           : [];
 
         if (documentosExistentes) {
@@ -916,11 +916,12 @@ export const TableGastos = () => {
                 {tipoGastoSeleccionado?.value === 1 && (
                   <ModalButton
                     color=""
-                    buttonClasses={`px-2 py-2 btn btn-sm btn-secondary d-flex align-items-center justify-content-center w-100 ${estatus.estatus !== "Nuevo" &&
+                    buttonClasses={`px-2 py-2 btn btn-sm btn-secondary d-flex align-items-center justify-content-center w-100 ${
+                      estatus.estatus !== "Nuevo" &&
                       estatus.estatus !== "GRABADO"
-                      ? "disabled"
-                      : ""
-                      }`}
+                        ? "disabled"
+                        : ""
+                    }`}
                     text={detalleGasto ? `Editar Gasto` : "Agregar Gasto"}
                     ModalComponent={ModalCombustible}
                     setDetalleGasto={setDetalleGasto}
@@ -931,19 +932,19 @@ export const TableGastos = () => {
               <th className="text-center" style={{ minWidth: "105px" }}>
                 {(tipoGastoSeleccionado?.value === 17 ||
                   session.profile.WEB_REACT_CLIENTE_OBLIGATORIO) && (
-                    <AsyncSelect
-                      id="atencionCliente"
-                      loadOptions={clientesOptions}
-                      onChange={handleSelectAtencionCliente}
-                      placeholder="Seleccione cliente"
-                      isDisabled={
-                        estatus.estatus !== "Nuevo" &&
-                        estatus.estatus !== "GRABADO"
-                      }
-                      value={atencionClienteSeleccionado}
-                      styles={customStyles}
-                    />
-                  )}
+                  <AsyncSelect
+                    id="atencionCliente"
+                    loadOptions={clientesOptions}
+                    onChange={handleSelectAtencionCliente}
+                    placeholder="Seleccione cliente"
+                    isDisabled={
+                      estatus.estatus !== "Nuevo" &&
+                      estatus.estatus !== "GRABADO"
+                    }
+                    value={atencionClienteSeleccionado}
+                    styles={customStyles}
+                  />
+                )}
               </th>
               <th className="text-center" style={{ minWidth: "105px" }}>
                 {tipoDocumento.value === "Nota" && (
@@ -954,11 +955,12 @@ export const TableGastos = () => {
                         ? "Editar Importe"
                         : "Agregar Importe"
                     }
-                    buttonClasses={`px-2 py-2 btn btn-sm btn-info d-flex align-items-center justify-content-center w-100 ${estatus.estatus !== "Nuevo" &&
+                    buttonClasses={`px-2 py-2 btn btn-sm btn-info d-flex align-items-center justify-content-center w-100 ${
+                      estatus.estatus !== "Nuevo" &&
                       estatus.estatus !== "GRABADO"
-                      ? "disabled"
-                      : ""
-                      }`}
+                        ? "disabled"
+                        : ""
+                    }`}
                     ModalComponent={ModalImportes}
                     importesData={importesData}
                     setImportesData={setImportesData}
@@ -1126,16 +1128,16 @@ export const TableGastos = () => {
                 <td>
                   {(doc.tipoGasto.label === "ATENCION A CLIENTES" ||
                     doc.detalleGasto?.label) && (
-                      <>
-                        {
-                          <>
-                            <strong>Cliente: </strong>
-                            <br />
-                            {doc.detalleGasto.label}
-                          </>
-                        }
-                      </>
-                    )}
+                    <>
+                      {
+                        <>
+                          <strong>Cliente: </strong>
+                          <br />
+                          {doc.detalleGasto.label}
+                        </>
+                      }
+                    </>
+                  )}
                 </td>
                 {/* <td>
                   {(doc.tipoGasto.label === "ATENCION A CLIENTES" || 
@@ -1253,7 +1255,8 @@ export const TableGastos = () => {
                         icon={faDownload}
                         style={{
                           marginRight: "8px",
-                          cursor: estatus.estatus === "Nuevo" && "pointer",
+                          // cursor: estatus.estatus === "Nuevo" && "pointer",
+                          cursor: "pointer",
                         }}
                         onClick={() => handleFileDownload(doc?.pdfArchivo)}
                         title={doc.pdfArchivo.nombre}
@@ -1287,32 +1290,32 @@ export const TableGastos = () => {
                 </td>
                 {(estatus.estatus === "Nuevo" ||
                   estatus.estatus === "GRABADO") && (
-                    <td className="text-center">
-                      {estatus.estatus === "GRABADO" &&
-                        session.profile.AUTORIZAR_GASTOS &&
-                        doc.renglonId && (
-                          <>
-                            {doc.descartado ? (
-                              <i
-                                className="fal fa-check mr-2 text-success cursor-pointer font-weight-bold"
-                                onClick={() => handleHabilitar(doc)}
-                              ></i>
-                            ) : (
-                              <i
-                                className="fal fa-ban mr-2 text-danger cursor-pointer font-weight-bold"
-                                onClick={() => handleDescartar(doc)}
-                              ></i>
-                            )}
-                          </>
-                        )}
-                      {estatus.propietario && (
-                        <i
-                          className="fal fa-trash-alt text-danger cursor-pointer font-weight-bold"
-                          onClick={() => eliminarDocumento(i)}
-                        ></i>
+                  <td className="text-center">
+                    {estatus.estatus === "GRABADO" &&
+                      session.profile.AUTORIZAR_GASTOS &&
+                      doc.renglonId && (
+                        <>
+                          {doc.descartado ? (
+                            <i
+                              className="fal fa-check mr-2 text-success cursor-pointer font-weight-bold"
+                              onClick={() => handleHabilitar(doc)}
+                            ></i>
+                          ) : (
+                            <i
+                              className="fal fa-ban mr-2 text-danger cursor-pointer font-weight-bold"
+                              onClick={() => handleDescartar(doc)}
+                            ></i>
+                          )}
+                        </>
                       )}
-                    </td>
-                  )}
+                    {estatus.propietario && (
+                      <i
+                        className="fal fa-trash-alt text-danger cursor-pointer font-weight-bold"
+                        onClick={() => eliminarDocumento(i)}
+                      ></i>
+                    )}
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>

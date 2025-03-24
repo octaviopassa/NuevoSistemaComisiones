@@ -3,6 +3,9 @@
 # Usa una imagen base especializada para construir aplicaciones Meteor (versión 2.15)
 FROM zcloudws/meteor-build:2.15 as builder
 
+# Agregar argumento para el ambiente
+ARG NODE_ENV=production
+
 # Cambia temporalmente a usuario root para crear directorios y establecer permisos
 USER root
 
@@ -13,6 +16,11 @@ USER zcloud
 
 # Copia todo el código fuente al contenedor, manteniendo los permisos del usuario zcloud
 COPY --chown=zcloud:zcloud . /build/source
+
+# Copia la configuración correcta según el ambiente
+RUN if [ "$NODE_ENV" = "production" ]; then \
+    cp /build/source/imports/utils/config.prod.js /build/source/imports/utils/config.js; \
+    fi
 
 # Instala dependencias NPM y construye la aplicación Meteor en el directorio /build/app-build
 RUN cd /build/source && \
