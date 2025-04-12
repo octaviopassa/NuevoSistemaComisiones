@@ -1,5 +1,6 @@
 import conexiones from "../../utils/config";
 import axios from "axios";
+import { limpiarCadenaXML } from "../../utils/utils";
 
 Meteor.methods({
   "gastos.pagarA": async (datos) => {
@@ -141,11 +142,12 @@ Meteor.methods({
   },
   "gastos.grabarRenglon": async (datos) => {
     try {
+      //Limpiamos la cadena XML
       let cadena_xml = datos.cadena_xml
-        ? Buffer.from(datos.cadena_xml, "base64").toString("utf-8")
+        ? limpiarCadenaXML(Buffer.from(datos.cadena_xml, "base64").toString("utf-8"))
         : "";
 
-      cadena_xml = cadena_xml.replace(/<\?xml.*?\?>\s*/g, '').replace(/'/g, '').trim();
+      // cadena_xml = cadena_xml.replace(/<\?xml.*?\?>\s*/g, '').replace(/'/g, '').trim();
 
       conexiones.body_bdseleccionada.tipo = "procedimiento";
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";

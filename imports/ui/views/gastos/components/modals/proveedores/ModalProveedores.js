@@ -51,7 +51,7 @@ export const ModalProveedores = ({
 
       toastr.success(
         result.message ||
-          `${proveedor ? "Actualizado" : "Creado"} correctamente`
+        `${proveedor ? "Actualizado" : "Creado"} correctamente`
       );
       toggle();
       reloadData();

@@ -1,5 +1,6 @@
 import conexiones from "../../utils/config";
 import axios from "axios";
+import { limpiarCadenaXML } from "../../utils/utils";
 
 Meteor.methods({
   "documentos.grabarArchivoXML": async (datos) => {
@@ -141,10 +142,10 @@ Meteor.methods({
   "documentos.grabarArchivo": async (datos) => {
     try {
       let cadena_xml = datos.cadena_xml
-        ? Buffer.from(datos.cadena_xml, "base64").toString("utf-8")
+        ? limpiarCadenaXML(Buffer.from(datos.cadena_xml, "base64").toString("utf-8"))
         : "";
 
-      cadena_xml = cadena_xml.replace(/<\?xml.*?\?>\s*/g, '').replace(/'/g, '').trim();
+      // cadena_xml = cadena_xml.replace(/<\?xml.*?\?>\s*/g, '').replace(/'/g, '').trim();      
 
       conexiones.body_bdseleccionada.tipo = "procedimientoAlmacenado";
       conexiones.body_bdseleccionada.baseDatos = "expedientes";

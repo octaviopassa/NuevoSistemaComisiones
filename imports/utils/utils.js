@@ -180,6 +180,14 @@ export const validarMismoMesAnioDocumentosIANSA = (documentosExistentes, fechaFo
   return true;
 };
 
+export function limpiarCadenaXML(cadena_xml) {
+  return cadena_xml
+    .replace(/<\?xml.*?\?>\s*/g, '') // Elimina la declaración XML y espacios en blanco posteriores
+    .replace(/^[^<]*/, '')              // Elimina todo lo que está antes del primer '<'
+    .replace(/'/g, '')                  // Elimina todas las comillas simples
+    .trim();                            // Elimina espacios al inicio y al final
+}
+
 export const version = () => {
   return "1.0.7";
 };
