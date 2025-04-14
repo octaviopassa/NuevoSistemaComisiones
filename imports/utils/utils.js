@@ -186,7 +186,48 @@ export function limpiarCadenaXML(cadena_xml) {
     .replace(/^[^<]*/, '')              // Elimina todo lo que está antes del primer '<'
     .replace(/'/g, '')                  // Elimina todas las comillas simples
     .trim();                            // Elimina espacios al inicio y al final
-}
+};
+
+export function limpiarBase64XML(base64xml, reencode = true) {
+  //Esta función sirve para limpiar los archivos que YA han sido guardados en la BD
+  if (typeof base64xml !== 'string') return base64xml;
+  try {
+    // Decodifica el base64 a texto
+    const decoded = Buffer.from(base64xml, 'base64').toString('utf8');
+    // Limpia el XML igual que la función limpiarCadenaXML
+    const cleaned = decoded
+      .replace(/<\?xml.*?\?>\s*/g, '')
+      .replace(/^[^<]*/, '')
+      .replace(/'/g, '')
+      .trim();
+    // Si se pide, vuelve a codificar en base64, si no, devuelve el texto limpio
+    return reencode ? Buffer.from(cleaned, 'utf8').toString('base64') : cleaned;
+  } catch (e) {
+    // Si falla la decodificación, regresa el original
+    console.log(e);
+    return base64xml;
+  }
+};
+
+export function limpiarBase64XMLEnMemoria(base64xml) {
+  //Esta función sirve para limpiar los archivos que NO han sido guardados en la BD
+  if (typeof base64xml !== 'string') return base64xml;
+  try {
+    // Decodifica el base64 a texto usando atob (navegador)
+    const decoded = atob(base64xml);
+    // Limpia el XML igual que la función limpiarCadenaXML
+    const cleaned = decoded
+      .replace(/<\?xml.*?\?>\s*/g, '')
+      .replace(/^[^<]*/, '')
+      .replace(/'/g, '')
+      .trim();
+    // Siempre vuelve a codificar en base64 usando btoa
+    return btoa(cleaned);
+  } catch (e) {
+    console.log(e);
+    return base64xml;
+  }
+};
 
 export const version = () => {
   return "1.0.7";

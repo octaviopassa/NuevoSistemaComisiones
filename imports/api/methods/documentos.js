@@ -1,10 +1,13 @@
 import conexiones from "../../utils/config";
 import axios from "axios";
-import { limpiarCadenaXML } from "../../utils/utils";
+import { limpiarBase64XML, limpiarCadenaXML } from "../../utils/utils";
 
 Meteor.methods({
   "documentos.grabarArchivoXML": async (datos) => {
     try {
+      //Limpiamos el archivo para eliminar los caracteres no validos
+      let archivoXML = limpiarBase64XML(datos.archivo);
+
       conexiones.body_bdseleccionada.tipo = "procedimientoAlmacenado";
       conexiones.body_bdseleccionada.baseDatos = "expedientes";
       conexiones.body_bdseleccionada.query = `dbo.MP_XML_GRABA_ARCHIVO`;
@@ -24,8 +27,8 @@ Meteor.methods({
         },
         {
           parametro: "@ARCHIVO",
-          valor: datos.archivo || "",
-          tipo: datos.archivo ? "base64ToImagen" : "cadena",
+          valor: archivoXML || "",
+          tipo: archivoXML ? "base64ToImagen" : "cadena",
           direccion: "entrada",
         },
         {
@@ -144,6 +147,8 @@ Meteor.methods({
       let cadena_xml = datos.cadena_xml
         ? limpiarCadenaXML(Buffer.from(datos.cadena_xml, "base64").toString("utf-8"))
         : "";
+      //Limpiamos el archivo para eliminar los caracteres no validos
+      let archivoXML = limpiarBase64XML(datos.archivo);
 
       // cadena_xml = cadena_xml.replace(/<\?xml.*?\?>\s*/g, '').replace(/'/g, '').trim();      
 
@@ -160,8 +165,8 @@ Meteor.methods({
         },
         {
           parametro: "@ARCHIVO_XML",
-          valor: datos.archivo_xml || "",
-          tipo: datos.archivo_xml ? "base64ToImagen" : "cadena",
+          valor: archivoXML || "",
+          tipo: archivoXML ? "base64ToImagen" : "cadena",
           direccion: "entrada",
         },
         {

@@ -32,6 +32,8 @@ import withReactContent from "sweetalert2-react-content";
 import {
   extraerRFC,
   formatDate,
+  limpiarBase64XML,
+  limpiarBase64XMLEnMemoria,
   limpiarCadenaXML,
   validarMismoMesAnioDocumentosIANSA,
 } from "../../../../../utils/utils";
@@ -500,16 +502,11 @@ export const TableGastos = () => {
         servidor: session.profile.servidor,
       });
     if (doc) {
-      const byteCharacters = atob(doc?.contenido || doc.data[0].ARCHIVO_XML);
-      const cleanXML = limpiarCadenaXML(byteCharacters)
-      const byteNumbers = new Array(cleanXML.length);
-      for (let i = 0; i < cleanXML.length; i++) {
-        byteNumbers[i] = cleanXML.charCodeAt(i);
+      const byteCharacters = atob(limpiarBase64XMLEnMemoria(doc?.contenido) || doc.data[0].ARCHIVO_XML);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
       }
-      // const byteNumbers = new Array(byteCharacters.length);
-      // for (let i = 0; i < byteCharacters.length; i++) {
-      //   byteNumbers[i] = byteCharacters.charCodeAt(i);
-      // }
       const byteArray = new Uint8Array(byteNumbers);
       const blob = new Blob([byteArray], { type: "application/xml" });
 
