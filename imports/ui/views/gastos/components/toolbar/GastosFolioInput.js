@@ -106,8 +106,9 @@ export const GastosFolioInput = () => {
         const iva16_fix = doc.IVA_16.split(",")[0] + doc.IVA_16.split(",")[1]
         const ret_fix = doc.RETENCION.split(",")[0] + doc.RETENCION.split(",")[1]
         const subtotal_fix = doc.SUBTOTAL.split(",")[0] + doc.SUBTOTAL.split(",")[1]
-        const total_fix = doc.TOTAL.split(",")[0] + doc.TOTAL.split(",")[1]
+        const total_fix = doc.TOTAL.split(",")[0] + doc.TOTAL.split(",")[1] //+ doc.TOTAL.split(",")[2]
         const tua_fix = doc.TUA.split(",")[0] + doc.TUA.split(",")[1]
+        const ish_fix = doc.ISH.split(",")[0] + doc.ISH.split(",")[1]
 
         return {
           renglonId: doc.ID_GASTO_DETALLE,
@@ -137,6 +138,7 @@ export const GastosFolioInput = () => {
             subtotal: subtotal_fix,//doc.SUBTOTAL,
             total: total_fix,//doc.TOTAL,
             tua: tua_fix,//doc.TUA,
+            ish: ish_fix,//doc.ISH,
           },
           pdfArchivo: doc?.IDPDF
             ? { id: doc.IDPDF, origen: doc?.ORIGEN_PDF, nombre: doc.NOMBRE_ARCHIVO_PDF }

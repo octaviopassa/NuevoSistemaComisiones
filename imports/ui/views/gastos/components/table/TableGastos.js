@@ -32,6 +32,7 @@ import withReactContent from "sweetalert2-react-content";
 import {
   extraerRFC,
   formatDate,
+  formatNumConComas,
   limpiarBase64XML,
   limpiarBase64XMLEnMemoria,
   limpiarCadenaXML,
@@ -347,9 +348,9 @@ export const TableGastos = () => {
             const totaldeRetenciones =
               impuestosLocales.getAttribute("TotaldeRetenciones");
 
-            if (totaldeRetenciones) {
-              datos.ret = totaldeRetenciones;
-            }
+            // if (totaldeRetenciones) {
+            //   datos.ret = totaldeRetenciones;
+            // }
 
             const trasladosLocales = impuestosLocales.getElementsByTagName(
               "implocal:TrasladosLocales"
@@ -1168,7 +1169,7 @@ export const TableGastos = () => {
                   <br />
                   <span>
                     <strong>Total:</strong> $
-                    {parseFloat(doc.importes?.total || 0).toFixed(2)}{" "}
+                    {formatNumConComas(parseFloat(doc.importes?.total || 0).toFixed(2))}{" "}
                     <FontAwesomeIcon
                       icon={faInfoCircle}
                       style={{ color: "blue", cursor: "pointer" }}
@@ -1181,20 +1182,20 @@ export const TableGastos = () => {
                       <strong>Detalles de importes:</strong>
                       <br />
                       Subtotal: $
-                      {parseFloat(doc.importes?.subtotal || 0).toFixed(2)}
+                      {formatNumConComas(parseFloat(doc.importes?.subtotal || 0).toFixed(2))}
                       <br />
                       IVA_16: $
-                      {parseFloat(doc.importes?.iva_16 || 0).toFixed(2)}
+                      {formatNumConComas(parseFloat(doc.importes?.iva_16 || 0).toFixed(2))}
                       <br />
-                      IVA_8: ${parseFloat(doc.importes?.iva_8 || 0).toFixed(2)}
+                      IVA_8: ${formatNumConComas(parseFloat(doc.importes?.iva_8 || 0).toFixed(2))}
                       <br />
-                      IEPS: ${parseFloat(doc.importes?.ieps || 0).toFixed(2)}
+                      IEPS: ${formatNumConComas(parseFloat(doc.importes?.ieps || 0).toFixed(2))}
                       <br />
-                      ISH: ${parseFloat(doc.importes?.ish || 0).toFixed(2)}
+                      ISH: ${formatNumConComas(parseFloat(doc.importes?.ish || 0).toFixed(2))}
                       <br />
-                      TUA: ${parseFloat(doc.importes?.tua || 0).toFixed(2)}
+                      TUA: ${formatNumConComas(parseFloat(doc.importes?.tua || 0).toFixed(2))}
                       <br />
-                      Ret: ${parseFloat(doc.importes?.ret || 0).toFixed(2)}
+                      Ret: ${formatNumConComas(parseFloat(doc.importes?.ret || 0).toFixed(2))}
                     </UncontrolledTooltip>
                   </span>
                 </td>

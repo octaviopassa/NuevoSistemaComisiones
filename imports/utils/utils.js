@@ -203,8 +203,8 @@ export function limpiarBase64XML(base64xml, reencode = true) {
     // Si se pide, vuelve a codificar en base64, si no, devuelve el texto limpio
     return reencode ? Buffer.from(cleaned, 'utf8').toString('base64') : cleaned;
   } catch (e) {
-    // Si falla la decodificación, regresa el original
-    console.log(e);
+    // Si falla la decodificación, regresa el original    
+    console.log('Error en limpiarBase64XML', e);
     return base64xml;
   }
 };
@@ -224,7 +224,7 @@ export function limpiarBase64XMLEnMemoria(base64xml) {
     // Siempre vuelve a codificar en base64 usando btoa
     return btoa(cleaned);
   } catch (e) {
-    console.log(e);
+    console.log('Error en limpiarBase64XMLEnMemoria', e);
     return base64xml;
   }
 };
