@@ -249,11 +249,13 @@ export const TableGastos = () => {
             return;
           }
 
-          if (rfcReceptor !== empresaRfc.rfc) {
-            toastr.error(
-              `El RFC del receptor ${rfcReceptor} no coincide con el RFC de la empresa ${empresaRfc.rfc} con la que has iniciado sesión`
-            );
-            return;
+          if (empresaRfc.VALIDA_RFC_RECEPTOR_WEB_REEMBOLSOS === "1") {
+            if (rfcReceptor !== empresaRfc.rfc) {
+              toastr.error(
+                `El RFC del receptor ${rfcReceptor} no coincide con el RFC de la empresa ${empresaRfc.rfc} con la que has iniciado sesión`
+              );
+              return;
+            }
           }
 
           if (!comprobante) {
