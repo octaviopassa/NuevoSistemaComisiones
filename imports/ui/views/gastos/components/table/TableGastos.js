@@ -143,13 +143,28 @@ export const TableGastos = () => {
           );
 
           let uuid;
+          let regimenFiscalReceptor;
           const comprobante =
             xmlDoc.getElementsByTagName("cfdi:Comprobante")[0];
+
+          if (!comprobante) {
+            toastr.error(
+              "El archivo XML no contiene un nodo 'cfdi:Comprobante'"
+            );
+            return;
+          }
+
+          const version = comprobante.getAttribute("Version") || comprobante.getAttribute("version");
           const metodo = comprobante.getAttribute("MetodoPago");
           const tipo = comprobante.getAttribute("TipoDeComprobante");
           const rfcReceptor = comprobante
             .getElementsByTagName("cfdi:Receptor")[0]
             .getAttribute("Rfc");
+          if (parseFloat(version) >= 4.0) {
+            regimenFiscalReceptor = comprobante
+              .getElementsByTagName("cfdi:Receptor")[0]
+              .getAttribute("RegimenFiscalReceptor");
+          }
           const rfcEmisor = comprobante
             .getElementsByTagName("cfdi:Emisor")[0]
             .getAttribute("Rfc");
@@ -258,18 +273,20 @@ export const TableGastos = () => {
             }
           }
 
-          if (!comprobante) {
-            toastr.error(
-              "El archivo XML no contiene un nodo 'cfdi:Comprobante'"
-            );
-            return;
-          }
-
           if (metodo !== "PUE") {
             toastr.error(
               `Método de pago inválido, la factura es ${metodo}, en reembolsos sólo se permiten PUE.`
             );
             return;
+          }
+
+          if (parseFloat(version) >= 4.0) {
+            if (regimenFiscalReceptor.toString() !== empresaRfc.CODIGO_REGIMEN_FISCAL.toString()) {
+              toastr.error(
+                `El regimen fiscal del receptor, ${regimenFiscalReceptor}, del XML no coincide con el regimen fiscal de la empresa: ${empresaRfc.CODIGO_REGIMEN_FISCAL}`
+              );
+              return;
+            }
           }
 
           const datos = {

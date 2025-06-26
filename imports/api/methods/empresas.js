@@ -86,7 +86,7 @@ Meteor.methods({
   "empresas.getRFC": async (datos) => {
     try {
       conexiones.body_bdseleccionada.tipo = "consulta";
-      conexiones.body_bdseleccionada.query = "SELECT rfc,VALIDA_RFC_RECEPTOR_WEB_REEMBOLSOS FROM facpars;";
+      conexiones.body_bdseleccionada.query = "SELECT rfc,VALIDA_RFC_RECEPTOR_WEB_REEMBOLSOS,CODIGO_REGIMEN_FISCAL FROM facpars;";
       conexiones.body_bdseleccionada.baseDatos = datos.baseDatos;
       conexiones.body_bdseleccionada.servidor = datos.servidor;
 
