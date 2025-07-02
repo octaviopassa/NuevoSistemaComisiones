@@ -24,4 +24,8 @@ EmpresasService.getRFC = async (data) => {
   return await Meteor.callSync("empresas.getRFC", data);
 };
 
+EmpresasService.getValidaEmpresaReceptora = async (data) => {
+  return await Meteor.callSync("empresas.getValidaEmpresaReceptora", data);
+};
+
 export { EmpresasService };

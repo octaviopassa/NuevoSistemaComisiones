@@ -86,8 +86,24 @@ Meteor.methods({
   "empresas.getRFC": async (datos) => {
     try {
       conexiones.body_bdseleccionada.tipo = "consulta";
-      conexiones.body_bdseleccionada.query = "SELECT rfc,VALIDA_RFC_RECEPTOR_WEB_REEMBOLSOS,CODIGO_REGIMEN_FISCAL FROM facpars;";
+      conexiones.body_bdseleccionada.query = "SELECT rfc FROM facpars;";
       conexiones.body_bdseleccionada.baseDatos = datos.baseDatos;
+      conexiones.body_bdseleccionada.servidor = datos.servidor;
+
+      const response = await axios.get(conexiones.windows_api, {
+        data: conexiones.body_bdseleccionada,
+      });
+
+      return JSON.parse(response.data.data.resultado);
+    } catch (e) {
+      console.log(e);
+    }
+  },
+  "empresas.getValidaEmpresaReceptora": async (datos) => {
+    try {
+      conexiones.body_bdseleccionada.tipo = "procedimiento";
+      conexiones.body_bdseleccionada.query = `exec MP_VALIDA_RECEPTOR @RFC_XML= '${datos.rfcXML}', @CODIGO_REGIMEN_FISCAL_XML = ${datos.codigoRegimenFiscalXML}`;
+      conexiones.body_bdseleccionada.baseDatos = "empresas";
       conexiones.body_bdseleccionada.servidor = datos.servidor;
 
       const response = await axios.get(conexiones.windows_api, {

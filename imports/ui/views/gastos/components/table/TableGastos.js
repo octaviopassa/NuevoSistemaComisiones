@@ -33,7 +33,7 @@ import {
   extraerRFC,
   formatDate,
   formatNumConComas,
-  limpiarBase64XML,
+  // limpiarBase64XML,
   limpiarBase64XMLEnMemoria,
   limpiarCadenaXML,
   validarMismoMesAnioDocumentosIANSA,
@@ -71,6 +71,7 @@ export const TableGastos = () => {
     folio: folioGlobal,
     plazaSeleccionada,
     gastosDate,
+    rfcEmpresaResponsablePagoSeleccionada
   } = useGastosData();
   const { data: dataTipoGastos } = useFetchData(TipoGastosService.getAll, [
     {
@@ -173,7 +174,6 @@ export const TableGastos = () => {
             toastr.error(
               `El RFC del emisor ${rfcEmisor} no coincide con el RFC del proveedor seleccionado o no has seleccionado un proveedor`
             );
-
             return;
           }
 
@@ -182,7 +182,6 @@ export const TableGastos = () => {
 
           if (!complemento) {
             toastr.error("El archivo XML no contiene un complemento");
-
             return;
           }
 
@@ -207,9 +206,7 @@ export const TableGastos = () => {
             }
 
             if (existingDocument) {
-              toastr.warning(
-                "Ya agrego un documento con el mismo UUID a este gasto"
-              );
+              toastr.warning("Ya agrego un documento con el mismo UUID a este gasto");
               return;
             }
 
@@ -252,11 +249,6 @@ export const TableGastos = () => {
             }
           }
 
-          const [empresaRfc] = await EmpresasService.getRFC({
-            baseDatos: session.profile.baseDatos,
-            servidor: session.profile.servidor,
-          });
-
           if (tipo !== "I") {
             toastr.error(
               `XML de tipo invalido ${tipo}, debe ser de tipo Ingreso`
@@ -264,14 +256,25 @@ export const TableGastos = () => {
             return;
           }
 
-          if (empresaRfc.VALIDA_RFC_RECEPTOR_WEB_REEMBOLSOS === "1") {
-            if (rfcReceptor !== empresaRfc.rfc) {
-              toastr.error(
-                `El RFC del receptor ${rfcReceptor} no coincide con el RFC de la empresa ${empresaRfc.rfc} con la que has iniciado sesión`
-              );
-              return;
-            }
+          if (!rfcEmpresaResponsablePagoSeleccionada) {
+            toastr.error(
+              `No se ha seleccionado una empresa responsable de pago`
+            );
+            return;
           }
+
+          if (rfcReceptor !== rfcEmpresaResponsablePagoSeleccionada) {
+            toastr.error(
+              `El RFC del receptor ${rfcReceptor} no coincide con el RFC de la empresa responsable del pago ${rfcEmpresaResponsablePagoSeleccionada}`
+            );
+            return;
+          }
+
+          const [validaEmpresaReceptora] = await EmpresasService.getValidaEmpresaReceptora({
+            servidor: session.profile.servidor,
+            rfcXML: rfcReceptor,
+            codigoRegimenFiscalXML: regimenFiscalReceptor,
+          });
 
           if (metodo !== "PUE") {
             toastr.error(
@@ -281,9 +284,9 @@ export const TableGastos = () => {
           }
 
           if (parseFloat(version) >= 4.0) {
-            if (regimenFiscalReceptor.toString() !== empresaRfc.CODIGO_REGIMEN_FISCAL.toString()) {
+            if (validaEmpresaReceptora.REGIMEN_FISCAL_VALIDO === "0") {
               toastr.error(
-                `El regimen fiscal del receptor, ${regimenFiscalReceptor}, del XML no coincide con el regimen fiscal de la empresa: ${empresaRfc.CODIGO_REGIMEN_FISCAL}`
+                validaEmpresaReceptora.MENSAJE
               );
               return;
             }

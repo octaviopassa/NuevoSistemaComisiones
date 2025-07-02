@@ -1,6 +1,6 @@
 import { format } from "date-fns";
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+// import { persist } from "zustand/middleware";
 
 export const useGastosData = create(
   // persist(
@@ -12,6 +12,10 @@ export const useGastosData = create(
     proyectoSeleccionado: "",
     setProyectoSeleccionado: (nuevoProyecto) =>
       set({ proyectoSeleccionado: nuevoProyecto }),
+
+    rfcEmpresaResponsablePagoSeleccionada: "",
+    setRfcEmpresaResponsablePagoSeleccionada: (rfc) =>
+      set({ rfcEmpresaResponsablePagoSeleccionada: rfc }),
 
     isCheckedSucursal: true,
     toggleCheckedSucursal: () =>
@@ -75,6 +79,7 @@ export const useGastosData = create(
           cancelado: "",
           oldFolio: false,
         },
+        rfcEmpresaResponsablePagoSeleccionada: "",
         resumen: [],
       });
     },

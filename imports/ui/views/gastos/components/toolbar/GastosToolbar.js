@@ -21,6 +21,7 @@ export const GastosToolbar = () => {
   const [searchParams] = useSearchParams();
   const folioParam = searchParams.get('folio');
   const plazaParam = searchParams.get('plaza');
+  const [empresasResponsablesPago, setEmpresasResponsablesPago] = useState([]);
 
   const { session: user } = useUserSession();
   const {
@@ -39,6 +40,8 @@ export const GastosToolbar = () => {
     estatus,
     isCheckedSucursal,
     toggleCheckedSucursal,
+    rfcEmpresaResponsablePagoSeleccionada,
+    setRfcEmpresaResponsablePagoSeleccionada,
   } = useGastosData();
 
   useEffect(() => {
@@ -48,7 +51,7 @@ export const GastosToolbar = () => {
   // useEffect(() => {
   //   getFolio();
   // }, [plazaSeleccionada]);
-  
+
   useEffect(() => {
     if (!folioParam) {  // Solo obtener folio si no viene de navegación
       getFolio();
@@ -79,13 +82,17 @@ export const GastosToolbar = () => {
         ? GastosService.getProyectos(user.profile.servidor)
         : null;
 
-      const [obtenerPlazas, pagarAQuien, proyectosResponse] = await Promise.all(
-        [plazasPromise, pagarAPromise, proyectosPromise]
+      const empresasResponsablesPagoPromise = GastosService.getEmpresasResponsablesPago()
+
+      const [obtenerPlazas, pagarAQuien, proyectosResponse, empresasResponsablesPagoResponse] = await Promise.all(
+        [plazasPromise, pagarAPromise, proyectosPromise, empresasResponsablesPagoPromise]
       );
 
       if (proyectosResponse) {
         setProyectos(proyectosResponse.data);
       }
+
+      setEmpresasResponsablesPago(empresasResponsablesPagoResponse.data);
 
       setPlazas(
         obtenerPlazas?.map((plaza) => ({
@@ -294,6 +301,29 @@ export const GastosToolbar = () => {
                 reloadData={() => setReloadData(!reloadData)}
               />
             )}
+          </div>
+          <div className="input-group">
+            <div className="input-group-prepend">
+              <label className="input-group-text" htmlFor="selectEmpresaPago">
+                Empresa Pago:
+              </label>
+            </div>
+            <select
+              className="custom-select"
+              id="selectEmpresaPago"
+              disabled={
+                estatus.estatus !== "Nuevo" && estatus.estatus !== "GRABADO"
+              }
+              onChange={(e) => setRfcEmpresaResponsablePagoSeleccionada(e.target.value)}
+              value={rfcEmpresaResponsablePagoSeleccionada}
+            >
+              <option value="">Seleccione la empresa</option>
+              {empresasResponsablesPago?.map((empresa) => (
+                <option key={empresa.RFC} value={empresa.RFC}>
+                  {empresa.NOMBRE}
+                </option>
+              ))}
+            </select>
           </div>
           {user.profile.MOSTRAR_COMBO_PROYECTO ? (
             <div className="input-group">

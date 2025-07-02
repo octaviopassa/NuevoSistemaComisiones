@@ -312,4 +312,30 @@ Meteor.methods({
       console.log(e);
     }
   },
+  "gastos.getEmpresasResponsablesPago": async () => {
+    try {
+      conexiones.body_empresas.tipo = "procedimiento";
+      conexiones.body_empresas.query = "SELECT RFC, NOMBRE FROM CAT_EMPRESAS_RESPONSABLES_PAGO ORDER BY NOMBRE DESC";
+
+      const response = await axios.get(conexiones.windows_api, {
+        data: conexiones.body_empresas,
+      });
+
+      if (!response.data.data.esValido) {
+        return {
+          isValid: response.data.data.esValido,
+          data: null,
+          message: response.data.data.mensaje,
+        };
+      }
+
+      return {
+        isValid: response.data.data.esValido,
+        data: JSON.parse(response.data.data.resultado),
+        message: response.data.data.mensaje,
+      };
+    } catch (e) {
+      console.log(e);
+    }
+  },
 });

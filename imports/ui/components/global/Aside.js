@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React /*, { useEffect, useState }*/ from "react";
 import {
   faRightFromBracket,
   faUsersGear,
@@ -9,7 +9,7 @@ import {
   faBars,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useTranslation } from "react-i18next";
+// import { useTranslation } from "react-i18next";
 import ProtectModule from "./ProtectModule";
 import Swal from "sweetalert2";
 import {
@@ -36,22 +36,22 @@ export const Aside = ({ isOpen, toggleSidebar, setIsSidebarOpen }) => {
     rol,
   };
 
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth > 767) {
-        setIsSidebarOpen(true);
-      } else {
-        setIsSidebarOpen(false);
-      }
-    };
+  // useEffect(() => {
+  //   const handleResize = () => {
+  //     if (window.innerWidth > 767) {
+  //       setIsSidebarOpen(true);
+  //     } else {
+  //       setIsSidebarOpen(false);
+  //     }
+  //   };
 
-    window.addEventListener("resize", handleResize);
-    handleResize();
+  //   window.addEventListener("resize", handleResize);
+  //   handleResize();
 
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
+  //   return () => {
+  //     window.removeEventListener("resize", handleResize);
+  //   };
+  // }, []);
 
   const Logout = () => {
     Swal.fire({

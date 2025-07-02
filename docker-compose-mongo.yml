@@ -1,17 +1,7 @@
-services:
-  app:
-    image: eljeque/portalcomisiones:latest
-    ports:
-      - '3011:3000'
-    environment:
-      ROOT_URL: ${APP_ROOT_URL:-http://localhost}
-      MONGO_URL: mongodb://mongo/comisiones
-    depends_on:
-      - mongo
-    networks:
-      - appnet
+services:  
   mongo:
     image: mongo:6.0
+    container_name: mongo-server
     command:
       - --storageEngine=wiredTiger
     networks:
