@@ -383,7 +383,7 @@ RESULT:
 .bg-brand-gradient {
   background-image: -webkit-gradient(linear, right top, left top, from(rgba(51, 148, 225, 0.18)), to(transparent));
   background-image: linear-gradient(270deg, rgba(51, 148, 225, 0.18), transparent);
-  background-color: #584475;
+  background-color: #54bb62;
 }
 
 /*
@@ -683,8 +683,8 @@ body:not(.header-function-fixed) .page-logo,
   cursor: default;
   color: #a6a6a6;
   position: relative;
-  
-	/* &.active {
+
+  /* &.active {
 		@extend %header-btn-active;
 	} */
 }

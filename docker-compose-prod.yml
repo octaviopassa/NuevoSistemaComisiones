@@ -1,0 +1,27 @@
+services:
+  portalcomisiones-service:
+    image: eljeque/portalcomisiones:latest
+    container_name: ctn-portalcomisiones
+    ports:
+      - '3011:3000'
+    environment:
+      ROOT_URL: ${APP_ROOT_URL:-http://localhost}
+      MONGO_URL: mongodb://mongo-service:27017/comisiones
+    networks:
+      - appnet
+    restart: unless-stopped
+
+networks:
+  appnet:
+    #No debe de ir driver: bridge, solo tiene efecto cuando Docker Compose crea la red (es decir, cuando la red NO es externa).
+    #Si quieres que Docker Compose cree la red (no es tu caso cuando compartes entre varios compose) si se debe poner
+    #driver: bridge   
+    #Al marcar la red como externa, le dices a Docker Compose:
+    #“No crees esta red, solo únete a la que ya existe y que yo gestiono por fuera”.    
+    external: true
+
+volumes:
+  generated:
+    driver: local
+
+#docker-compose -f .\docker-compose-prod.yml up -d --remove-orphans

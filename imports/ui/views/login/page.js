@@ -34,12 +34,12 @@ function Login() {
                   <div className="col col-md-6 col-lg-7 hidden-sm-down">
                     <img src="/img/logo.png" width={300} />
                     <h2 className="fs-xxl fw-500 mt-4 text-white">
-                      Sistema de Reembolsos
+                      Sistema de Comisiones
                     </h2>
                     <div className="fs-lg fw-300 p-5 bg-white border-faded rounded mb-g">
-                      <h3 className="mb-g">Seguimiento de Reembolsos</h3>
+                      <h3 className="mb-g">Seguimiento de Comisiones</h3>
                       <p className="text-justify">
-                        ¡Bienvenido a nuestro sistema de gestión de Reembolsos!
+                        ¡Bienvenido a nuestro sistema de gestión de Comisiones!
                       </p>
                       <p className="text-justify"></p>
                       <p className="text-justify"></p>
@@ -53,18 +53,6 @@ function Login() {
 
                     <LoginForm empresas={empresas} />
                   </div>
-                </div>
-                <div className="position-absolute pos-bottom pos-left pos-right p-3 text-center text-white">
-                  Sistema de Reembolsos
-                  <a
-                    href="https://www.passa.com.mx/home.html"
-                    className="text-white opacity-40 fw-500 ml-3"
-                    title="passa.com.mx"
-                    target="_blank"
-                  >
-                    passa.com.mx
-                  </a>
-                  <div className="float-right">v0.0.1</div>
                 </div>
               </div>
             </div>

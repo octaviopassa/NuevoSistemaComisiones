@@ -44,3 +44,18 @@
    ```bash
    npm run rob
    ```
+
+# Para levantar los compose :
+1. Crear la red:
+docker network create appnet
+2. Levantar los servicios:
+
+--El mongo no hay que levantarlo ya que se levantó en el proyecto del portalgastos
+docker-compose -f .\docker-compose-mongo.yml up -d
+docker-compose -f .\docker-compose-prod.yml up -d 
+
+# Cuando ya se ejecuta la aplicación para que aparezca el menú de gastos
+
+1. Entrar con el usuario=roberto contraseña=roberto
+2. En Páginas crear una página nueva con Nombre=Gastos Ruta=/gastos Modulos=view Descripción=Gastos
+3. En Roles Admin, click Gastos, check Gastos, quitar los checks del Módulo Usuarios , Guardar

@@ -1,18 +1,46 @@
-services:  
-  mongo:
+services:
+  mongo-service:
     image: mongo:6.0
-    container_name: mongo-server
+    container_name: ctn-mongo-server
     command:
       - --storageEngine=wiredTiger
     networks:
       - appnet
+    #environment:
+    #  MONGO_INITDB_DATABASE: comisiones      
     volumes:
       - C:/Deploys/mongo/comisiones:/data/db
     ports:
       - "27019:27017"
+    healthcheck:
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  mongo-express-service:
+    image: mongo-express:1.0.0-alpha.4
+    container_name: ctn-mongo-express
+    ports:
+      - "8081:8081"
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongo-service
+      - ME_CONFIG_MONGODB_PORT=27017
+      - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
+      - ME_CONFIG_BASICAUTH_USERNAME=admin
+      - ME_CONFIG_BASICAUTH_PASSWORD=S1stem@s
+    depends_on:
+      mongo-service:
+        condition: service_healthy
+    networks:
+      - appnet
+
 networks:
   appnet:
-    driver: bridge
+    #driver: bridge
+    external: true
+
 volumes:
   generated:
     driver: local
