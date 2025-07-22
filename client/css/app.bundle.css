@@ -6775,7 +6775,8 @@ hr.hr-xl {
 }
 
 .bg-trans-gradient {
-  background: linear-gradient(250deg, #3e93d6, #8a75aa);
+  /* background: linear-gradient(250deg, #3e93d6, #8a75aa); */
+  background: linear-gradient(250deg, #4caf50, #81c784);
 }
 
 /* custom scroll */

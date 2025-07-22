@@ -165,6 +165,7 @@ export const GastosFolioInput = () => {
         isCheckedSucursal: gastos.ORIGEN === "S",
         pagarASeleccionado: gastos.PAGAR_A,
         proyectoSeleccionado: gastos.CODIGO_PROYECTO ? gastos.CODIGO_PROYECTO : "",
+        rfcEmpresaResponsablePagoSeleccionada: gastos.RFC_EMPRESA_RESPONSABLE_PAGO,
         selectedIngeniero: gastos.ORIGEN === "I" ? gastos.CODIGO_VENDEDOR : "",
         folio: gastos.FOLIO_GASTO,
         gastosDate: format(new Date(gastos.FECHA), "yyyy-MM-dd"),

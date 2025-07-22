@@ -43,6 +43,10 @@ export const useGastosData = create(
     empresa: "",
     setEmpresa: (nuevaEmpresa) => set({ empresa: nuevaEmpresa }),
 
+    rfcEmpresaResponsablePagoSeleccionada: "",
+    setRfcEmpresaResponsablePagoSeleccionada: (rfc) =>
+      set({ rfcEmpresaResponsablePagoSeleccionada: rfc }),
+
     estatus: {
       estatus: "Nuevo",
       grabo: "",

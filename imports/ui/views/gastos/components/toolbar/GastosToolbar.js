@@ -311,9 +311,7 @@ export const GastosToolbar = () => {
             <select
               className="custom-select"
               id="selectEmpresaPago"
-              disabled={
-                estatus.estatus !== "Nuevo" && estatus.estatus !== "GRABADO"
-              }
+              disabled={estatus.estatus !== "Nuevo"}
               onChange={(e) => setRfcEmpresaResponsablePagoSeleccionada(e.target.value)}
               value={rfcEmpresaResponsablePagoSeleccionada}
             >

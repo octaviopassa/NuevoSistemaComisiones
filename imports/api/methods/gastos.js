@@ -123,9 +123,12 @@ Meteor.methods({
         @ACCION='${datos.accion}',
         ${datos.proyecto ? `@CODIGO_PROYECTO='${datos.proyecto}',` : ""}
         @EsWeb=1,
-        @RFC_RECEPTOR='${datos.rfc}'
+        @RFC_RECEPTOR='${datos.rfc}',
+        @RFC_EMPRESA_RESPONSABLE_PAGO='${datos.rfcEmpresaResponsablePago}'
       `;
       conexiones.body_bdseleccionada.servidor = datos.servidor;
+
+      console.log("borrar", conexiones.body_bdseleccionada.query);
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,

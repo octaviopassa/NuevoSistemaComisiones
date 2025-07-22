@@ -24,6 +24,7 @@ export const GuardarButton = () => {
     estatus,
     setEstatus,
     setResumen,
+    rfcEmpresaResponsablePagoSeleccionada,
   } = useGastosData();
   const { session } = useUserSession();
   const totalImportes = documentos.reduce(
@@ -92,6 +93,10 @@ export const GuardarButton = () => {
         toastr.warning("Por favor, seleccione una fecha.");
         return;
       }
+      if (!rfcEmpresaResponsablePagoSeleccionada) {
+        toastr.warning("Por favor, seleccione la empresa responsable del pago.");
+        return;
+      }
       let newFolio = folio;
 
       if (estatus.estatus === "Nuevo" || estatus.estatus === "GRABADO") {
@@ -125,8 +130,11 @@ export const GuardarButton = () => {
           rfc: rfc.rfc,
           ...totalImportes,
           servidor: session.profile.servidor,
+          rfcEmpresaResponsablePago: rfcEmpresaResponsablePagoSeleccionada,
           accion: estatus.estatus === "GRABADO" ? "ACTUALIZAR" : "INSERTAR",
         };
+
+        console.log("borrar", dataGastoGlobal);
 
         const { observaciones, ...dataToValidate } = dataGastoGlobal;
 

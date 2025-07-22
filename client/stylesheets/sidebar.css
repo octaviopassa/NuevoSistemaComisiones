@@ -1,10 +1,20 @@
-:root {
+/* :root {
   --color-default: #584475;
   --color-second: #6e5691;
   --second-bg: #584475;
   --color-white: #917ead;
   --color-body: #584475;
   --color-custom-white: #e5d7ff;
+} */
+
+:root {
+  --color-default: #54bb62;
+  --color-second: #44994f;
+  --second-bg: #54bb62;
+  --color-white: #9de5a4;
+  --color-body: #54bb62;
+  --color-custom-white: #e5fff0;
+  --color-black: #000000;
 }
 
 .custom-white {
@@ -41,6 +51,7 @@
   justify-content: center;
   position: relative;
 }
+
 .sidebar.open .logo-details {
   justify-content: space-between;
 }
@@ -59,6 +70,7 @@
   white-space: nowrap;
   display: none;
 }
+
 .logo-details .logo-name img {
   width: calc(100% - 50px);
 }
@@ -227,7 +239,7 @@
   padding: 10px 10px;
   overflow: hidden;
   transition: all 0.5s ease;
-  background-color: #563d7c;
+  background-color: var(--color-default);
   display: flex;
   justify-content: space-between;
 }
@@ -258,6 +270,7 @@
   white-space: nowrap;
   opacity: 0;
 }
+
 .sidebar.open .profile-details .name {
   opacity: 1;
 }
@@ -289,7 +302,7 @@
   width: calc(100% - 250px);
 }
 
-.sidebar.open ~ .home-section {
+.sidebar.open~.home-section {
   left: 250px;
   width: calc(100% - 250px);
 }
@@ -308,12 +321,8 @@
     width: calc(100vw - 78px);
   }
 
-  .sidebar.open ~ .home-section {
+  .sidebar.open~.home-section {
     left: 0;
     width: 100%;
   }
 }
-
-
-
-
