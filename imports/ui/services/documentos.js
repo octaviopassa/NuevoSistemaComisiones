@@ -16,6 +16,10 @@ DocumentosService.grabarArchivoNota = async (data) => {
   return await Meteor.callSync("documentos.grabarArchivoNota", data);
 };
 
+DocumentosService.grabarArchivoComisiones = async (data) => {
+  return await Meteor.callSync("documentos.grabarArchivoComisiones", data);
+};
+
 DocumentosService.eliminarXML = async (data) => {
   return await Meteor.callSync("documentos.eliminarXML", data);
 };

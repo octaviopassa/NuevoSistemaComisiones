@@ -738,4 +738,75 @@ Meteor.methods({
       };
     }
   },
+  "documentos.grabarArchivoComisiones": async (datos) => {
+    try {
+      conexiones.body_bdseleccionada.tipo = "procedimientoAlmacenado";
+      conexiones.body_bdseleccionada.baseDatos = "expedientes";
+      conexiones.body_bdseleccionada.query = `dbo.MP_COMISIONES_TIPOS_DOCUMENTOS_EXPEDIENTES_GRABAR`;
+      conexiones.body_bdseleccionada.servidor = datos.servidor;
+      conexiones.body_bdseleccionada.parametros = [
+        {
+          parametro: "@FOLIO_GASTO",
+          valor: `${datos.id_renglon}`,
+          tipo: "cadena",
+          direccion: "entrada",
+        },
+        {
+          parametro: "@CODIGO_TIPO_DOCUMENTO",
+          valor: `${datos.id_renglon}`,
+          tipo: "entero",
+          direccion: "entrada",
+        },
+        {
+          parametro: "@NOMBRE_ARCHIVO",
+          valor: datos.nombre_pdf,
+          tipo: "cadena",
+          direccion: "entrada",
+        },
+        {
+          parametro: "@ARCHIVO",
+          valor: datos.archivo || "",
+          tipo: datos.archivo ? "base64ToImagen" : "cadena",
+          direccion: "entrada",
+        },
+        {
+          parametro: "@COD_USU_AGREGO",
+          valor: datos.cod_usu,
+          tipo: "cadena",
+          direccion: "entrada",
+        },
+      ];
+
+      const response = await axios.post(
+        conexiones.windows_api_post,
+        conexiones.body_bdseleccionada,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.data.data.esValido) {
+        return {
+          isValid: response.data.data.esValido,
+          data: null,
+          message: response.data.data.mensaje,
+        };
+      }
+
+      return {
+        isValid: response.data.isValid,
+        data: JSON.parse(response.data.data.resultado),
+        message: response.data.data.mensaje,
+      };
+    } catch (error) {
+      console.log(error);
+      return {
+        isValid: false,
+        data: null,
+        message: error.message,
+      };
+    }
+  },
 });

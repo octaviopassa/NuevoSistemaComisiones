@@ -26,6 +26,10 @@ export const useGastosData = create(
     documentos: [],
     setDocumentos: (nuevosDocumentos) => set({ documentos: nuevosDocumentos }),
 
+    documentosComisiones: [],
+    setDocumentosComisiones: (nuevosDocumentosComisiones) =>
+      set({ documentosComisiones: nuevosDocumentosComisiones }),
+
     pagarASeleccionado: "",
     setPagarASeleccionado: (nuevoPagarA) =>
       set({ pagarASeleccionado: nuevoPagarA }),
@@ -85,6 +89,7 @@ export const useGastosData = create(
         },
         rfcEmpresaResponsablePagoSeleccionada: "",
         resumen: [],
+        documentosComisiones: [],
       });
     },
 

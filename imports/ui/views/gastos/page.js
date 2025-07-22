@@ -10,10 +10,11 @@ import {
 } from "./components";
 import { useGastosData } from "./store";
 import { useSearchParams } from "react-router-dom";
+import { TableTiposDocumentos } from "./components/table/TableTiposDocumentos";
 
 const Gastos = () => {
   const [clientesVisible, setClientesVisible] = useState(false);
-  const { resetData } = useGastosData(); 
+  const { resetData } = useGastosData();
   const [searchParams] = useSearchParams();
   const folioParam = searchParams.get("folio");
   const plazaParam = searchParams.get("plaza");
@@ -40,6 +41,9 @@ const Gastos = () => {
 
         <TableCantidades />
       </div>
+      <hr className="my-4" />
+      <legend>Archivos</legend>
+      <TableTiposDocumentos />
     </Page>
   );
 };

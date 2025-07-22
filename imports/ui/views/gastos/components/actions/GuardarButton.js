@@ -134,8 +134,6 @@ export const GuardarButton = () => {
           accion: estatus.estatus === "GRABADO" ? "ACTUALIZAR" : "INSERTAR",
         };
 
-        console.log("borrar", dataGastoGlobal);
-
         const { observaciones, ...dataToValidate } = dataGastoGlobal;
 
         const areFieldsValid = Object.values(dataToValidate).every(

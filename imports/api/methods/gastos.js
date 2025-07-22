@@ -49,6 +49,25 @@ Meteor.methods({
       console.log(e);
     }
   },
+  "tipoDocumentosComisiones.getAll": async (data) => {
+    try {
+      conexiones.body_bdseleccionada.tipo = "procedimiento";
+      conexiones.body_bdseleccionada.query =
+        "SELECT CODIGO_TIPO_DOCUMENTO Codigo, NOMBRE_TIPO_DOCUMENTO Nombre FROM CONSUMOS_PASSA..CAT_TIPOS_DOCUMENTOS_COMISIONES ORDER BY NOMBRE_TIPO_DOCUMENTO";
+      conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
+      conexiones.body_bdseleccionada.servidor = data.servidor;
+
+      const response = await axios.get(conexiones.windows_api, {
+        data: conexiones.body_bdseleccionada,
+      });
+
+      const respuesta = JSON.parse(response.data.data.resultado);
+
+      return respuesta;
+    } catch (e) {
+      console.log(e);
+    }
+  },
   "gastos.getFolioProvisional": async (data) => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
