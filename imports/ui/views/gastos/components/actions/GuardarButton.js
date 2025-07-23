@@ -214,7 +214,7 @@ export const GuardarButton = () => {
             tipoDocumento,
             proveedor: proveedor.value,
             tipoGasto: tipoGasto.value,
-            concepto,
+            concepto: concepto.replace("'", "''"),
             fecha: formatDate(fecha), //new Date(fecha).toISOString().slice(0, 10).split('-').reverse().join('-'),
             folioProveedor: folio,
             subtotal: parseFloat(subtotal),
