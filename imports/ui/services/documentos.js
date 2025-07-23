@@ -36,6 +36,10 @@ DocumentosService.getGastosDetalle = async (data) => {
   return await Meteor.callSync("documentos.getGastosDetalle", data);
 };
 
+DocumentosService.getComisionesTiposDocumentosExpedientes = async (data) => {
+  return await Meteor.callSync("documentos.getComisionesTiposDocumentosExpedientes", data);
+};
+
 DocumentosService.autorizarGasto = async (data) => {
   return await Meteor.callSync("documentos.autorizarGasto", data);
 };

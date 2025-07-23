@@ -47,6 +47,10 @@ Meteor.methods({
         data: conexiones.body_bdseleccionada,
       });
 
+      if (!response.data.data.esValido) {
+        throw new Meteor.Error("error", response.data.data.mensaje);
+      }
+
       return {
         isValid: response.data.isValid,
         data: JSON.parse(response.data.data.resultado),
@@ -54,6 +58,11 @@ Meteor.methods({
       };
     } catch (error) {
       console.log(error);
+      return {
+        isValid: false,
+        data: null,
+        message: error.message,
+      };
     }
   },
   "cuentas.update": async (data) => {
@@ -81,6 +90,10 @@ Meteor.methods({
         data: conexiones.body_bdseleccionada,
       });
 
+      if (!response.data.data.esValido) {
+        throw new Meteor.Error("error", response.data.data.mensaje);
+      }
+
       return {
         isValid: response.data.isValid,
         data: JSON.parse(response.data.data.resultado),
@@ -88,6 +101,11 @@ Meteor.methods({
       };
     } catch (error) {
       console.log(error);
+      return {
+        isValid: false,
+        data: null,
+        message: error.message,
+      };
     }
   },
 });

@@ -78,7 +78,7 @@ export const GastosFolioInput = () => {
     try {
       setLoading(true);
 
-      const [gastosData, detalleData, resumenData] = await Promise.all([
+      const [gastosData, detalleData, resumenData, comisionesExpedientesData] = await Promise.all([
         DocumentosService.getGastoGlobal({
           folio: newFolio,
           plaza: plazaParam || plazaSeleccionada,
@@ -93,11 +93,16 @@ export const GastosFolioInput = () => {
           folio: newFolio,
           servidor: session.profile.servidor,
         }),
+        DocumentosService.getComisionesTiposDocumentosExpedientes({
+          folio: newFolio,
+          servidor: session.profile.servidor,
+        }),
       ]);
 
       const gastos = gastosData.data[0] || {};
       const detalle = detalleData.data;
       const resumen = resumenData.data;
+      const comisionesExpedientes = comisionesExpedientesData.data || [];
 
       const newDocumentos = detalle.map((doc) => {
         //REEMPLAZAMOS LA COMA PARA QUE NO MARQUE ERROR EL parseFloat DE TableCantidades
@@ -187,6 +192,7 @@ export const GastosFolioInput = () => {
           oldFolio: true,
         },
         documentos: newDocumentos,
+        documentosComisiones: comisionesExpedientes,
         resumen,
       });
 

@@ -21,6 +21,7 @@ export const TableTiposDocumentos = () => {
     setDocumentosComisiones,
     documentosComisiones,
     estatus,
+    folio,
   } = useGastosData();
   const { data: dataTipoDocumentosComisiones } = useFetchData(TipoDocumentosComisionesService.getAll, [
     {
@@ -168,23 +169,23 @@ export const TableTiposDocumentos = () => {
     }
 
     const nuevoDocumentoComisiones = {
-      tipoDocumentoComisiones: tipoDocumentoComisiones.value,
-      tipoDocumentoComisionesLabel: tipoDocumentoComisiones.label,
+      codigoTipoDocumentoComisiones: tipoDocumentoComisiones.value,
+      nombreTipoDocumentoComisiones: tipoDocumentoComisiones.label,
       pdfArchivo: pdfArchivoFinal,
     };
 
-    setDocumentosComisiones([...documentosComisiones, nuevoDocumentoComisiones]);
+    // setDocumentosComisiones([...documentosComisiones, nuevoDocumentoComisiones]);
     limpiarCamposComisiones();
     setPdfTempData(null);
 
-    if (documento.pdfArchivo || documento?.pdfArchivo?.contenido) {
+    if (nuevoDocumentoComisiones.pdfArchivo || nuevoDocumentoComisiones?.pdfArchivo?.contenido) {
       //MP_COMISIONES_TIPOS_DOCUMENTOS_EXPEDIENTES_GRABAR
       const grabadoArchivosGlobal =
         await DocumentosService.grabarArchivoComisiones({
-          id_renglon: renglonId,
-          nombre_pdf:
-            documento?.pdfArchivo?.nombre || `${renglonId}.pdf`,
-          archivo: documento?.pdfArchivo?.contenido,
+          folio: folio,
+          codigo_tipo_documento: nuevoDocumentoComisiones.codigoTipoDocumentoComisiones,
+          nombre_pdf: nuevoDocumentoComisiones?.pdfArchivo?.nombre || `${folio}.pdf`,
+          archivo: nuevoDocumentoComisiones?.pdfArchivo?.contenido,
           cod_usu: session.profile.COD_USU,
           servidor: session.profile.servidor,
         });
@@ -192,6 +193,16 @@ export const TableTiposDocumentos = () => {
       if (!grabadoArchivosGlobal?.isValid) {
         hasError = true;
         console.error(grabadoArchivosGlobal);
+      }
+      else {
+        const [comisionesExpedientesData] = await Promise.all([
+          DocumentosService.getComisionesTiposDocumentosExpedientes({
+            folio: folio,
+            servidor: session.profile.servidor,
+          }),
+        ]);
+        setDocumentosComisiones(comisionesExpedientesData.data);
+        toastr.success("Archivo grabado exitosamente");
       }
     }
   };
@@ -301,12 +312,13 @@ export const TableTiposDocumentos = () => {
             {documentosComisiones.map((doc, i) => (
               <tr key={i} className={!doc.descartado ? "" : "table-danger"}>
                 <td className="text-center">{i + 1}</td>
-                <td>{doc?.tipoDocumentoComisiones} - {doc?.tipoDocumentoComisionesLabel}</td>
+                {/* <td>{doc?.codigoTipoDocumentoComisiones} - {doc?.nombreTipoDocumentoComisiones}</td> */}
+                <td>{doc?.DOCUMENTO}</td>
                 <td className="text-center">
-                  {estatus.estatus !== "CANCELADO" && doc.pdfArchivo && (
+                  {estatus.estatus !== "CANCELADO" && doc.NOMBRE_ARCHIVO && (
                     <div className="d-flex align-items-center justify-content-center">
-                      <span className="text-secondary" style={{ marginRight: "15px" }}>{doc.pdfArchivo.nombre}</span>
-                      <FontAwesomeIcon
+                      <span className="text-secondary" style={{ marginRight: "15px" }}>{doc.NOMBRE_ARCHIVO}</span>
+                      {/* <FontAwesomeIcon
                         icon={faDownload}
                         style={{
                           marginRight: "8px",
@@ -314,8 +326,7 @@ export const TableTiposDocumentos = () => {
                           cursor: "pointer",
                         }}
                         onClick={() => handleFileComisionesDownload(doc?.pdfArchivo)}
-                        title={doc.pdfArchivo.nombre}
-                      />
+                      /> */}
 
                       {/* {(estatus.estatus === "Nuevo" || !doc.renglonId) && (
                         <label
@@ -343,12 +354,12 @@ export const TableTiposDocumentos = () => {
                 {(estatus.estatus === "Nuevo" ||
                   estatus.estatus === "GRABADO") && (
                     <td className="text-center">
-                      {estatus.propietario && (
+                      {/* {estatus.propietario && (
                         <i
                           className="fal fa-trash-alt text-danger cursor-pointer font-weight-bold"
                           onClick={() => eliminarDocumentoComisiones(i)}
                         ></i>
-                      )}
+                      )} */}
                     </td>
                   )}
               </tr>

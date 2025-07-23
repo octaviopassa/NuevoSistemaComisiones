@@ -147,8 +147,6 @@ Meteor.methods({
       `;
       conexiones.body_bdseleccionada.servidor = datos.servidor;
 
-      console.log("borrar", conexiones.body_bdseleccionada.query);
-
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
       });

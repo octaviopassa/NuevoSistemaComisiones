@@ -398,6 +398,42 @@ Meteor.methods({
       };
     }
   },
+  "documentos.getComisionesTiposDocumentosExpedientes": async (data) => {
+    try {
+      conexiones.body_bdseleccionada.tipo = "procedimiento";
+      conexiones.body_bdseleccionada.baseDatos = "expedientes";
+      conexiones.body_bdseleccionada.query = `
+              EXEC DBO.MP_COMISIONES_TIPOS_DOCUMENTOS_EXPEDIENTES_CONSULTAR 
+              @FOLIO_GASTO='${data.folio}'
+            `;
+      conexiones.body_bdseleccionada.servidor = data.servidor;
+
+      const response = await axios.get(conexiones.windows_api, {
+        data: conexiones.body_bdseleccionada,
+      });
+
+      if (!response.data.data.esValido) {
+        return {
+          isValid: response.data.data.esValido,
+          data: null,
+          message: response.data.data.mensaje,
+        };
+      }
+
+      return {
+        isValid: response.data.isValid,
+        data: JSON.parse(response.data.data.resultado),
+        message: response.data.data.mensaje,
+      };
+    } catch (error) {
+      console.log(error);
+      return {
+        isValid: false,
+        data: null,
+        message: error.message,
+      };
+    }
+  },
   "documentos.getResumen": async (data) => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
@@ -747,13 +783,13 @@ Meteor.methods({
       conexiones.body_bdseleccionada.parametros = [
         {
           parametro: "@FOLIO_GASTO",
-          valor: `${datos.id_renglon}`,
+          valor: `${datos.folio}`,
           tipo: "cadena",
           direccion: "entrada",
         },
         {
           parametro: "@CODIGO_TIPO_DOCUMENTO",
-          valor: `${datos.id_renglon}`,
+          valor: `${datos.codigo_tipo_documento}`,
           tipo: "entero",
           direccion: "entrada",
         },
@@ -770,7 +806,7 @@ Meteor.methods({
           direccion: "entrada",
         },
         {
-          parametro: "@COD_USU_AGREGO",
+          parametro: "@COD_USU_GRABO",
           valor: datos.cod_usu,
           tipo: "cadena",
           direccion: "entrada",
