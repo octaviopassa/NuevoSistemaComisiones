@@ -230,7 +230,7 @@ export const GuardarButton = () => {
             uuid: xmlArchivo?.uuid || "",
             tua_desglosado,
             cliente:
-              tipoGasto.value === 17 || documento.detalleGasto.label.replace("'", "''")
+              tipoGasto.value === 17 || documento.detalleGasto.label
                 ? documento.detalleGasto.label.replace("'", "''")
                 : "",
             servidor: session.profile.servidor,
