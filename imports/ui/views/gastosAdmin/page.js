@@ -33,11 +33,14 @@ const GastosAdmin = () => {
       return;
     }
 
+    const fechaInicio = filters.usarFiltroFecha ? formatDate(filters.fechaInicio) : null;
+    const fechaFin = filters.usarFiltroFecha ? formatDate(filters.fechaFin) : null;
+
     const data = {
       ...filters,
       vendedor: filters.vendedor || "0",
-      fechaInicio: formatDate(filters.fechaInicio) || null,
-      fechaFin: formatDate(filters.fechaFin) || null,
+      fechaInicio,
+      fechaFin,
       cod_usu: session.profile.TIENE_ACCESO_VER_TODOS_GASTOS
         ? "0"
         : session.profile.COD_USU,

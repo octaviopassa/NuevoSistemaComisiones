@@ -9,8 +9,6 @@ import React from "react";
 import { Spinner, Table } from "reactstrap";
 import { useNavigate } from "react-router-dom";
 import { formatDate, formatToSinaloaDate } from "../../../../../utils/utils";
-import { AutorizarButton } from "../actions/AutorizarButton";
-import { useUserSession } from "../../../../store";
 
 const theadClasses = "d-flex justify-content-between align-items-center";
 
@@ -18,7 +16,6 @@ const theadClasses = "d-flex justify-content-between align-items-center";
 const GastosAdminTable = ({ gastos, plazaSeleccionada, loading }) => {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
   const navigate = useNavigate();
-  const { session } = useUserSession();
 
   const handleSort = (key) => {
     let direction = "asc";
@@ -89,40 +86,10 @@ const GastosAdminTable = ({ gastos, plazaSeleccionada, loading }) => {
               <FontAwesomeIcon cursor={"pointer"} icon={getIcon("plaza")} />
             </span>
           </th>
-          <th onClick={() => handleSort("cliente")}>
+          <th onClick={() => handleSort("registro")}>
             <span className={theadClasses}>
-              <span>Cliente</span>
-              <FontAwesomeIcon cursor={"pointer"} icon={getIcon("cliente")} />
-            </span>
-          </th>
-          <th onClick={() => handleSort("ingeniero")}>
-            <span className={theadClasses}>
-              <span>Ingeniero</span>
-              <FontAwesomeIcon cursor={"pointer"} icon={getIcon("ingeniero")} />
-            </span>
-          </th>
-          <th onClick={() => handleSort("titular_cuenta")}>
-            <span className={theadClasses}>
-              <span>Titular de la cuenta</span>
-              <FontAwesomeIcon cursor={"pointer"} icon={getIcon("titular_cuenta")} />
-            </span>
-          </th>
-          <th onClick={() => handleSort("num_cuenta")}>
-            <span className={theadClasses}>
-              <span>Número de cuenta</span>
-              <FontAwesomeIcon cursor={"pointer"} icon={getIcon("num_cuenta")} />
-            </span>
-          </th>
-          <th onClick={() => handleSort("banco")}>
-            <span className={theadClasses}>
-              <span>Banco</span>
-              <FontAwesomeIcon cursor={"pointer"} icon={getIcon("banco")} />
-            </span>
-          </th>
-          <th onClick={() => handleSort("folio_factura")}>
-            <span className={theadClasses}>
-              <span>Folio de factura</span>
-              <FontAwesomeIcon cursor={"pointer"} icon={getIcon("folio_factura")} />
+              <span>Registró</span>
+              <FontAwesomeIcon cursor={"pointer"} icon={getIcon("registro")} />
             </span>
           </th>
           <th onClick={() => handleSort("total")}>
@@ -158,12 +125,29 @@ const GastosAdminTable = ({ gastos, plazaSeleccionada, loading }) => {
               <td>{formatDate(gasto.FECHA)}</td>
               {/* <td>{format(new Date(gasto.FECHA), "dd/MM/yyyy")}</td> */}
               <td>{`${gasto.PLAZA} - ${gasto.NOM_PLAZA}`}</td>
-              <td>{gasto.CLIENTE}</td>
-              <td>{gasto.INGENIERO}</td>
-              <td>{gasto.TITULAR_CUENTA}</td>
-              <td>{gasto.NUMERO_CUENTA}</td>
-              <td>{gasto.BANCO}</td>
-              <td>{gasto.FOLIO_FACTURA}</td>
+              <td>
+                {gasto.Registró.match(/<b>Usuario:<\/b>\s*([A-Z_]+)/)?.[1]
+                  .split("_")
+                  .map(
+                    (word) =>
+                      word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+                  )
+                  .join(" ")}{" "}
+                {gasto.Registró.match(/<b>Vendedor: <\/b>(.*)/)?.[1] && (
+                  <>
+                    - <br />
+                    <b>Vendedor: </b>
+                    {gasto.Registró.match(/<b>Vendedor: <\/b>(.*)/)[1]
+                      .split(" ")
+                      .map(
+                        (word) =>
+                          word.charAt(0).toUpperCase() +
+                          word.slice(1).toLowerCase()
+                      )
+                      .join(" ")}
+                  </>
+                )}
+              </td>
               <td>{gasto.TOTAL}</td>
               <td>
                 <button
@@ -172,9 +156,6 @@ const GastosAdminTable = ({ gastos, plazaSeleccionada, loading }) => {
                 >
                   Ver
                 </button>
-                {gasto.ESTATUS === "G" && session.profile.AUTORIZAR_GASTOS && (
-                  <AutorizarButton gasto={gasto} />
-                )}
               </td>
             </tr>
           ))

@@ -6,9 +6,10 @@ export const useFiltersStore = create(
   (set, get) => ({
     filters: {
       plaza: "",
+      usarFiltroFecha: true,
       fechaInicio: format(subMonths(new Date(), 1), "yyyy-MM-dd"),
       fechaFin: format(new Date(), "yyyy-MM-dd"),
-      estatus: "",
+      estatus: "G",
       vendedor: "",
     },
     setFilters: (nuevosFiltros) => set({ filters: { ...get().filters, ...nuevosFiltros } }),
@@ -16,9 +17,10 @@ export const useFiltersStore = create(
       set({
         filters: {
           plaza: "",
+          usarFiltroFecha: true,
           fechaInicio: format(subMonths(new Date(), 1), "yyyy-MM-dd"),
           fechaFin: format(new Date(), "yyyy-MM-dd"),
-          estatus: "",
+          estatus: "G",
           vendedor: "",
         },
       }),

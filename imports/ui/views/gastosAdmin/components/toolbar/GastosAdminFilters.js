@@ -30,6 +30,13 @@ const GastosAdminFilters = () => {
     }
   }, [plazaSeleccionada]);
 
+  useEffect(() => {
+    if (plazas.map((plaza) => plaza.Codigo).includes("#")) {
+      setPlazaSeleccionada("#");
+      setFilters({ ...filters, plaza: "#" });
+    }
+  }, [plazas]);
+
   const getPlazas = async () => {
     try {
       const obtenerPlazas = await PlazasService.getAllGastosAdmin({
@@ -71,12 +78,14 @@ const GastosAdminFilters = () => {
 
       setFilters({
         ...filters,
+        usarFiltroFecha: true,
         fechaInicio: format(fechaInicio, "yyyy-MM-dd"),
         fechaFin: format(fechaActual, "yyyy-MM-dd"),
       });
     } else {
       setFilters({
         ...filters,
+        usarFiltroFecha: false,
         fechaInicio: "",
         fechaFin: "",
       });

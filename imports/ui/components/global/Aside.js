@@ -7,6 +7,7 @@ import {
   faHome,
   faBuilding,
   faBars,
+  faCheck,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 // import { useTranslation } from "react-i18next";
@@ -134,6 +135,18 @@ export const Aside = ({ isOpen, toggleSidebar, setIsSidebarOpen }) => {
               <span className="tooltip">Gastos</span>
             </li>
           </ProtectModule>
+          {session.profile.AUTORIZAR_GASTOS && (
+            <ProtectModule method="remove" page="Gastos" module="view">
+              <li>
+                <Link className="" data-filter-tags="Gastos" to="/gastos/administracion">
+                  <FontAwesomeIcon icon={faCheck} className="icono1" />
+
+                  <span className="linkname">Autorizar</span>
+                </Link>
+                <span className="tooltip">Autorizar</span>
+              </li>
+            </ProtectModule>
+          )}
         </ul>
 
         <div className="profile-content">
