@@ -1,4 +1,4 @@
-import React /*, { useEffect, useState }*/ from "react";
+import React, { useEffect, useState } from "react";
 import {
   faRightFromBracket,
   faUsersGear,
@@ -37,22 +37,22 @@ export const Aside = ({ isOpen, toggleSidebar, setIsSidebarOpen }) => {
     rol,
   };
 
-  // useEffect(() => {
-  //   const handleResize = () => {
-  //     if (window.innerWidth > 767) {
-  //       setIsSidebarOpen(true);
-  //     } else {
-  //       setIsSidebarOpen(false);
-  //     }
-  //   };
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 767) {
+        setIsSidebarOpen(false);
+      } else {
+        setIsSidebarOpen(false);
+      }
+    };
 
-  //   window.addEventListener("resize", handleResize);
-  //   handleResize();
+    window.addEventListener("resize", handleResize);
+    handleResize();
 
-  //   return () => {
-  //     window.removeEventListener("resize", handleResize);
-  //   };
-  // }, []);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   const Logout = () => {
     Swal.fire({

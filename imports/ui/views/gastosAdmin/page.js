@@ -67,13 +67,13 @@ const GastosAdmin = () => {
       <GastosAdminFilters />
 
       <h4 className="m-0 d-flex align-items-center justify-content-left bg-primary p-3 text-white">
-        Gastos
+        Comisiones
       </h4>
       <div className="p-3 border border-primary shadow-sm rounded-3">
         <div className="row">
-          <h5 className="col-6 text-left m-0 d-flex align-items-center mb-3">
+          {/* <h5 className="col-6 text-left m-0 d-flex align-items-center mb-3">
             Mostrar Menu Gastos
-          </h5>
+          </h5> */}
           <div className="col-6 d-flex justify-content-end">
             <InputGroup className="mb-3">
               <Input

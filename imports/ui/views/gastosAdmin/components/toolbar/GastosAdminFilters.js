@@ -16,7 +16,7 @@ const GastosAdminFilters = () => {
   const [plazas, setPlazas] = useState([]);
   const [plazaSeleccionada, setPlazaSeleccionada] = useState();
   const [vendedores, setVendedores] = useState([]);
-  const [dateFilterVisible, setDateFilterVisible] = useState(true);
+  const [dateFilterVisible, setDateFilterVisible] = useState(false);
   const { filters, setFilters } = useFiltersStore();
   const { session } = useUserSession();
 

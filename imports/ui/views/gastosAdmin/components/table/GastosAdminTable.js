@@ -8,14 +8,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { Spinner, Table } from "reactstrap";
 import { useNavigate } from "react-router-dom";
-import { formatDate, formatToSinaloaDate } from "../../../../../utils/utils";
+import { formatDate } from "../../../../../utils/utils";
 import { AutorizarButton } from "../actions/AutorizarButton";
 import { useUserSession } from "../../../../store";
 
 const theadClasses = "d-flex justify-content-between align-items-center";
 
 // TODO: Si se requiere a futuro separar la lógica del sort del componente y hacerlo un custom hook
-const GastosAdminTable = ({ gastos, plazaSeleccionada, loading }) => {
+const GastosAdminTable = ({ gastos, loading }) => {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
   const navigate = useNavigate();
   const { session } = useUserSession();
@@ -83,40 +83,34 @@ const GastosAdminTable = ({ gastos, plazaSeleccionada, loading }) => {
               <FontAwesomeIcon cursor={"pointer"} icon={getIcon("fecha")} />
             </span>
           </th>
-          <th onClick={() => handleSort("plaza")}>
+          <th onClick={() => handleSort("plaza")} style={{ width: "180px" }}>
             <span className={theadClasses}>
               <span>Plaza</span>
               <FontAwesomeIcon cursor={"pointer"} icon={getIcon("plaza")} />
             </span>
           </th>
-          <th onClick={() => handleSort("cliente")}>
+          {/* <th onClick={() => handleSort("cliente")}>
             <span className={theadClasses}>
               <span>Cliente</span>
               <FontAwesomeIcon cursor={"pointer"} icon={getIcon("cliente")} />
             </span>
+          </th> */}
+          <th onClick={() => handleSort("concepto")} style={{ width: "250px" }}>
+            <span className={theadClasses}>
+              <span>Concepto</span>
+              <FontAwesomeIcon cursor={"pointer"} icon={getIcon("concepto")} />
+            </span>
           </th>
-          <th onClick={() => handleSort("ingeniero")}>
+          <th onClick={() => handleSort("ingeniero")} style={{ width: "200px" }}>
             <span className={theadClasses}>
               <span>Ingeniero</span>
               <FontAwesomeIcon cursor={"pointer"} icon={getIcon("ingeniero")} />
             </span>
           </th>
-          <th onClick={() => handleSort("titular_cuenta")}>
+          <th onClick={() => handleSort("datos_bancarios")} style={{ width: "300px" }}>
             <span className={theadClasses}>
-              <span>Titular de la cuenta</span>
-              <FontAwesomeIcon cursor={"pointer"} icon={getIcon("titular_cuenta")} />
-            </span>
-          </th>
-          <th onClick={() => handleSort("num_cuenta")}>
-            <span className={theadClasses}>
-              <span>Número de cuenta</span>
-              <FontAwesomeIcon cursor={"pointer"} icon={getIcon("num_cuenta")} />
-            </span>
-          </th>
-          <th onClick={() => handleSort("banco")}>
-            <span className={theadClasses}>
-              <span>Banco</span>
-              <FontAwesomeIcon cursor={"pointer"} icon={getIcon("banco")} />
+              <span>Datos bancarios</span>
+              <FontAwesomeIcon cursor={"pointer"} icon={getIcon("datos_bancarios")} />
             </span>
           </th>
           <th onClick={() => handleSort("folio_factura")}>
@@ -158,11 +152,16 @@ const GastosAdminTable = ({ gastos, plazaSeleccionada, loading }) => {
               <td>{formatDate(gasto.FECHA)}</td>
               {/* <td>{format(new Date(gasto.FECHA), "dd/MM/yyyy")}</td> */}
               <td>{`${gasto.PLAZA} - ${gasto.NOM_PLAZA}`}</td>
-              <td>{gasto.CLIENTE}</td>
+              {/* <td>{gasto.CLIENTE}</td> */}
+              <td>{gasto.CONCEPTO}</td>
               <td>{gasto.INGENIERO}</td>
-              <td>{gasto.TITULAR_CUENTA}</td>
-              <td>{gasto.NUMERO_CUENTA}</td>
-              <td>{gasto.BANCO}</td>
+              <td>
+                <b>Titular de la cuenta:</b> {gasto.TITULAR_CUENTA}
+                <br />
+                <b>Número de cuenta:</b> {gasto.NUMERO_CUENTA}
+                <br />
+                <b>Banco:</b> {gasto.BANCO}
+              </td>
               <td>{gasto.FOLIO_FACTURA}</td>
               <td>{gasto.TOTAL}</td>
               <td>

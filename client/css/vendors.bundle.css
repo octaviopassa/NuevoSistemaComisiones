@@ -7839,7 +7839,8 @@ a.close.disabled {
 }
 
 .bg-primary {
-  background-color: #886ab5 !important;
+  /* background-color: #886ab5 !important; */
+  background-color: #54bb62 !important;
 }
 
 a.bg-primary:hover,
@@ -12359,7 +12360,7 @@ a.text-dark:focus {
   }
 
   abbr[title]::after {
-    content: " ("attr(title) ")";
+    content: " (" attr(title) ")";
   }
 
   pre {
@@ -23100,4 +23101,3 @@ RESULT:
 }
 
 /*# sourceMappingURL=vendors.bundle.css.map */
-
