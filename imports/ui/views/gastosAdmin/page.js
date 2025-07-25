@@ -12,7 +12,7 @@ import { useFiltersStore } from "./store";
 
 const GastosAdmin = () => {
   const [gastos, setGastos] = useState([]);
-  const { filters } = useFiltersStore();
+  const { filters, setFilters } = useFiltersStore();
   const [loading, setLoading] = useState(false);
   const { session } = useUserSession();
   const { searchText, setSearchText, filteredData } = useSearch(gastos || []);
@@ -20,6 +20,9 @@ const GastosAdmin = () => {
     useClientPagination(filteredData);
 
   useEffect(() => {
+    if (filters.recargarDespuesDeAutorizar) {
+      setFilters({ ...filters, recargarDespuesDeAutorizar: false });
+    }
     getGastos();
   }, [filters]);
 

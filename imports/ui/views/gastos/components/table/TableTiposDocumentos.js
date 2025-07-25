@@ -293,7 +293,7 @@ export const TableTiposDocumentos = () => {
                   }
                   onClick={agregarDocumentoComisiones}
                 >
-                  <i className="fal fa-save mr-1"></i> Guardar
+                  <i className="fal fa-plus mr-1"></i> Agregar
                 </button>
               </th>
             </tr>

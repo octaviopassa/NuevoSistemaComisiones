@@ -11,6 +11,7 @@ export const useFiltersStore = create(
       fechaFin: format(new Date(), "yyyy-MM-dd"),
       estatus: "G",
       vendedor: "",
+      recargarDespuesDeAutorizar: false,
     },
     setFilters: (nuevosFiltros) => set({ filters: { ...get().filters, ...nuevosFiltros } }),
     resetFilters: () =>
@@ -22,6 +23,7 @@ export const useFiltersStore = create(
           fechaFin: format(new Date(), "yyyy-MM-dd"),
           estatus: "G",
           vendedor: "",
+          recargarDespuesDeAutorizar: false,
         },
       }),
   })
