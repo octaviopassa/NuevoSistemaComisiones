@@ -71,5 +71,8 @@ DocumentosService.getXml = async (data) => {
 DocumentosService.getPDF = async (data) => {
   return await Meteor.callSync("documentos.getPDF", data);
 };
+DocumentosService.EliminarArchivoComisiones = async (data) => {
+  return await Meteor.callSync("documentos.EliminarArchivoComisiones", data);
+};
 
 export { DocumentosService };

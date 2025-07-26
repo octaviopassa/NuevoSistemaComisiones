@@ -160,6 +160,15 @@ export const GastosFolioInput = () => {
         };
       });
 
+      const newComisionesExpedientes = comisionesExpedientes.map((doc) => {
+        return {
+          ...doc,
+          pdfArchivo: doc?.ID
+            ? { id: doc.ID, nombre: doc.NOMBRE_ARCHIVO }
+            : "",
+        };
+      });
+
       if (!gastos) {
         toastr.error("No se encontraron registros para el folio");
         return;
@@ -192,7 +201,7 @@ export const GastosFolioInput = () => {
           oldFolio: true,
         },
         documentos: newDocumentos,
-        documentosComisiones: comisionesExpedientes,
+        documentosComisiones: newComisionesExpedientes,
         resumen,
       });
 

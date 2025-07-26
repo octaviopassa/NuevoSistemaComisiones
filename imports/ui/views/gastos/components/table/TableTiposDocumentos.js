@@ -100,16 +100,19 @@ export const TableTiposDocumentos = () => {
     }
   };
 
-  const handleFileComisionesDownload = async (pdfArchivo) => {
-    const doc = pdfArchivo?.contenido
-      ? pdfArchivo
+  const handleFileComisionesDownload = async (archivoPDF) => {
+    const doc = archivoPDF?.contenido
+      ? archivoPDF
       : await DocumentosService.getPDF({
-        id: pdfArchivo?.id,
+        id: archivoPDF?.id,
+        tipoArchivo: 'PDF_COMISIONES',
+        folioGasto: folio,
         servidor: session.profile.servidor,
       });
 
     if (doc) {
       const archivoPDFBase64 = doc?.data[0].ARCHIVO_PDF || doc?.contenido;
+
       try {
         const cleanedBase64 = archivoPDFBase64.replace(/[^A-Za-z0-9+/=]/g, "");
         const byteCharacters = atob(cleanedBase64);
@@ -120,7 +123,7 @@ export const TableTiposDocumentos = () => {
         }
 
         const byteArray = new Uint8Array(byteNumbers);
-        const tipoArchivo = pdfArchivo?.nombre.split(".")[1];
+        const tipoArchivo = archivoPDF?.nombre.split(".")[1];
         const blob = new Blob([byteArray], {
           type: `application/${tipoArchivo}`,
         });
@@ -128,7 +131,7 @@ export const TableTiposDocumentos = () => {
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = pdfArchivo?.nombre || `ARCHIVO_PDF.pdf`;
+        a.download = archivoPDF?.nombre || `ARCHIVO_PDF.pdf`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -156,7 +159,7 @@ export const TableTiposDocumentos = () => {
     }
 
     if (!tipoDocumentoComisiones) {
-      toastr.warning("Por favor, seleccione un tipo de documento.");
+      toastr.warning("Por favor, seleccione un tipo de archivo.");
       return;
     }
 
@@ -207,13 +210,18 @@ export const TableTiposDocumentos = () => {
     }
   };
 
-  const eliminarDocumentoComisiones = async (index) => {
+  const eliminarDocumentoComisiones = async (ID) => {
     if (!documentosComisiones.length) {
       toastr.warning("No hay documentos para eliminar");
       return;
     }
 
-    if (documentosComisiones[index].renglonId) {
+    if (!session.profile.AUTORIZAR_GASTOS) {
+      toastr.warning("No tienes permiso para eliminar documentos");
+      return;
+    }
+
+    if (ID) {
       const result = await MySwal.fire({
         title: "¿Deseas eliminar este documento?",
         confirmButtonText: "Confirmar",
@@ -228,13 +236,20 @@ export const TableTiposDocumentos = () => {
         return;
       }
 
-      await DocumentosService.eliminarXML({
-        id: documentosComisiones[index].renglonId,
+      await DocumentosService.EliminarArchivoComisiones({
+        id: ID,
+        folio: folio,
         servidor: session.profile.servidor,
       });
     }
 
-    setDocumentosComisiones(documentosComisiones.filter((_, i) => i !== index));
+    const [comisionesExpedientesData] = await Promise.all([
+      DocumentosService.getComisionesTiposDocumentosExpedientes({
+        folio: folio,
+        servidor: session.profile.servidor,
+      }),
+    ]);
+    setDocumentosComisiones(comisionesExpedientesData.data);
     toastr.success("Documento eliminado");
   };
 
@@ -254,17 +269,22 @@ export const TableTiposDocumentos = () => {
                 <Select
                   options={tipoDocumentosComisiones}
                   onChange={handleTipoDocumentoComisionesChange}
-                  placeholder="Tipo de documento"
+                  placeholder="Tipo de archivo"
                   isDisabled={
-                    estatus.estatus !== "Nuevo" && estatus.estatus !== "GRABADO"
+                    estatus.estatus !== "AUTORIZADO" && estatus.estatus !== "GRABADO"
                   }
                   value={tipoDocumentoComisiones}
                 />
               </th>
+              <th className="text-center" style={{ maxWidth: "80px" }}></th>
               <th className="text-center" style={{ maxWidth: "80px" }}>
                 <label
                   htmlFor="pdfArchivo-upload"
-                  className="btn btn-primary mb-0 d-flex align-items-center justify-content-center py-2 px-3"
+                  // className="btn btn-primary mb-0 d-flex align-items-center justify-content-center py-2 px-3"
+                  className={`btn btn-primary mb-0 d-flex align-items-center justify-content-center py-2 px-3 ${estatus.estatus !== "AUTORIZADO" && estatus.estatus !== "GRABADO"
+                    ? "disabled opacity-50"
+                    : ""
+                    }`}
                 >
                   {pdfTempData ? (
                     <i className="fal fa-solid fa-repeat mr-1"></i>
@@ -276,7 +296,7 @@ export const TableTiposDocumentos = () => {
                     id="pdfArchivo-upload"
                     type="file"
                     disabled={
-                      estatus.estatus !== "Nuevo" &&
+                      estatus.estatus !== "AUTORIZADO" &&
                       estatus.estatus !== "GRABADO"
                     }
                     accept=".pdf,.jpg,.jpeg,.png,image/jpeg,image/png"
@@ -289,7 +309,7 @@ export const TableTiposDocumentos = () => {
                 <button
                   className="btn btn-primary btn-sm d-flex align-items-center py-2 px-3"
                   disabled={
-                    estatus.estatus !== "Nuevo" && estatus.estatus !== "GRABADO"
+                    estatus.estatus !== "AUTORIZADO" && estatus.estatus !== "GRABADO"
                   }
                   onClick={agregarDocumentoComisiones}
                 >
@@ -299,7 +319,8 @@ export const TableTiposDocumentos = () => {
             </tr>
             <tr>
               <th className="text-center">#</th>
-              <th className="text-center">Documento</th>
+              <th className="text-center">Tipo de archivo</th>
+              <th className="text-center">Nombre archivo</th>
               <th className="text-center">
                 <i className="fal fa-file"></i>
               </th>
@@ -312,22 +333,20 @@ export const TableTiposDocumentos = () => {
             {documentosComisiones.map((doc, i) => (
               <tr key={i} className={!doc.descartado ? "" : "table-danger"}>
                 <td className="text-center">{i + 1}</td>
-                {/* <td>{doc?.codigoTipoDocumentoComisiones} - {doc?.nombreTipoDocumentoComisiones}</td> */}
-                <td>{doc?.DOCUMENTO}</td>
+                <td className="text-left">{doc?.DOCUMENTO}</td>
+                <td className="text-left">{doc?.NOMBRE_ARCHIVO}</td>
                 <td className="text-center">
-                  {estatus.estatus !== "CANCELADO" && doc.NOMBRE_ARCHIVO && (
+                  {estatus.estatus !== "Nuevo" && doc.NOMBRE_ARCHIVO && (
                     <div className="d-flex align-items-center justify-content-center">
-                      <span className="text-secondary" style={{ marginRight: "15px" }}>{doc.NOMBRE_ARCHIVO}</span>
-                      {/* <FontAwesomeIcon
+                      <FontAwesomeIcon
                         icon={faDownload}
                         style={{
                           marginRight: "8px",
-                          // cursor: estatus.estatus === "Nuevo" && "pointer",
                           cursor: "pointer",
                         }}
+                        title="Descargar archivo"
                         onClick={() => handleFileComisionesDownload(doc?.pdfArchivo)}
-                      /> */}
-
+                      />
                       {/* {(estatus.estatus === "Nuevo" || !doc.renglonId) && (
                         <label
                           htmlFor={`pdfArchivo-replace-${i}`}
@@ -351,22 +370,19 @@ export const TableTiposDocumentos = () => {
                     </div>
                   )}
                 </td>
-                {(estatus.estatus === "Nuevo" ||
-                  estatus.estatus === "GRABADO") && (
-                    <td className="text-center">
-                      {/* {estatus.propietario && (
-                        <i
-                          className="fal fa-trash-alt text-danger cursor-pointer font-weight-bold"
-                          onClick={() => eliminarDocumentoComisiones(i)}
-                        ></i>
-                      )} */}
-                    </td>
-                  )}
+                {session.profile.AUTORIZAR_GASTOS && (
+                  <td className="text-center">
+                    <i
+                      className="fal fa-trash-alt text-danger cursor-pointer font-weight-bold"
+                      onClick={() => eliminarDocumentoComisiones(doc?.ID)}
+                    ></i>
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-    </div>
+    </div >
   );
 };

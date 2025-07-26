@@ -748,7 +748,8 @@ Meteor.methods({
       conexiones.body_bdseleccionada.query = `
               exec MP_CONSULTA_WEB_REACT_ARCHIVO_XML_PDF               
               @ID_GASTO_DETALLE=${data.id},
-              @TIPO_ARCHIVO='PDF'
+              @TIPO_ARCHIVO=${data.tipoArchivo ? `'PDF_COMISIONES'` : `'PDF'`},
+              @FOLIO_GASTO=${data.folioGasto ? `'${data.folioGasto}'` : ''}
             `;
       conexiones.body_bdseleccionada.servidor = data.servidor;
 
@@ -808,6 +809,59 @@ Meteor.methods({
         {
           parametro: "@COD_USU_GRABO",
           valor: datos.cod_usu,
+          tipo: "cadena",
+          direccion: "entrada",
+        },
+      ];
+
+      const response = await axios.post(
+        conexiones.windows_api_post,
+        conexiones.body_bdseleccionada,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.data.data.esValido) {
+        return {
+          isValid: response.data.data.esValido,
+          data: null,
+          message: response.data.data.mensaje,
+        };
+      }
+
+      return {
+        isValid: response.data.isValid,
+        data: JSON.parse(response.data.data.resultado),
+        message: response.data.data.mensaje,
+      };
+    } catch (error) {
+      console.log(error);
+      return {
+        isValid: false,
+        data: null,
+        message: error.message,
+      };
+    }
+  },
+  "documentos.EliminarArchivoComisiones": async (datos) => {
+    try {
+      conexiones.body_bdseleccionada.tipo = "procedimientoAlmacenado";
+      conexiones.body_bdseleccionada.baseDatos = "expedientes";
+      conexiones.body_bdseleccionada.query = `dbo.MP_COMISIONES_TIPOS_DOCUMENTOS_EXPEDIENTES_BORRAR`;
+      conexiones.body_bdseleccionada.servidor = datos.servidor;
+      conexiones.body_bdseleccionada.parametros = [
+        {
+          parametro: "@ID_COMISIONES_TIPOS_DOCUMENTOS_EXPEDIENTES",
+          valor: `${datos.id}`,
+          tipo: "entero",
+          direccion: "entrada",
+        },
+        {
+          parametro: "@FOLIO_GASTO",
+          valor: `${datos.folio}`,
           tipo: "cadena",
           direccion: "entrada",
         },
