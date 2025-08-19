@@ -275,6 +275,23 @@ Meteor.methods({
 
           existingUser = Meteor.users.findOne(userId);
         }
+        else if (existingUser && userWithSameUsername) {
+          // Si existe el usuario con la misma base de datos, actualizamos sus datos
+          Meteor.users.update(
+            { _id: existingUser._id },
+            {
+              $set: {
+                profile: {
+                  ...userData,
+                  baseDatos: data.BASE_DATOS,
+                  estatus: true,
+                  WEB_REACT_CLIENTE_OBLIGATORIO:
+                    userData.WEB_REACT_CLIENTE_OBLIGATORIO === "1",
+                },
+              },
+            }
+          );
+        }
 
         // Generar un token de inicio de sesión para el usuario
         const stampedLoginToken = Accounts._generateStampedLoginToken();

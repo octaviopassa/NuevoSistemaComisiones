@@ -17,7 +17,7 @@ export const useGastosData = create(
     setRfcEmpresaResponsablePagoSeleccionada: (rfc) =>
       set({ rfcEmpresaResponsablePagoSeleccionada: rfc }),
 
-    isCheckedSucursal: true,
+    isCheckedSucursal: false,
     toggleCheckedSucursal: () =>
       set((state) => ({
         isCheckedSucursal: !state.isCheckedSucursal,
@@ -69,7 +69,7 @@ export const useGastosData = create(
     resetData: () => {
       set({
         plazaSeleccionada: "",
-        isCheckedSucursal: true,
+        isCheckedSucursal: false,
         proyectoSeleccionado: "",
         documentos: [],
         empresa: "",

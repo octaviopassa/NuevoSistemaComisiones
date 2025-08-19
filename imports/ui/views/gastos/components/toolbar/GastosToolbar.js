@@ -149,7 +149,7 @@ export const GastosToolbar = () => {
       <div className="row mb-3">
         <div className="col-sm-3">
           <div className="custom-control-inline">Gastos de:</div>
-          <div className="custom-control custom-radio custom-control-inline">
+          {/* <div className="custom-control custom-radio custom-control-inline">
             <input
               type="radio"
               className="custom-control-input"
@@ -165,7 +165,7 @@ export const GastosToolbar = () => {
             >
               Sucursal
             </label>
-          </div>
+          </div> */}
 
           <div className="custom-control custom-radio custom-control-inline">
             <input

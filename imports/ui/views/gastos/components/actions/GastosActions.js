@@ -11,6 +11,7 @@ import {
 import { useGastosData } from "../../store";
 import { ConsultarButton } from "./ConsultarButton";
 import { useUserSession } from "../../../../store";
+import { AplicarButton } from "./AplicarButton";
 
 export const GastosActions = () => {
   const { estatus: estatusGastos } = useGastosData();
@@ -37,6 +38,10 @@ export const GastosActions = () => {
 
         {estatus === "AUTORIZADO" && session.profile.DESAUTORIZAR_GASTOS && (
           <DesautorizarButton setLoading={setLoading} />
+        )}
+
+        {estatus === "AUTORIZADO" && session.profile.APLICAR_COMISIONES && (
+          <AplicarButton setLoading={setLoading} />
         )}
 
         {estatus === "GRABADO" && propietario && (

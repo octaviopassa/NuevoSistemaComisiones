@@ -48,6 +48,10 @@ DocumentosService.desautorizarGasto = async (data) => {
   return await Meteor.callSync("documentos.desautorizarGasto", data);
 };
 
+DocumentosService.aplicarGasto = async (data) => {
+  return await Meteor.callSync("documentos.aplicarGasto", data);
+};
+
 DocumentosService.cancelarGasto = async (data) => {
   return await Meteor.callSync("documentos.cancelarGasto", data);
 };
