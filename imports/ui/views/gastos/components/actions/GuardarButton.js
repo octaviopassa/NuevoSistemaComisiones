@@ -25,6 +25,8 @@ export const GuardarButton = () => {
     setEstatus,
     setResumen,
     rfcEmpresaResponsablePagoSeleccionada,
+    mesComision,
+    anioComision,
   } = useGastosData();
   const { session } = useUserSession();
   const totalImportes = documentos.reduce(
@@ -97,6 +99,14 @@ export const GuardarButton = () => {
         toastr.warning("Por favor, seleccione la empresa responsable del pago.");
         return;
       }
+      if (!mesComision) {
+        toastr.warning("Por favor, seleccione un mes.");
+        return;
+      }
+      if (!anioComision) {
+        toastr.warning("Por favor, seleccione un año.");
+        return;
+      }
       let newFolio = folio;
 
       if (estatus.estatus === "Nuevo" || estatus.estatus === "GRABADO") {
@@ -131,6 +141,8 @@ export const GuardarButton = () => {
           ...totalImportes,
           servidor: session.profile.servidor,
           rfcEmpresaResponsablePago: rfcEmpresaResponsablePagoSeleccionada,
+          mesComision: mesComision,
+          anioComision: anioComision,
           accion: estatus.estatus === "GRABADO" ? "ACTUALIZAR" : "INSERTAR",
         };
 
@@ -158,7 +170,9 @@ export const GuardarButton = () => {
         const grabadoGlobal = await GastosService.grabar(dataGastoGlobal);
 
         if (!grabadoGlobal.isValid) {
-          toastr.warning("No se pudo realizar el grabado.");
+          // toastr.warning("No se pudo realizar el grabado.");
+          toastr.error(grabadoGlobal.message);
+          setError(true);
           console.error(grabadoGlobal);
           return;
         }
@@ -389,9 +403,10 @@ export const GuardarButton = () => {
       toastr.success(`${newFolio} grabado correctamente`);
     } catch (error) {
       setError(true);
-      toastr.error(
-        "Hubo un error al grabar los documentos, por favor reconsulte este folio y verifique. Contacte al departamento de sistemas."
-      );
+      // toastr.error(
+      //   "Hubo un error al grabar los documentos, por favor reconsulte este folio y verifique. Contacte al departamento de sistemas."
+      // );
+      toastr.error(error.message);
       console.log(error);
     } finally {
       setLoading(false);

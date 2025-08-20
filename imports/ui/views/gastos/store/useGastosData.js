@@ -17,6 +17,12 @@ export const useGastosData = create(
     setRfcEmpresaResponsablePagoSeleccionada: (rfc) =>
       set({ rfcEmpresaResponsablePagoSeleccionada: rfc }),
 
+    mesComision: "",
+    setMesComision: (mes) => set({ mesComision: mes }),
+
+    anioComision: "",
+    setAnioComision: (anio) => set({ anioComision: anio }),
+
     isCheckedSucursal: false,
     toggleCheckedSucursal: () =>
       set((state) => ({
@@ -90,6 +96,8 @@ export const useGastosData = create(
         rfcEmpresaResponsablePagoSeleccionada: "",
         resumen: [],
         documentosComisiones: [],
+        mesComision: "",
+        anioComision: "",
       });
     },
 

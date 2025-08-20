@@ -143,13 +143,19 @@ Meteor.methods({
         ${datos.proyecto ? `@CODIGO_PROYECTO='${datos.proyecto}',` : ""}
         @EsWeb=1,
         @RFC_RECEPTOR='${datos.rfc}',
-        @RFC_EMPRESA_RESPONSABLE_PAGO='${datos.rfcEmpresaResponsablePago}'
+        @RFC_EMPRESA_RESPONSABLE_PAGO='${datos.rfcEmpresaResponsablePago}',
+        @MES_COMISION='${datos.mesComision}',
+        @ANIO_COMISION='${datos.anioComision}'
       `;
       conexiones.body_bdseleccionada.servidor = datos.servidor;
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,
       });
+
+      if (!response.data.data.esValido) {
+        throw new Meteor.Error("error", response.data.data.mensaje);
+      }
 
       return {
         isValid: response.data.isValid,
@@ -158,6 +164,11 @@ Meteor.methods({
       };
     } catch (e) {
       console.log(e);
+      return {
+        isValid: false,
+        data: null,
+        message: e.message,
+      };
     }
   },
   "gastos.grabarRenglon": async (datos) => {

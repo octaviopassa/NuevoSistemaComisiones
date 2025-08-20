@@ -10,6 +10,7 @@ import { useUserSession } from "../../../../store";
 import { ModalCuentas } from "../modals/ModalCuentas";
 import { GastosFolioInput } from "./GastosFolioInput";
 import { useSearchParams } from "react-router-dom";
+import { getAniosComisiones, getMesesComisiones } from "../../../../../utils/utils";
 
 export const GastosToolbar = () => {
   const [plazas, setPlazas] = useState([]);
@@ -22,6 +23,8 @@ export const GastosToolbar = () => {
   const folioParam = searchParams.get('folio');
   const plazaParam = searchParams.get('plaza');
   const [empresasResponsablesPago, setEmpresasResponsablesPago] = useState([]);
+  const [meses, setMeses] = useState({});
+  const [anios, setAnios] = useState([]);
 
   const { session: user } = useUserSession();
   const {
@@ -42,6 +45,10 @@ export const GastosToolbar = () => {
     toggleCheckedSucursal,
     rfcEmpresaResponsablePagoSeleccionada,
     setRfcEmpresaResponsablePagoSeleccionada,
+    mesComision,
+    setMesComision,
+    anioComision,
+    setAnioComision,
   } = useGastosData();
 
   useEffect(() => {
@@ -60,6 +67,9 @@ export const GastosToolbar = () => {
 
   useEffect(() => {
     if (plazaSeleccionada) getIngenieros();
+    else {
+      setIngenieros([]);
+    }
   }, [folio]);
 
   const cargaInicial = async () => {
@@ -106,6 +116,13 @@ export const GastosToolbar = () => {
       }
 
       setPagarA(pagarAQuien);
+
+      const meses = getMesesComisiones();
+      setMeses(meses);
+
+      const anios = getAniosComisiones();
+      setAnios(anios);
+
     } catch (error) {
       console.error("Error durante la carga inicial", error);
     }
@@ -319,6 +336,46 @@ export const GastosToolbar = () => {
               {empresasResponsablesPago?.map((empresa) => (
                 <option key={empresa.RFC} value={empresa.RFC}>
                   {empresa.NOMBRE}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="input-group">
+            <div className="input-group-prepend">
+              <label className="input-group-text" htmlFor="selectMesComision">
+                Mes:
+              </label>
+            </div>
+            <select
+              className="custom-select"
+              id="selectMesComision"
+              disabled={estatus.estatus !== "Nuevo"}
+              onChange={(e) => setMesComision(e.target.value)}
+              value={mesComision}
+            >
+              <option value="">Seleccione el mes</option>
+              {Object.entries(meses || {})?.map(([key, value]) => (
+                <option key={key} value={key}>
+                  {value}
+                </option>
+              ))}
+            </select>
+            <div className="input-group-prepend">
+              <label className="input-group-text" htmlFor="selectAnioComision">
+                Año:
+              </label>
+            </div>
+            <select
+              className="custom-select"
+              id="selectAnioComision"
+              disabled={estatus.estatus !== "Nuevo"}
+              onChange={(e) => setAnioComision(e.target.value)}
+              value={anioComision}
+            >
+              <option value="">Seleccione el año</option>
+              {anios?.map((anio) => (
+                <option key={anio} value={anio}>
+                  {anio}
                 </option>
               ))}
             </select>
