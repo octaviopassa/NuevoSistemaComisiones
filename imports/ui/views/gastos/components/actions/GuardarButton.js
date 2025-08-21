@@ -25,8 +25,10 @@ export const GuardarButton = () => {
     setEstatus,
     setResumen,
     rfcEmpresaResponsablePagoSeleccionada,
-    mesComision,
-    anioComision,
+    // mesComision,
+    // anioComision,
+    fecha1,
+    fecha2,
   } = useGastosData();
   const { session } = useUserSession();
   const totalImportes = documentos.reduce(
@@ -99,14 +101,28 @@ export const GuardarButton = () => {
         toastr.warning("Por favor, seleccione la empresa responsable del pago.");
         return;
       }
-      if (!mesComision) {
-        toastr.warning("Por favor, seleccione un mes.");
+      // if (!mesComision) {
+      //   toastr.warning("Por favor, seleccione un mes.");
+      //   return;
+      // }
+      // if (!anioComision) {
+      //   toastr.warning("Por favor, seleccione un año.");
+      //   return;
+      // }
+
+      if (!fecha1) {
+        toastr.warning("Por favor, seleccione una fecha.");
         return;
       }
-      if (!anioComision) {
-        toastr.warning("Por favor, seleccione un año.");
+      if (!fecha2) {
+        toastr.warning("Por favor, seleccione una fecha.");
         return;
       }
+      if (fecha1 > fecha2) {
+        toastr.warning("La fecha 1 debe ser menor a la fecha 2.");
+        return;
+      }
+
       let newFolio = folio;
 
       if (estatus.estatus === "Nuevo" || estatus.estatus === "GRABADO") {
@@ -141,8 +157,18 @@ export const GuardarButton = () => {
           ...totalImportes,
           servidor: session.profile.servidor,
           rfcEmpresaResponsablePago: rfcEmpresaResponsablePagoSeleccionada,
-          mesComision: mesComision,
-          anioComision: anioComision,
+          // mesComision: mesComision,
+          // anioComision: anioComision,
+          fecha1: new Date(fecha1).toISOString()
+            .slice(0, 10)
+            .split("-")
+            .reverse()
+            .join("-"),
+          fecha2: new Date(fecha2).toISOString()
+            .slice(0, 10)
+            .split("-")
+            .reverse()
+            .join("-"),
           accion: estatus.estatus === "GRABADO" ? "ACTUALIZAR" : "INSERTAR",
         };
 

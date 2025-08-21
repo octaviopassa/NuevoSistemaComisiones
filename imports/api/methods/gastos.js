@@ -144,8 +144,8 @@ Meteor.methods({
         @EsWeb=1,
         @RFC_RECEPTOR='${datos.rfc}',
         @RFC_EMPRESA_RESPONSABLE_PAGO='${datos.rfcEmpresaResponsablePago}',
-        @MES_COMISION='${datos.mesComision}',
-        @ANIO_COMISION='${datos.anioComision}'
+        @FECHA1_COMISION='${datos.fecha1}',
+        @FECHA2_COMISION='${datos.fecha2}'
       `;
       conexiones.body_bdseleccionada.servidor = datos.servidor;
 

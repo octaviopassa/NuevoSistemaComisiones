@@ -1,4 +1,4 @@
-import { format } from "date-fns";
+import { format, startOfMonth, endOfMonth } from "date-fns";
 import { create } from "zustand";
 // import { persist } from "zustand/middleware";
 
@@ -17,11 +17,11 @@ export const useGastosData = create(
     setRfcEmpresaResponsablePagoSeleccionada: (rfc) =>
       set({ rfcEmpresaResponsablePagoSeleccionada: rfc }),
 
-    mesComision: "",
-    setMesComision: (mes) => set({ mesComision: mes }),
+    // mesComision: "",
+    // setMesComision: (mes) => set({ mesComision: mes }),
 
-    anioComision: "",
-    setAnioComision: (anio) => set({ anioComision: anio }),
+    // anioComision: "",
+    // setAnioComision: (anio) => set({ anioComision: anio }),
 
     isCheckedSucursal: false,
     toggleCheckedSucursal: () =>
@@ -46,6 +46,12 @@ export const useGastosData = create(
 
     gastosDate: format(new Date(), "yyyy-MM-dd"),
     setGastosDate: (nuevaFecha) => set({ gastosDate: nuevaFecha }),
+
+    fecha1: format(startOfMonth(new Date()), "yyyy-MM-dd"),
+    setFecha1: (nuevaFecha) => set({ fecha1: nuevaFecha }),
+
+    fecha2: format(endOfMonth(new Date()), "yyyy-MM-dd"),
+    setFecha2: (nuevaFecha) => set({ fecha2: nuevaFecha }),
 
     folio: "GC-000010",
     setFolio: (nuevoFolio) => set({ folio: nuevoFolio }),
@@ -96,8 +102,10 @@ export const useGastosData = create(
         rfcEmpresaResponsablePagoSeleccionada: "",
         resumen: [],
         documentosComisiones: [],
-        mesComision: "",
-        anioComision: "",
+        // mesComision: "",
+        // anioComision: "",
+        fecha1: format(startOfMonth(new Date()), "yyyy-MM-dd"),
+        fecha2: format(endOfMonth(new Date()), "yyyy-MM-dd"),
       });
     },
 

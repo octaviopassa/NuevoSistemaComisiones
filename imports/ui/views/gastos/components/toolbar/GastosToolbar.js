@@ -10,7 +10,7 @@ import { useUserSession } from "../../../../store";
 import { ModalCuentas } from "../modals/ModalCuentas";
 import { GastosFolioInput } from "./GastosFolioInput";
 import { useSearchParams } from "react-router-dom";
-import { getAniosComisiones, getMesesComisiones } from "../../../../../utils/utils";
+// import { getAniosComisiones, getMesesComisiones } from "../../../../../utils/utils";
 
 export const GastosToolbar = () => {
   const [plazas, setPlazas] = useState([]);
@@ -23,8 +23,8 @@ export const GastosToolbar = () => {
   const folioParam = searchParams.get('folio');
   const plazaParam = searchParams.get('plaza');
   const [empresasResponsablesPago, setEmpresasResponsablesPago] = useState([]);
-  const [meses, setMeses] = useState({});
-  const [anios, setAnios] = useState([]);
+  // const [meses, setMeses] = useState({});
+  // const [anios, setAnios] = useState([]);
 
   const { session: user } = useUserSession();
   const {
@@ -45,10 +45,14 @@ export const GastosToolbar = () => {
     toggleCheckedSucursal,
     rfcEmpresaResponsablePagoSeleccionada,
     setRfcEmpresaResponsablePagoSeleccionada,
-    mesComision,
-    setMesComision,
-    anioComision,
-    setAnioComision,
+    // mesComision,
+    // setMesComision,
+    // anioComision,
+    // setAnioComision,
+    fecha1,
+    fecha2,
+    setFecha1,
+    setFecha2,
   } = useGastosData();
 
   useEffect(() => {
@@ -117,11 +121,11 @@ export const GastosToolbar = () => {
 
       setPagarA(pagarAQuien);
 
-      const meses = getMesesComisiones();
-      setMeses(meses);
+      // const meses = getMesesComisiones();
+      // setMeses(meses);
 
-      const anios = getAniosComisiones();
-      setAnios(anios);
+      // const anios = getAniosComisiones();
+      // setAnios(anios);
 
     } catch (error) {
       console.error("Error durante la carga inicial", error);
@@ -340,7 +344,7 @@ export const GastosToolbar = () => {
               ))}
             </select>
           </div>
-          <div className="input-group">
+          {/* <div className="input-group">
             <div className="input-group-prepend">
               <label className="input-group-text" htmlFor="selectMesComision">
                 Mes:
@@ -379,6 +383,36 @@ export const GastosToolbar = () => {
                 </option>
               ))}
             </select>
+          </div> */}
+          <div className="input-group">
+            <div className="input-group-prepend">
+              <label className="input-group-text" htmlFor="selectFecha1">
+                Desde:
+              </label>
+            </div>
+            <input
+              className="form-control"
+              type="date"
+              name="date"
+              id="selectFecha1"
+              disabled={estatus.estatus !== "Nuevo"}
+              value={fecha1}
+              onChange={(e) => setFecha1(e.target.value)}
+            />
+            <div className="input-group-prepend">
+              <label className="input-group-text" htmlFor="selectFecha2">
+                Hasta:
+              </label>
+            </div>
+            <input
+              className="form-control"
+              type="date"
+              name="date"
+              id="selectFecha2"
+              disabled={estatus.estatus !== "Nuevo"}
+              value={fecha2}
+              onChange={(e) => setFecha2(e.target.value)}
+            />
           </div>
           {user.profile.MOSTRAR_COMBO_PROYECTO ? (
             <div className="input-group">
