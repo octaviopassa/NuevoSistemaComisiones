@@ -257,5 +257,5 @@ export const getAniosComisiones = () => {
 };
 
 export const version = () => {
-  return "1.0.18";
+  return "1.0.19";
 };
