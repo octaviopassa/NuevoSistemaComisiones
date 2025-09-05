@@ -156,7 +156,7 @@ export const TableGastos = () => {
           }
 
           const version = comprobante.getAttribute("Version") || comprobante.getAttribute("version");
-          const metodo = comprobante.getAttribute("MetodoPago");
+          // const metodo = comprobante.getAttribute("MetodoPago");
           const tipo = comprobante.getAttribute("TipoDeComprobante");
           const rfcReceptor = comprobante
             .getElementsByTagName("cfdi:Receptor")[0]
@@ -276,12 +276,12 @@ export const TableGastos = () => {
             codigoRegimenFiscalXML: regimenFiscalReceptor,
           });
 
-          if (metodo !== "PUE") {
-            toastr.error(
-              `Método de pago inválido, la factura es ${metodo}, en reembolsos sólo se permiten PUE.`
-            );
-            return;
-          }
+          // if (metodo !== "PUE") {
+          //   toastr.error(
+          //     `Método de pago inválido, la factura es ${metodo}, en reembolsos sólo se permiten PUE.`
+          //   );
+          //   return;
+          // }
 
           if (parseFloat(version) >= 4.0) {
             if (validaEmpresaReceptora.REGIMEN_FISCAL_VALIDO === "0") {
