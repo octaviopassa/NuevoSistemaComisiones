@@ -95,10 +95,10 @@ const GastosAdminTable = ({ gastos, loading }) => {
               <FontAwesomeIcon cursor={"pointer"} icon={getIcon("cliente")} />
             </span>
           </th> */}
-          <th onClick={() => handleSort("concepto")} style={{ width: "250px" }}>
+          <th onClick={() => handleSort("informacion_adicional")} style={{ width: "250px" }}>
             <span className={theadClasses}>
-              <span>Concepto</span>
-              <FontAwesomeIcon cursor={"pointer"} icon={getIcon("concepto")} />
+              <span>Información adicional</span>
+              <FontAwesomeIcon cursor={"pointer"} icon={getIcon("informacion_adicional")} />
             </span>
           </th>
           <th onClick={() => handleSort("ingeniero")} style={{ width: "200px" }}>
@@ -153,8 +153,16 @@ const GastosAdminTable = ({ gastos, loading }) => {
               {/* <td>{format(new Date(gasto.FECHA), "dd/MM/yyyy")}</td> */}
               <td>{`${gasto.PLAZA} - ${gasto.NOM_PLAZA}`}</td>
               {/* <td>{gasto.CLIENTE}</td> */}
-              <td>{gasto.CONCEPTO}</td>
-              <td>{gasto.INGENIERO}</td>
+              <td>
+                <b>Periodo de comisiones:</b>
+                <br />
+                {gasto.PERIODO_COMISION}
+                <br />
+                <b>Cliente:</b>
+                <br />
+                {gasto.CLIENTE}
+              </td>
+              <td>{gasto.NOMBRE_REPRESENTANTE}</td>
               <td>
                 <b>Titular de la cuenta:</b> {gasto.TITULAR_CUENTA}
                 <br />

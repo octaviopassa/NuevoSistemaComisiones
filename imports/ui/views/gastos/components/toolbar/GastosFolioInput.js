@@ -7,7 +7,7 @@ import { format } from "date-fns";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { formatDate, formatToSinaloaDate } from "../../../../../utils/utils";
+import { formatDate/*, formatToSinaloaDate */ } from "../../../../../utils/utils";
 
 export const GastosFolioInput = () => {
   const [loading, setLoading] = useState(false);
@@ -184,7 +184,8 @@ export const GastosFolioInput = () => {
         // anioComision: gastos.ANIO_COMISION,
         fecha1: format(new Date(gastos.FECHA1_COMISION), "yyyy-MM-dd"),
         fecha2: format(new Date(gastos.FECHA2_COMISION), "yyyy-MM-dd"),
-        selectedIngeniero: gastos.ORIGEN === "I" ? gastos.CODIGO_VENDEDOR : "",
+        // selectedIngeniero: gastos.ORIGEN === "I" ? gastos.CODIGO_VENDEDOR : "",
+        selectedRepresentante: gastos.ORIGEN === "R" ? gastos.CODIGO_REPRESENTANTE : "",
         folio: gastos.FOLIO_GASTO,
         gastosDate: format(new Date(gastos.FECHA), "yyyy-MM-dd"),
         empresa: gastos.EMPRESA,

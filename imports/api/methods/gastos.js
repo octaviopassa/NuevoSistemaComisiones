@@ -288,7 +288,7 @@ Meteor.methods({
         @FECHA1=${datos.fechaInicio ? `'${datos.fechaInicio}'` : null},
         @FECHA2=${datos.fechaFin ? `'${datos.fechaFin}'` : null},
         @ESTATUS='${datos.estatus}',
-        @CODIGO_VENDEDOR='${datos.vendedor}',
+        @CODIGO_REPRESENTANTE='${datos.vendedor}',
         @Cod_Usuario='${datos.cod_usu}'
       `;
       conexiones.body_bdseleccionada.servidor = datos.servidor;

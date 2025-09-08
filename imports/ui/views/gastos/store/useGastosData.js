@@ -40,9 +40,13 @@ export const useGastosData = create(
     setPagarASeleccionado: (nuevoPagarA) =>
       set({ pagarASeleccionado: nuevoPagarA }),
 
-    selectedIngeniero: "",
-    setSelectedIngeniero: (nuevoIngeniero) =>
-      set({ selectedIngeniero: nuevoIngeniero }),
+    // selectedIngeniero: "",
+    // setSelectedIngeniero: (nuevoIngeniero) =>
+    //   set({ selectedIngeniero: nuevoIngeniero }),
+
+    selectedRepresentante: "",
+    setSelectedRepresentante: (nuevoRepresentante) =>
+      set({ selectedRepresentante: nuevoRepresentante }),
 
     gastosDate: format(new Date(), "yyyy-MM-dd"),
     setGastosDate: (nuevaFecha) => set({ gastosDate: nuevaFecha }),
@@ -86,7 +90,8 @@ export const useGastosData = create(
         documentos: [],
         empresa: "",
         pagarASeleccionado: "",
-        selectedIngeniero: "",
+        // selectedIngeniero: "",
+        selectedRepresentante: "",
         gastosDate: format(new Date(), "yyyy-MM-dd"),
         folio: "",
         estatus: {

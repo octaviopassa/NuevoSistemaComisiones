@@ -67,6 +67,21 @@ Meteor.methods({
 
     return respuesta;
   },
+  "representantes.getAll": async (datos) => {
+    conexiones.body_bdseleccionada.tipo = "procedimiento";
+    conexiones.body_bdseleccionada.query = `exec MP_WEB_REACT_CAT_REPRESENTANTES_CONSULTAR @Plaza= '${datos.plaza}'`;
+    conexiones.body_bdseleccionada.baseDatos = datos.baseDatos;
+    conexiones.body_bdseleccionada.servidor = datos.servidor;
+
+    const response = await axios.get(conexiones.windows_api, {
+      data: conexiones.body_bdseleccionada,
+    });
+
+    const respuesta = JSON.parse(response.data.data.resultado);
+
+    return respuesta;
+  },
+
   "combustibles.getAll": async (datos) => {
     try {
       conexiones.body_bdseleccionada.tipo = "consulta";

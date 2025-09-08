@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { IngenierosService, PlazasService } from "../../../../services";
+import { /*IngenierosService, */PlazasService } from "../../../../services";
 import { useUserSession } from "../../../../store";
 import { Input } from "reactstrap";
 import { format, subMonths } from "date-fns";
 import { useFiltersStore } from "../../store";
+import { RepresentantesService } from "../../../../services/representantes";
 
 const statusOptions = [
   { value: "G", label: "Grabado" },
@@ -15,7 +16,7 @@ const statusOptions = [
 const GastosAdminFilters = () => {
   const [plazas, setPlazas] = useState([]);
   const [plazaSeleccionada, setPlazaSeleccionada] = useState();
-  const [vendedores, setVendedores] = useState([]);
+  const [representates, setRepresentantes] = useState([]);
   const [dateFilterVisible, setDateFilterVisible] = useState(false);
   const { filters, setFilters } = useFiltersStore();
   const { session } = useUserSession();
@@ -26,7 +27,7 @@ const GastosAdminFilters = () => {
 
   useEffect(() => {
     if (plazaSeleccionada) {
-      getVendedores();
+      getRepresentantes();
     }
   }, [plazaSeleccionada]);
 
@@ -55,14 +56,14 @@ const GastosAdminFilters = () => {
     }
   };
 
-  const getVendedores = async () => {
+  const getRepresentantes = async () => {
     try {
-      const obtenerVendedores = await IngenierosService.getAll({
+      const obtenerRepresentantes = await RepresentantesService.getAll({
         plaza: plazaSeleccionada,
         baseDatos: session.profile.baseDatos,
         servidor: session.profile.servidor,
       });
-      setVendedores(obtenerVendedores);
+      setRepresentantes(obtenerRepresentantes);
     } catch (error) {
       console.error("Error durante la carga inicial", error);
     }
@@ -144,19 +145,19 @@ const GastosAdminFilters = () => {
 
         <div className="col-sm-2 input-group">
           <div className="input-group-prepend">
-            <label htmlFor="vendedorSelect" className="input-group-text">
-              Vendedor
+            <label htmlFor="representanteSelect" className="input-group-text">
+              Representante
             </label>
             <select
               className="custom-select"
-              id="vendedorSelect"
+              id="representanteSelect"
               onChange={(e) => setFilters({ ...filters, vendedor: e.target.value })}
               value={filters.vendedor}
             >
-              <option value="">Seleccione un vendedor</option>
-              {vendedores.map((option) => (
-                <option key={option.Codigo} value={option.Codigo}>
-                  {option.Nombre}
+              <option value="">Seleccione un representante</option>
+              {representates.map((option) => (
+                <option key={option.CODIGO_REPRESENTANTE} value={option.CODIGO_REPRESENTANTE}>
+                  {option.NOMBRE_REPRESENTANTE}
                 </option>
               ))}
             </select>

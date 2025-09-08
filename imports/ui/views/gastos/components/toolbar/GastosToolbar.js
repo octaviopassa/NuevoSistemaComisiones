@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
   PlazasService,
-  IngenierosService,
+  // IngenierosService,
   GastosService,
 } from "../../../../services";
 import { ModalButton } from "../modals";
@@ -10,12 +10,13 @@ import { useUserSession } from "../../../../store";
 import { ModalCuentas } from "../modals/ModalCuentas";
 import { GastosFolioInput } from "./GastosFolioInput";
 import { useSearchParams } from "react-router-dom";
+import { RepresentantesService } from "../../../../services/representantes";
 // import { getAniosComisiones, getMesesComisiones } from "../../../../../utils/utils";
 
 export const GastosToolbar = () => {
   const [plazas, setPlazas] = useState([]);
   const [pagarA, setPagarA] = useState([]);
-  const [ingenieros, setIngenieros] = useState([]);
+  const [representantes, setRepresentantes] = useState([]);//const [ingenieros, setIngenieros] = useState([]);
   const [proyectos, setProyectos] = useState([]);
   const [reloadData, setReloadData] = useState(false);
   // const history = useLocation()?.state;
@@ -34,8 +35,10 @@ export const GastosToolbar = () => {
     setProyectoSeleccionado,
     pagarASeleccionado,
     setPagarASeleccionado,
-    selectedIngeniero,
-    setSelectedIngeniero,
+    // selectedIngeniero,
+    // setSelectedIngeniero,
+    selectedRepresentante,
+    setSelectedRepresentante,
     gastosDate,
     setGastosDate,
     folio,
@@ -70,9 +73,13 @@ export const GastosToolbar = () => {
   }, [plazaSeleccionada]);
 
   useEffect(() => {
-    if (plazaSeleccionada) getIngenieros();
+    // if (plazaSeleccionada) getIngenieros();
+    // else {
+    //   setIngenieros([]);
+    // }
+    if (plazaSeleccionada) getRepresentantes();
     else {
-      setIngenieros([]);
+      setRepresentantes([]);
     }
   }, [folio]);
 
@@ -132,17 +139,31 @@ export const GastosToolbar = () => {
     }
   };
 
-  const getIngenieros = async () => {
+  // const getIngenieros = async () => {
+  //   try {
+  //     const ingenierosData = await IngenierosService.getAll({
+  //       plaza: plazaSeleccionada,
+  //       baseDatos: user.profile.baseDatos,
+  //       servidor: user.profile.servidor,
+  //     });
+
+  //     setIngenieros(ingenierosData);
+  //   } catch (error) {
+  //     console.error("Error en getIngenieros", error);
+  //   }
+  // };
+
+  const getRepresentantes = async () => {
     try {
-      const ingenierosData = await IngenierosService.getAll({
+      const representantesData = await RepresentantesService.getAll({
         plaza: plazaSeleccionada,
         baseDatos: user.profile.baseDatos,
         servidor: user.profile.servidor,
       });
 
-      setIngenieros(ingenierosData);
+      setRepresentantes(representantesData);
     } catch (error) {
-      console.error("Error en getIngenieros", error);
+      console.error("Error en getRepresentantes", error);
     }
   };
 
@@ -161,7 +182,7 @@ export const GastosToolbar = () => {
   const handleChecks = async () => {
     toggleCheckedSucursal();
     if (isCheckedSucursal) {
-      setSelectedIngeniero("");
+      setSelectedRepresentante("");// setSelectedIngeniero("");
     }
   };
 
@@ -192,7 +213,7 @@ export const GastosToolbar = () => {
             <input
               type="radio"
               className="custom-control-input"
-              id="inlineRadioIngeniero"
+              id="inlineRadiorRepresentante"
               name="gastosDe"
               checked={!isCheckedSucursal}
               onChange={handleChecks}
@@ -200,9 +221,9 @@ export const GastosToolbar = () => {
             />
             <label
               className="custom-control-label"
-              htmlFor="inlineRadioIngeniero"
+              htmlFor="inlineRadioRepresentante"
             >
-              Ingeniero
+              Representante
             </label>
           </div>
         </div>
@@ -211,21 +232,21 @@ export const GastosToolbar = () => {
           <div className="col-sm-3">
             <div className="input-group">
               <div className="input-group-prepend">
-                <label className="input-group-text" htmlFor="selectIngeniero">
-                  Ingeniero
+                <label className="input-group-text" htmlFor="selectRepresentante">
+                  Representante
                 </label>
               </div>
               <select
                 className="custom-select"
-                id="selectIngeniero"
-                value={selectedIngeniero}
-                onChange={(e) => setSelectedIngeniero(e.target.value)}
+                id="selectRepresentante"
+                value={selectedRepresentante}
+                onChange={(e) => setSelectedRepresentante(e.target.value)}
                 disabled={estatus.estatus !== "Nuevo"}
               >
                 <option value="">Seleccione...</option>
-                {ingenieros.map((ingeniero) => (
-                  <option key={ingeniero.Codigo} value={ingeniero.Codigo}>
-                    {ingeniero.Nombre}
+                {representantes.map((representante) => (
+                  <option key={representante.CODIGO_REPRESENTANTE} value={representante.CODIGO_REPRESENTANTE}>
+                    {representante.NOMBRE_REPRESENTANTE}
                   </option>
                 ))}
               </select>
