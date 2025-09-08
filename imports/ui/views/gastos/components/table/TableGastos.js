@@ -552,6 +552,7 @@ export const TableGastos = () => {
       ? pdfArchivo
       : await DocumentosService.getPDF({
         id: pdfArchivo?.id,
+        folioGasto: folioGlobal,
         servidor: session.profile.servidor,
       });
 
