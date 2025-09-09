@@ -71,7 +71,8 @@ export const TableGastos = () => {
     folio: folioGlobal,
     plazaSeleccionada,
     gastosDate,
-    rfcEmpresaResponsablePagoSeleccionada
+    rfcEmpresaResponsablePagoSeleccionada,
+    selectedRepresentante,
   } = useGastosData();
   const { data: dataTipoGastos } = useFetchData(TipoGastosService.getAll, [
     {
@@ -107,6 +108,7 @@ export const TableGastos = () => {
       try {
         const clientes = await ClientesService.getAllByName({
           search: inputValue,
+          codigoRepresentante: selectedRepresentante || 0,
           servidor: session.profile.servidor,
         });
 

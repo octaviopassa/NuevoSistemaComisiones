@@ -101,10 +101,10 @@ const GastosAdminTable = ({ gastos, loading }) => {
               <FontAwesomeIcon cursor={"pointer"} icon={getIcon("informacion_adicional")} />
             </span>
           </th>
-          <th onClick={() => handleSort("ingeniero")} style={{ width: "200px" }}>
+          <th onClick={() => handleSort("representante")} style={{ width: "200px" }}>
             <span className={theadClasses}>
-              <span>Ingeniero</span>
-              <FontAwesomeIcon cursor={"pointer"} icon={getIcon("ingeniero")} />
+              <span>Representante</span>
+              <FontAwesomeIcon cursor={"pointer"} icon={getIcon("representante")} />
             </span>
           </th>
           <th onClick={() => handleSort("datos_bancarios")} style={{ width: "300px" }}>

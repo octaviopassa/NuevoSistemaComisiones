@@ -134,7 +134,7 @@ Meteor.methods({
         @RETENCION=${datos.retencion},
         @TOTAL=${datos.total},
         @ORIGEN='${datos.origen}',
-        @CODIGO_VENDEDOR='${datos.ingeniero}',
+        @CODIGO_REPRESENTANTE='${datos.representante}',
         @PAGAR_A='${datos.pagarA}',
         @ISH=${datos.ish},
         @TUA=${datos.tua},

@@ -1,9 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  PlazasService,
-  // IngenierosService,
-  GastosService,
-} from "../../../../services";
+import { PlazasService, GastosService } from "../../../../services";
 import { ModalButton } from "../modals";
 import { useGastosData } from "../../store";
 import { useUserSession } from "../../../../store";
@@ -16,7 +12,7 @@ import { RepresentantesService } from "../../../../services/representantes";
 export const GastosToolbar = () => {
   const [plazas, setPlazas] = useState([]);
   const [pagarA, setPagarA] = useState([]);
-  const [representantes, setRepresentantes] = useState([]);//const [ingenieros, setIngenieros] = useState([]);
+  const [representantes, setRepresentantes] = useState([]);
   const [proyectos, setProyectos] = useState([]);
   const [reloadData, setReloadData] = useState(false);
   // const history = useLocation()?.state;
@@ -35,8 +31,6 @@ export const GastosToolbar = () => {
     setProyectoSeleccionado,
     pagarASeleccionado,
     setPagarASeleccionado,
-    // selectedIngeniero,
-    // setSelectedIngeniero,
     selectedRepresentante,
     setSelectedRepresentante,
     gastosDate,
@@ -73,10 +67,6 @@ export const GastosToolbar = () => {
   }, [plazaSeleccionada]);
 
   useEffect(() => {
-    // if (plazaSeleccionada) getIngenieros();
-    // else {
-    //   setIngenieros([]);
-    // }
     if (plazaSeleccionada) getRepresentantes();
     else {
       setRepresentantes([]);
@@ -139,20 +129,6 @@ export const GastosToolbar = () => {
     }
   };
 
-  // const getIngenieros = async () => {
-  //   try {
-  //     const ingenierosData = await IngenierosService.getAll({
-  //       plaza: plazaSeleccionada,
-  //       baseDatos: user.profile.baseDatos,
-  //       servidor: user.profile.servidor,
-  //     });
-
-  //     setIngenieros(ingenierosData);
-  //   } catch (error) {
-  //     console.error("Error en getIngenieros", error);
-  //   }
-  // };
-
   const getRepresentantes = async () => {
     try {
       const representantesData = await RepresentantesService.getAll({
@@ -182,7 +158,7 @@ export const GastosToolbar = () => {
   const handleChecks = async () => {
     toggleCheckedSucursal();
     if (isCheckedSucursal) {
-      setSelectedRepresentante("");// setSelectedIngeniero("");
+      setSelectedRepresentante("");
     }
   };
 
@@ -416,7 +392,7 @@ export const GastosToolbar = () => {
               type="date"
               name="date"
               id="selectFecha1"
-              disabled={estatus.estatus !== "Nuevo"}
+              disabled={estatus.estatus === "APLICADO" || estatus.estatus === "CANCELADO" || estatus.estatus === "AUTORIZADO"}
               value={fecha1}
               onChange={(e) => setFecha1(e.target.value)}
             />
@@ -430,7 +406,7 @@ export const GastosToolbar = () => {
               type="date"
               name="date"
               id="selectFecha2"
-              disabled={estatus.estatus !== "Nuevo"}
+              disabled={estatus.estatus === "APLICADO" || estatus.estatus === "CANCELADO" || estatus.estatus === "AUTORIZADO"}
               value={fecha2}
               onChange={(e) => setFecha2(e.target.value)}
             />

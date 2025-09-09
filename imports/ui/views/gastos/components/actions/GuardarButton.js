@@ -18,7 +18,7 @@ export const GuardarButton = () => {
     plazaSeleccionada,
     proyectoSeleccionado,
     pagarASeleccionado,
-    selectedIngeniero,
+    selectedRepresentante,
     gastosDate,
     folio,
     estatus,
@@ -140,8 +140,8 @@ export const GuardarButton = () => {
             .split("-")
             .reverse()
             .join("-"),
-          origen: selectedIngeniero === "" ? "S" : "I",
-          ingeniero: selectedIngeniero || "0",
+          origen: selectedRepresentante === "" ? "S" : "I",
+          representante: selectedRepresentante || 0,
           gastosDate: new Date(gastosDate)
             .toISOString()
             .slice(0, 10)
