@@ -104,7 +104,7 @@ export const TableGastos = () => {
   };
 
   const clientesOptions = async (inputValue) => {
-    if (inputValue.length >= 3) {
+    if (inputValue.length >= 1) {
       try {
         const clientes = await ClientesService.getAllByName({
           search: inputValue,

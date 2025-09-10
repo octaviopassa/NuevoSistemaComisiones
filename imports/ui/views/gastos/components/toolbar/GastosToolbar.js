@@ -27,8 +27,8 @@ export const GastosToolbar = () => {
   const {
     plazaSeleccionada,
     setPlazaSeleccionada,
-    proyectoSeleccionado,
-    setProyectoSeleccionado,
+    // proyectoSeleccionado,
+    // setProyectoSeleccionado,
     pagarASeleccionado,
     setPagarASeleccionado,
     selectedRepresentante,
@@ -39,7 +39,7 @@ export const GastosToolbar = () => {
     setFolio,
     estatus,
     isCheckedSucursal,
-    toggleCheckedSucursal,
+    // toggleCheckedSucursal,
     rfcEmpresaResponsablePagoSeleccionada,
     setRfcEmpresaResponsablePagoSeleccionada,
     // mesComision,
@@ -155,19 +155,68 @@ export const GastosToolbar = () => {
     }
   };
 
-  const handleChecks = async () => {
-    toggleCheckedSucursal();
-    if (isCheckedSucursal) {
-      setSelectedRepresentante("");
-    }
-  };
+  // const handleChecks = async () => {
+  //   toggleCheckedSucursal();
+  //   if (isCheckedSucursal) {
+  //     setSelectedRepresentante("");
+  //   }
+  // };
 
   return (
     <>
       <div className="row mb-3">
-        <div className="col-sm-3">
+        <div className="col-sm-4">
+          <div className="input-group">
+            <div className="input-group-prepend">
+              <label className="input-group-text" htmlFor="selectPlaza">
+                Plaza:
+              </label>
+            </div>
+            <select
+              className="custom-select"
+              id="selectPlaza"
+              value={plazaSeleccionada}
+              disabled={estatus.estatus !== "Nuevo"}
+              onChange={(e) => setPlazaSeleccionada(e.target.value)}
+            >
+              <option value="">Seleccione...</option>
+              {plazas.map((plaza) => (
+                <option key={plaza.Codigo} value={plaza.Codigo}>
+                  {plaza.Nombre}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {!isCheckedSucursal && (
+            <div className="input-group">
+              <div className="input-group-prepend">
+                <label className="input-group-text" htmlFor="selectRepresentante">
+                  Representante
+                </label>
+              </div>
+              <select
+                className="custom-select"
+                id="selectRepresentante"
+                value={selectedRepresentante}
+                onChange={(e) => setSelectedRepresentante(e.target.value)}
+                disabled={estatus.estatus !== "Nuevo"}
+              >
+                <option value="">Seleccione...</option>
+                {representantes.map((representante) => (
+                  <option key={representante.CODIGO_REPRESENTANTE} value={representante.CODIGO_REPRESENTANTE}>
+                    {representante.NOMBRE_REPRESENTANTE}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          <GastosFolioInput />
+        </div>
+        {/* <div className="col-sm-3">
           <div className="custom-control-inline">Gastos de:</div>
-          {/* <div className="custom-control custom-radio custom-control-inline">
+          <div className="custom-control custom-radio custom-control-inline">
             <input
               type="radio"
               className="custom-control-input"
@@ -183,7 +232,7 @@ export const GastosToolbar = () => {
             >
               Sucursal
             </label>
-          </div> */}
+          </div>
 
           <div className="custom-control custom-radio custom-control-inline">
             <input
@@ -202,9 +251,9 @@ export const GastosToolbar = () => {
               Representante
             </label>
           </div>
-        </div>
+        </div> */}
 
-        {!isCheckedSucursal && (
+        {/* {!isCheckedSucursal && (
           <div className="col-sm-3">
             <div className="input-group">
               <div className="input-group-prepend">
@@ -228,7 +277,7 @@ export const GastosToolbar = () => {
               </select>
             </div>
           </div>
-        )}
+        )} */}
 
         <div className="col-sm-2">
           <div className="input-group">
@@ -248,32 +297,108 @@ export const GastosToolbar = () => {
             />
           </div>
         </div>
-        <div className="col-sm-4">
+
+        <div className="col-sm-5">
           <div className="input-group">
             <div className="input-group-prepend">
-              <label className="input-group-text" htmlFor="selectPlaza">
-                Plaza:
+              <label className="input-group-text" htmlFor="selectPagarA">
+                Pagar a:
               </label>
             </div>
             <select
               className="custom-select"
-              id="selectPlaza"
-              value={plazaSeleccionada}
-              disabled={estatus.estatus !== "Nuevo"}
-              onChange={(e) => setPlazaSeleccionada(e.target.value)}
+              id="selectPagarA"
+              disabled={
+                (estatus.estatus !== "Nuevo" && estatus.estatus !== "GRABADO") ||
+                !estatus.propietario
+              }
+              value={pagarASeleccionado}
+              onChange={(e) => setPagarASeleccionado(e.target.value)}
             >
               <option value="">Seleccione...</option>
-              {plazas.map((plaza) => (
-                <option key={plaza.Codigo} value={plaza.Codigo}>
-                  {plaza.Nombre}
+              {pagarA.map((p, index) => (
+                <option key={`${p.Codigo}-${index}`} value={p.Codigo}>
+                  {p.Nombre}
+                </option>
+              ))}
+            </select>
+            <ModalButton
+              color="primary"
+              buttonClasses="px-3 ml-2"
+              text="Agregar"
+              ModalComponent={ModalCuentas}
+              reloadData={() => setReloadData(!reloadData)}
+            />
+            {pagarASeleccionado && (
+              <ModalButton
+                color="secondary"
+                buttonClasses="px-3 ml-2"
+                text="Modificar Cuenta"
+                ModalComponent={ModalCuentas}
+                cuenta={pagarA.find(
+                  (p) => p.Codigo === Number(pagarASeleccionado)
+                )}
+                reloadData={() => setReloadData(!reloadData)}
+              />
+            )}
+          </div>
+
+          <div className="input-group">
+            <div className="input-group-prepend">
+              <label className="input-group-text" htmlFor="selectEmpresaPago">
+                Empresa Pago:
+              </label>
+            </div>
+            <select
+              className="custom-select"
+              id="selectEmpresaPago"
+              disabled={estatus.estatus !== "Nuevo"}
+              onChange={(e) => setRfcEmpresaResponsablePagoSeleccionada(e.target.value)}
+              value={rfcEmpresaResponsablePagoSeleccionada}
+            >
+              <option value="">Seleccione la empresa</option>
+              {empresasResponsablesPago?.map((empresa) => (
+                <option key={empresa.RFC} value={empresa.RFC}>
+                  {empresa.NOMBRE}
                 </option>
               ))}
             </select>
           </div>
+
+          <div className="input-group">
+            <div className="input-group-prepend">
+              <label className="input-group-text" htmlFor="selectFecha1">
+                Desde:
+              </label>
+            </div>
+            <input
+              className="form-control"
+              type="date"
+              name="date"
+              id="selectFecha1"
+              disabled={estatus.estatus === "APLICADO" || estatus.estatus === "CANCELADO" || estatus.estatus === "AUTORIZADO"}
+              value={fecha1}
+              onChange={(e) => setFecha1(e.target.value)}
+            />
+            <div className="input-group-prepend">
+              <label className="input-group-text" htmlFor="selectFecha2">
+                Hasta:
+              </label>
+            </div>
+            <input
+              className="form-control"
+              type="date"
+              name="date"
+              id="selectFecha2"
+              disabled={estatus.estatus === "APLICADO" || estatus.estatus === "CANCELADO" || estatus.estatus === "AUTORIZADO"}
+              value={fecha2}
+              onChange={(e) => setFecha2(e.target.value)}
+            />
+          </div>
         </div>
       </div>
 
-      <div className="row mb-3">
+      {/* <div className="row mb-3">
         <GastosFolioInput />
 
         <div className="col-sm-5">
@@ -341,7 +466,7 @@ export const GastosToolbar = () => {
               ))}
             </select>
           </div>
-          {/* <div className="input-group">
+          <div className="input-group">
             <div className="input-group-prepend">
               <label className="input-group-text" htmlFor="selectMesComision">
                 Mes:
@@ -380,7 +505,7 @@ export const GastosToolbar = () => {
                 </option>
               ))}
             </select>
-          </div> */}
+          </div>
           <div className="input-group">
             <div className="input-group-prepend">
               <label className="input-group-text" htmlFor="selectFecha1">
@@ -437,7 +562,7 @@ export const GastosToolbar = () => {
             </div>
           ) : null}
         </div>
-      </div>
+      </div> */}
     </>
   );
 };

@@ -238,7 +238,7 @@ export const GastosFolioInput = () => {
   };
 
   return (
-    <div className="col-sm-3">
+    <div > {/*className="col-sm-3"*/}
       <div className="input-group">
         <div className="input-group-prepend">
           <span className="input-group-text">Folio:</span>

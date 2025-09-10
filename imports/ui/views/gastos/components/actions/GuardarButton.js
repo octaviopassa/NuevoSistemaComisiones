@@ -274,6 +274,10 @@ export const GuardarButton = () => {
                 ? documento.detalleGasto.label.replace("'", "''")
                 : "",
             servidor: session.profile.servidor,
+            codigoCliente:
+              tipoGasto.value === 17 || documento.detalleGasto.label
+                ? documento.detalleGasto.value
+                : "",
           };
 
           const grabarRenglon = await GastosService.grabarRenglon(
