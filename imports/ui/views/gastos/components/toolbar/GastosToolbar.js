@@ -13,7 +13,7 @@ export const GastosToolbar = () => {
   const [plazas, setPlazas] = useState([]);
   const [pagarA, setPagarA] = useState([]);
   const [representantes, setRepresentantes] = useState([]);
-  const [proyectos, setProyectos] = useState([]);
+  // const [proyectos, setProyectos] = useState([]);
   const [reloadData, setReloadData] = useState(false);
   // const history = useLocation()?.state;
   const [searchParams] = useSearchParams();
@@ -89,19 +89,19 @@ export const GastosToolbar = () => {
         servidor: user.profile.servidor,
       });
 
-      const proyectosPromise = user.profile.MOSTRAR_COMBO_PROYECTO
-        ? GastosService.getProyectos(user.profile.servidor)
-        : null;
+      // const proyectosPromise = user.profile.MOSTRAR_COMBO_PROYECTO
+      //   ? GastosService.getProyectos(user.profile.servidor)
+      //   : null;
 
       const empresasResponsablesPagoPromise = GastosService.getEmpresasResponsablesPago()
 
-      const [obtenerPlazas, pagarAQuien, proyectosResponse, empresasResponsablesPagoResponse] = await Promise.all(
-        [plazasPromise, pagarAPromise, proyectosPromise, empresasResponsablesPagoPromise]
+      const [obtenerPlazas, pagarAQuien, /* proyectosResponse, */ empresasResponsablesPagoResponse] = await Promise.all(
+        [plazasPromise, pagarAPromise, /* proyectosPromise, */ empresasResponsablesPagoPromise]
       );
 
-      if (proyectosResponse) {
-        setProyectos(proyectosResponse.data);
-      }
+      // if (proyectosResponse) {
+      //   setProyectos(proyectosResponse.data);
+      // }
 
       setEmpresasResponsablesPago(empresasResponsablesPagoResponse.data);
 
@@ -133,7 +133,6 @@ export const GastosToolbar = () => {
     try {
       const representantesData = await RepresentantesService.getAll({
         plaza: plazaSeleccionada,
-        baseDatos: user.profile.baseDatos,
         servidor: user.profile.servidor,
       });
 
