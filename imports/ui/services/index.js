@@ -14,3 +14,5 @@ export * from './usuarios';
 export * from './vehiculos';
 export * from './documentos';
 export * from './reportes';
+export * from './zonas';
+export * from './representantes';

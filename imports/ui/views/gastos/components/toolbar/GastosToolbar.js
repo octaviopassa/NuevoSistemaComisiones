@@ -7,6 +7,7 @@ import { ModalCuentas } from "../modals/ModalCuentas";
 import { GastosFolioInput } from "./GastosFolioInput";
 import { useSearchParams } from "react-router-dom";
 import { RepresentantesService } from "../../../../services/representantes";
+import { ModalRepresentantes } from "../modals/ModalRepresentantes";
 // import { getAniosComisiones, getMesesComisiones } from "../../../../../utils/utils";
 
 export const GastosToolbar = () => {
@@ -66,12 +67,12 @@ export const GastosToolbar = () => {
     }
   }, [plazaSeleccionada]);
 
-  useEffect(() => {
-    if (plazaSeleccionada) getRepresentantes();
-    else {
-      setRepresentantes([]);
-    }
-  }, [folio]);
+  // useEffect(() => {
+  //   if (plazaSeleccionada) getRepresentantes();
+  //   else {
+  //     setRepresentantes([]);
+  //   }
+  // }, [folio]);
 
   const cargaInicial = async () => {
     try {
@@ -89,14 +90,19 @@ export const GastosToolbar = () => {
         servidor: user.profile.servidor,
       });
 
+      const representantesPromise = RepresentantesService.getAll({
+        plaza: plazaSeleccionada,
+        servidor: user.profile.servidor,
+      });
+
       // const proyectosPromise = user.profile.MOSTRAR_COMBO_PROYECTO
       //   ? GastosService.getProyectos(user.profile.servidor)
       //   : null;
 
       const empresasResponsablesPagoPromise = GastosService.getEmpresasResponsablesPago()
 
-      const [obtenerPlazas, pagarAQuien, /* proyectosResponse, */ empresasResponsablesPagoResponse] = await Promise.all(
-        [plazasPromise, pagarAPromise, /* proyectosPromise, */ empresasResponsablesPagoPromise]
+      const [obtenerPlazas, pagarAQuien, /* proyectosResponse, */ empresasResponsablesPagoResponse, representantesResponse] = await Promise.all(
+        [plazasPromise, pagarAPromise, /* proyectosPromise, */ empresasResponsablesPagoPromise, representantesPromise]
       );
 
       // if (proyectosResponse) {
@@ -104,6 +110,7 @@ export const GastosToolbar = () => {
       // }
 
       setEmpresasResponsablesPago(empresasResponsablesPagoResponse.data);
+      setRepresentantes(representantesResponse);
 
       setPlazas(
         obtenerPlazas?.map((plaza) => ({
@@ -129,18 +136,18 @@ export const GastosToolbar = () => {
     }
   };
 
-  const getRepresentantes = async () => {
-    try {
-      const representantesData = await RepresentantesService.getAll({
-        plaza: plazaSeleccionada,
-        servidor: user.profile.servidor,
-      });
+  // const getRepresentantes = async () => {
+  //   try {
+  //     const representantesData = await RepresentantesService.getAll({
+  //       plaza: plazaSeleccionada,
+  //       servidor: user.profile.servidor,
+  //     });
 
-      setRepresentantes(representantesData);
-    } catch (error) {
-      console.error("Error en getRepresentantes", error);
-    }
-  };
+  //     setRepresentantes(representantesData);
+  //   } catch (error) {
+  //     console.error("Error en getRepresentantes", error);
+  //   }
+  // };
 
   const getFolio = async () => {
     try {
@@ -208,6 +215,25 @@ export const GastosToolbar = () => {
                   </option>
                 ))}
               </select>
+              <ModalButton
+                color="primary"
+                buttonClasses="px-3 ml-2"
+                text="Agregar"
+                ModalComponent={ModalRepresentantes}
+                reloadData={() => setReloadData(!reloadData)}
+              />
+              {selectedRepresentante && (
+                <ModalButton
+                  color="secondary"
+                  buttonClasses="px-3 ml-2"
+                  text="Editar"
+                  ModalComponent={ModalRepresentantes}
+                  representante={representantes.find(
+                    (p) => p.CODIGO_REPRESENTANTE === Number(selectedRepresentante)
+                  )}
+                  reloadData={() => setReloadData(!reloadData)}
+                />
+              )}
             </div>
           )}
 

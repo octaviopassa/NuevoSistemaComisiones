@@ -4,9 +4,9 @@ import axios from "axios";
 Meteor.methods({
   "clientes.getAll": async (data) => {
     try {
-      conexiones.body_bdseleccionada.tipo = "procedimiento";
-      conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
-      conexiones.body_bdseleccionada.query = `EXEC MP_CAT_CLIENTES_CONSULTA @CODIGO_CLIENTE=''`;
+      conexiones.body_bdseleccionada.tipo = "consulta";
+      conexiones.body_bdseleccionada.baseDatos = data.baseDatos;
+      conexiones.body_bdseleccionada.query = `SELECT COD_CTE,NOM_CTE FROM CATCTES WHERE STATUS='A'`;
       conexiones.body_bdseleccionada.servidor = data.servidor;
 
       const response = await axios.get(conexiones.windows_api, {
