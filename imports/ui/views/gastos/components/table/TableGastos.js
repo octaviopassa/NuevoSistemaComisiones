@@ -15,6 +15,7 @@ import {
   ClientesService,
   DocumentosService,
   EmpresasService,
+  GastosService,
   ProveedoresService,
   TipoGastosService,
 } from "../../../../services";
@@ -73,6 +74,8 @@ export const TableGastos = () => {
     gastosDate,
     rfcEmpresaResponsablePagoSeleccionada,
     selectedRepresentante,
+    fecha1,
+    fecha2,
   } = useGastosData();
   const { data: dataTipoGastos } = useFetchData(TipoGastosService.getAll, [
     {
@@ -643,7 +646,7 @@ export const TableGastos = () => {
     setTipoDocumento(selectedOption);
   };
 
-  const agregarDocumento = () => {
+  const agregarDocumento = async () => {
     const clienteValidation =
       session.profile.WEB_REACT_CLIENTE_OBLIGATORIO ||
       tipoGastoSeleccionado === 17;
@@ -657,6 +660,32 @@ export const TableGastos = () => {
     ) {
       toastr.warning("Por favor, llene todos los campos requeridos.");
       return;
+    }
+
+    if (tipoGastoSeleccionado.value === 17) {
+      const validacion = await GastosService.validaClientePeriodo({
+        codigoCliente: detalleGasto.value,
+        fecha1: formatDate(fecha1),
+        fecha2: formatDate(fecha2),
+        folio: folioGlobal,
+        servidor: session.profile.servidor
+      });
+
+      if (validacion.data.length > 0) {
+        const result = await MySwal.fire({
+          title: `Validación de cliente`,
+          confirmButtonText: "Continuar",
+          showCancelButton: true,
+          text: `Ya existe un gasto (${validacion.data[0]?.FOLIO_GASTO}) con el mismo codigo de cliente (${validacion.data[0]?.COD_CTE}) y periodo, ¿deseas continuar?`,
+          cancelButtonText: "Cancelar",
+          reverseButtons: true,
+          icon: "warning",
+        });
+
+        if (!result.isConfirmed) {
+          return;
+        }
+      }
     }
 
     let importesFinales = {};
@@ -1065,7 +1094,7 @@ export const TableGastos = () => {
                   disabled={
                     estatus.estatus !== "Nuevo" && estatus.estatus !== "GRABADO"
                   }
-                  onClick={agregarDocumento}
+                  onClick={async () => await agregarDocumento()}
                 >
                   <i className="fal fa-plus mr-1"></i> Agregar
                 </button>

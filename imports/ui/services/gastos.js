@@ -36,4 +36,8 @@ GastosService.isAuthorized = async (data) => {
   return await Meteor.callSync("gastos.isAuthorized", data);
 };
 
+GastosService.validaClientePeriodo = async (data) => {
+  return await Meteor.callSync("gastos.validaClientePeriodo", data);
+};
+
 export { GastosService };

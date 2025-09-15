@@ -6,8 +6,8 @@ import { useUserSession } from "../../../../store";
 import { ModalCuentas } from "../modals/ModalCuentas";
 import { GastosFolioInput } from "./GastosFolioInput";
 import { useSearchParams } from "react-router-dom";
-import { RepresentantesService } from "../../../../services/representantes";
 import { ModalRepresentantes } from "../modals/ModalRepresentantes";
+import { RepresentantesService } from "../../../../services/representantes";
 // import { getAniosComisiones, getMesesComisiones } from "../../../../../utils/utils";
 
 export const GastosToolbar = () => {
@@ -23,7 +23,7 @@ export const GastosToolbar = () => {
   const [empresasResponsablesPago, setEmpresasResponsablesPago] = useState([]);
   // const [meses, setMeses] = useState({});
   // const [anios, setAnios] = useState([]);
-
+  const { session } = useUserSession();
   const { session: user } = useUserSession();
   const {
     plazaSeleccionada,
@@ -91,7 +91,7 @@ export const GastosToolbar = () => {
       });
 
       const representantesPromise = RepresentantesService.getAll({
-        plaza: plazaSeleccionada,
+        plaza: estatus.estatus === "Nuevo" ? plazaSeleccionada : "#",
         servidor: user.profile.servidor,
       });
 
@@ -110,7 +110,6 @@ export const GastosToolbar = () => {
       // }
 
       setEmpresasResponsablesPago(empresasResponsablesPagoResponse.data);
-      setRepresentantes(representantesResponse);
 
       setPlazas(
         obtenerPlazas?.map((plaza) => ({
@@ -124,6 +123,7 @@ export const GastosToolbar = () => {
       }
 
       setPagarA(pagarAQuien);
+      setRepresentantes(representantesResponse);
 
       // const meses = getMesesComisiones();
       // setMeses(meses);
@@ -209,30 +209,34 @@ export const GastosToolbar = () => {
                 disabled={estatus.estatus !== "Nuevo"}
               >
                 <option value="">Seleccione...</option>
-                {representantes.map((representante) => (
+                {representantes?.map((representante) => (
                   <option key={representante.CODIGO_REPRESENTANTE} value={representante.CODIGO_REPRESENTANTE}>
                     {representante.NOMBRE_REPRESENTANTE}
                   </option>
                 ))}
               </select>
-              <ModalButton
-                color="primary"
-                buttonClasses="px-3 ml-2"
-                text="Agregar"
-                ModalComponent={ModalRepresentantes}
-                reloadData={() => setReloadData(!reloadData)}
-              />
-              {selectedRepresentante && (
-                <ModalButton
-                  color="secondary"
-                  buttonClasses="px-3 ml-2"
-                  text="Editar"
-                  ModalComponent={ModalRepresentantes}
-                  representante={representantes.find(
-                    (p) => p.CODIGO_REPRESENTANTE === Number(selectedRepresentante)
+              {session.profile.CAT_REPRESENTANTES && (
+                <>
+                  <ModalButton
+                    color="primary"
+                    buttonClasses="px-3 ml-2"
+                    text="Agregar"
+                    ModalComponent={ModalRepresentantes}
+                    reloadData={() => setReloadData(!reloadData)}
+                  />
+                  {selectedRepresentante && (
+                    <ModalButton
+                      color="secondary"
+                      buttonClasses="px-3 ml-2"
+                      text="Editar"
+                      ModalComponent={ModalRepresentantes}
+                      representante={representantes.find(
+                        (p) => p.CODIGO_REPRESENTANTE === Number(selectedRepresentante)
+                      )}
+                      reloadData={() => setReloadData(!reloadData)}
+                    />
                   )}
-                  reloadData={() => setReloadData(!reloadData)}
-                />
+                </>
               )}
             </div>
           )}

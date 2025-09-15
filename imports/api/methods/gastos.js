@@ -370,4 +370,39 @@ Meteor.methods({
       console.log(e);
     }
   },
+  "gastos.validaClientePeriodo": async (data) => {
+    try {
+      conexiones.body_bdseleccionada.tipo = "procedimiento";
+      conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
+      conexiones.body_bdseleccionada.query = `SELECT TOP 1 G.FOLIO_GASTO, D.COD_CTE 
+      FROM GASTOS_DETALLE D 
+      INNER JOIN GASTOS_GLOBAL G ON(D.FOLIO_GASTO=G.FOLIO_GASTO)
+      WHERE D.COD_CTE='${data.codigoCliente}' AND G.FECHA1_COMISION <= '${data.fecha2}' AND '${data.fecha1}' <= G.FECHA2_COMISION
+      AND G.FOLIO_GASTO<>'${data.folio}'`;
+      conexiones.body_bdseleccionada.servidor = data.servidor;
+
+      const response = await axios.get(conexiones.windows_api, {
+        data: conexiones.body_bdseleccionada,
+      });
+
+      if (!response.data.data.esValido) {
+        throw new Error(response.data.data.mensaje);
+      }
+
+      const result = JSON.parse(response.data.data.resultado)
+
+      return {
+        isValid: response.data.data.esValido,
+        data: result,
+        message: response.data.data.mensaje,
+      };
+    } catch (error) {
+      console.log(error);
+      return {
+        isValid: false,
+        data: null,
+        message: error.message,
+      };
+    }
+  },
 });

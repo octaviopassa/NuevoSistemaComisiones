@@ -5,7 +5,7 @@ Meteor.methods({
   "representantes.getAll": async (datos) => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
-      conexiones.body_bdseleccionada.query = `exec MP_WEB_REACT_CAT_REPRESENTANTES_CONSULTAR @Plaza= '${datos.plaza}'`;
+      conexiones.body_bdseleccionada.query = `EXEC MP_WEB_REACT_CAT_REPRESENTANTES_CONSULTAR @Plaza= '${datos.plaza}'`;
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
       conexiones.body_bdseleccionada.servidor = datos.servidor;
 
@@ -13,10 +13,11 @@ Meteor.methods({
         data: conexiones.body_bdseleccionada,
       });
 
-      return JSON.parse(response.data.data.resultado);
-    } catch (error) {
-      console.log(error);
-      return error;
+      const respuesta = JSON.parse(response.data.data.resultado);
+
+      return respuesta;
+    } catch (e) {
+      console.log(e);
     }
   },
   "representantes.grabar": async (datos) => {
