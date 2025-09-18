@@ -54,6 +54,7 @@ import "../../api/methods/documentos";
 import "../../api/methods/reportes";
 import "../../api/methods/zonas";
 import "../../api/methods/representantes";
+import "../../api/methods/reporteDepositos";
 
 import "./startup";
 import "./initialLoad";

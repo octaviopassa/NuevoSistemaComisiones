@@ -1,6 +1,6 @@
 import { format, startOfMonth, endOfMonth } from "date-fns";
 import { create } from "zustand";
-// import { persist } from "zustand/middleware";
+import { createJSONStorage /*, persist */ } from "zustand/middleware";
 
 export const useGastosData = create(
   // persist(
@@ -112,7 +112,7 @@ export const useGastosData = create(
     setMultiple: (nuevosDatos) => {
       set(nuevosDatos);
     },
-  })
+  }),
   //   {
   //     name: "global-data-fetch",
   //     getStorage: () => localStorage,

@@ -12,9 +12,10 @@ import { useGastosData } from "../../store";
 import { ConsultarButton } from "./ConsultarButton";
 import { useUserSession } from "../../../../store";
 import { AplicarButton } from "./AplicarButton";
+import { ConsultarReporteDepositosButton } from "./ConsultarReporteDepositos";
 
 export const GastosActions = () => {
-  const { estatus: estatusGastos } = useGastosData();
+  const { estatus: estatusGastos, selectedRepresentante } = useGastosData();
   const [loading, setLoading] = useState(false);
   const { session } = useUserSession();
 
@@ -30,7 +31,8 @@ export const GastosActions = () => {
           <GuardarButton />
         )}
 
-        {estatus !== "Nuevo" && <ImprimirButton />}
+        {/* {estatus !== "Nuevo" && <ImprimirButton />} */}
+        {selectedRepresentante !== "" && <ConsultarReporteDepositosButton />}
 
         {estatus === "GRABADO" && session.profile.AUTORIZAR_GASTOS && (
           <AutorizarButton setLoading={setLoading} />

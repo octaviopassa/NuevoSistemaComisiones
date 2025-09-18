@@ -451,7 +451,7 @@ export const GuardarButton = () => {
     <button
       disabled={loading}
       type="button"
-      className="btn btn-success waves-effect waves-themed"
+      className="btn btn-success waves-effect waves-themed mr-2"
       onClick={handleGrabado}
     >
       <i className="fal fa-save"></i> Guardar
