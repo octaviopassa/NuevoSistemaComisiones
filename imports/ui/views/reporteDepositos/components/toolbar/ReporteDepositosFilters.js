@@ -14,8 +14,14 @@ const ReporteDepositosFilters = () => {
   }, []);
 
   useEffect(() => {
-    if (representantes.map((representante) => representante.CODIGO_REPRESENTANTE).includes(filters.codigoRepresentante)) {
-      setFilters({ ...filters, codigoRepresentante: filters.codigoRepresentante });
+    if (representantes.length) {
+      const representanteSeleccionado = representantes.find(r => String(r.CODIGO_REPRESENTANTE) === String(filters.codigoRepresentante));
+      if (representanteSeleccionado) {
+        setFilters({
+          ...filters,
+          nombreRepresentante: representanteSeleccionado.NOMBRE_REPRESENTANTE
+        });
+      }
     }
   }, [representantes]);
 
@@ -45,7 +51,7 @@ const ReporteDepositosFilters = () => {
               id="representanteSelectDepositosFilter"
               onChange={(e) => setFilters({ ...filters, codigoRepresentante: e.target.value })}
               value={filters.codigoRepresentante}
-              disabled={true}
+            // disabled={true}
             >
               <option value="">Seleccione un representante</option>
               {representantes.map((option) => (
@@ -66,7 +72,7 @@ const ReporteDepositosFilters = () => {
               id="fecha1DepositosFilter"
               className="w-100"
               value={filters.fecha1_Comision}
-              disabled={true}
+              // disabled={true}
               onChange={(e) =>
                 setFilters({ ...filters, fecha1_Comision: e.target.value })
               }
@@ -82,7 +88,7 @@ const ReporteDepositosFilters = () => {
               type="date"
               id="fecha2DepositosFilter"
               value={filters.fecha2_Comision}
-              disabled={true}
+              // disabled={true}
               onChange={(e) =>
                 setFilters({ ...filters, fecha2_Comision: e.target.value })
               }

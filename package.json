@@ -40,6 +40,8 @@
     "i18next-http-backend": "2.4.3",
     "jquery": "3.7.1",
     "jquery.flot.tooltip": "0.9.0",
+    "jspdf": "^2.5.1",
+    "jspdf-autotable": "^3.8.1",
     "jszip": "3.10.1",
     "libreoffice-convert": "^1.6.0",
     "meteor-node-stubs": "1.2.7",

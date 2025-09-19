@@ -5,6 +5,9 @@ import { formatCurrency, formatDate, formatNumConComas } from "../../../../../ut
 const theadClasses = "d-flex justify-content-between align-items-center";
 
 const ReporteDepositosTable = ({ depositos, loading }) => {
+  const totalPago = (depositos || []).reduce((acc, d) => acc + (Number(d.PAGO_POR_RENGLON_VENTA) || 0), 0);
+  const totalComision = (depositos || []).reduce((acc, d) => acc + (Number(d.COMISION_POR_RENGLON_VENTA) || 0), 0);
+
   return (
     <Table responsive striped bordered>
       <thead>
@@ -89,6 +92,15 @@ const ReporteDepositosTable = ({ depositos, loading }) => {
           ))
         )}
       </tbody>
+      {!loading && (
+        <tfoot>
+          <tr>
+            <td colSpan={7} className="text-right font-weight-bold">Totales</td>
+            <td className="text-left font-weight-bold">{formatCurrency(totalPago)}</td>
+            <td className="text-left font-weight-bold">{formatCurrency(totalComision)}</td>
+          </tr>
+        </tfoot>
+      )}
     </Table>
   );
 };

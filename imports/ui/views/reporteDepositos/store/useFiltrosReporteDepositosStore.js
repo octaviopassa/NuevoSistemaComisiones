@@ -6,6 +6,7 @@ export const useFiltrosReporteDepositosStore = create(
   (set, get) => ({
     filters: {
       codigoRepresentante: "",
+      nombreRepresentante: "",
       fecha1_Comision: format(subMonths(new Date(), 1), "yyyy-MM-dd"),
       fecha2_Comision: format(new Date(), "yyyy-MM-dd"),
     },
@@ -14,6 +15,7 @@ export const useFiltrosReporteDepositosStore = create(
       set({
         filters: {
           codigoRepresentante: "",
+          nombreRepresentante: "",
           fecha1_Comision: format(subMonths(new Date(), 1), "yyyy-MM-dd"),
           fecha2_Comision: format(new Date(), "yyyy-MM-dd"),
         },

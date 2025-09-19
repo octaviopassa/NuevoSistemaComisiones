@@ -8,22 +8,25 @@ import { useFiltrosReporteDepositosStore } from "./store";
 import { ReporteDepositosService } from "../../services/reporteDepositos";
 import { ReporteDepositosTable } from "./components/table/ReporteDepositosTable";
 import { ReporteDepositosFilters } from "./components/toolbar/ReporteDepositosFilters";
+import { ExportarPDFButton } from "./components/actions/ExportarPDFButton";
 
 const ReporteDepositos = () => {
   const [reporteDepositos, setReporteDepositos] = useState([]);
   const { filters, setFilters } = useFiltrosReporteDepositosStore();
   const [loading, setLoading] = useState(false);
   const { searchText, setSearchText, filteredData } = useSearch(reporteDepositos || []);
-  const { paginatedData, PaginationComponent, PaginationSelector } = useClientPagination(filteredData);
+  const { paginatedData, PaginationComponent, PaginationSelector } = useClientPagination(filteredData, 100);
+  const totalPago = (filteredData || []).reduce((acc, d) => acc + (Number(d.PAGO_POR_RENGLON_VENTA) || 0), 0);
+  const totalComision = (filteredData || []).reduce((acc, d) => acc + (Number(d.COMISION_POR_RENGLON_VENTA) || 0), 0);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const selectedRepresentante = params.get("selectedRepresentante");
+    const codigoRepresentante = params.get("selectedRepresentante");
     const fecha1 = params.get("fecha1");
     const fecha2 = params.get("fecha2");
 
     setFilters({
-      codigoRepresentante: selectedRepresentante,
+      codigoRepresentante: codigoRepresentante,
       fecha1_Comision: fecha1,
       fecha2_Comision: fecha2,
     });
@@ -64,6 +67,13 @@ const ReporteDepositos = () => {
       </h4>
       <div className="p-3 border border-primary shadow-sm rounded-3">
         <div className="row">
+          <div className="col-6 d-flex align-items-center">
+            <ExportarPDFButton
+              rows={filteredData}
+              totalPago={totalPago}
+              totalComision={totalComision}
+            />
+          </div>
           <div className="col-6 d-flex justify-content-end">
             <InputGroup className="mb-3">
               <Input
