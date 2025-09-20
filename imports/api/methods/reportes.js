@@ -84,21 +84,17 @@ Meteor.methods({
         empresa: global[0].EMPRESA_NOMBRE,
         folio: global[0].FOLIO_GASTO_GLOBAL,
         ciudad: global[0].NOM_PLAZA,
-        estatus: `${global[0].ESTATUS} - ${
-          estadosReembolso[global[0].ESTATUS]
-        }`,
-        grabo: `${formatDate(global[0]?.FECHA)} ${
-          global[0]?.NOMBRE_GRABO || ""
-        }`,
+        estatus: `${global[0].ESTATUS} - ${estadosReembolso[global[0].ESTATUS]
+          }`,
+        grabo: `${formatDate(global[0]?.FECHA)} ${global[0]?.NOMBRE_GRABO || ""
+          }`,
         aplico: global[0]?.NOMBRE_APLICO
-          ? `${formatDate(global[0]?.FECHA_APLICACION)} ${
-              global[0]?.NOMBRE_APLICO || ""
-            }`
+          ? `${formatDate(global[0]?.FECHA_APLICACION)} ${global[0]?.NOMBRE_APLICO || ""
+          }`
           : "",
         autorizo: global[0]?.NOMBRE_AUTORIZO
-          ? `${formatDate(global[0]?.FECHA_AUTORIZACION)} ${
-              global[0]?.NOMBRE_AUTORIZO
-            }`
+          ? `${formatDate(global[0]?.FECHA_AUTORIZACION)} ${global[0]?.NOMBRE_AUTORIZO
+          }`
           : "",
         // grabo: `${format(new Date(global[0]?.FECHA), "dd/MM/yyyy")} ${
         //   global[0]?.NOMBRE_GRABO || ""

@@ -31,7 +31,8 @@ export const GastosActions = () => {
           <GuardarButton />
         )}
 
-        {/* {estatus !== "Nuevo" && <ImprimirButton />} */}
+        {estatus !== "Nuevo" && <ImprimirButton />}
+
         {selectedRepresentante !== "" && <ConsultarReporteDepositosButton />}
 
         {estatus === "GRABADO" && session.profile.AUTORIZAR_GASTOS && (

@@ -5,7 +5,7 @@ Meteor.methods({
   "representantes.getAll": async (datos) => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
-      conexiones.body_bdseleccionada.query = `EXEC MP_WEB_REACT_CAT_REPRESENTANTES_CONSULTAR @Plaza= '${datos.plaza}'`;
+      conexiones.body_bdseleccionada.query = `EXEC MP_CAT_REPRESENTANTES_CONSULTAR @Plaza= '${datos.plaza}'`;
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
       conexiones.body_bdseleccionada.servidor = datos.servidor;
 
@@ -122,7 +122,7 @@ Meteor.methods({
   "representantes.getClientesRelacionados": async (datos) => {
     try {
       conexiones.body_bdseleccionada.tipo = "procedimiento";
-      conexiones.body_bdseleccionada.query = `exec MP_WEB_REACT_CAT_REPRESENTANTES_REL_CLIENTES_CONSULTAR @CODIGO_REPRESENTANTE=${datos.codigoRepresentante}`;
+      conexiones.body_bdseleccionada.query = `exec MP_CAT_REPRESENTANTES_REL_CLIENTES_CONSULTAR @CODIGO_REPRESENTANTE=${datos.codigoRepresentante}`;
       conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
       conexiones.body_bdseleccionada.servidor = datos.servidor;
 

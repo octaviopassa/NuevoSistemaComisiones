@@ -3,11 +3,12 @@ import { useGastosData } from "../../store";
 import printJS from "print-js";
 import { ReportesService } from "../../../../services/reportes";
 import { useUserSession } from "../../../../store";
+import toastr from "toastr";
 
 export const ImprimirButton = () => {
   const { session } = useUserSession();
   const { plazaSeleccionada, folio } = useGastosData();
-  
+
   const handlePrint = async () => {
     const reporteResponse = await ReportesService.generarReporte({
       plaza: plazaSeleccionada,
