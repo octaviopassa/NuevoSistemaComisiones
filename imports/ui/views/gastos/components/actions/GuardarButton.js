@@ -109,7 +109,12 @@ export const GuardarButton = () => {
       //   toastr.warning("Por favor, seleccione un año.");
       //   return;
       // }
-
+      if (!selectedRepresentante) {
+        toastr.warning(
+          "Por favor, seleccione el representante."
+        );
+        return;
+      }
       if (!fecha1) {
         toastr.warning("Por favor, seleccione una fecha.");
         return;
