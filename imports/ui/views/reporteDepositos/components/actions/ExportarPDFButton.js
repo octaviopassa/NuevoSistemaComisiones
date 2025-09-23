@@ -60,7 +60,7 @@ export const ExportarPDFButton = ({
         ]);
 
         // Pie de tabla con totales bajo Pago (col 8) y Comisión (col 9)
-        const foot = [["", "", "", "", "", "", "", totalPagoLabel, totalComisionLabel]];
+        const foot = [["", "", "", "", "", "", "Totales:", totalPagoLabel, totalComisionLabel]];
 
         autoTable(doc, {
             head,
@@ -70,9 +70,17 @@ export const ExportarPDFButton = ({
             margin,
             styles: { fontSize: 8, cellPadding: 3, overflow: 'linebreak' },
             headStyles: { fillColor: [33, 150, 243], textColor: 255 },
+            footStyles: { fillColor: [245, 245, 245], textColor: 0, fontStyle: 'bold', halign: 'right' },
+            columnStyles: {
+                4: { halign: 'right' }, // Cantidad
+                6: { halign: 'right' }, // % Utilidad
+                7: { halign: 'right' }, // Pago
+                8: { halign: 'right' }, // Comisión
+            },
             theme: "striped",
             pageBreak: 'auto',
             showHead: 'everyPage',
+            showFoot: 'lastPage',
             didDrawPage: (data) => {
                 // Footer con número de página y total de registros
                 const pageCount = doc.getNumberOfPages();
@@ -88,7 +96,6 @@ export const ExportarPDFButton = ({
         // const totalsY = Math.min(endY + 20, doc.internal.pageSize.getHeight() - margin.bottom - 10);
         doc.setFontSize(10);
         // doc.text(`Totales — Pago: ${totalPagoLabel}    Comisión: ${totalComisionLabel}`, margin.left, totalsY);
-
         doc.save(`${fileName}.pdf`);
     };
 
