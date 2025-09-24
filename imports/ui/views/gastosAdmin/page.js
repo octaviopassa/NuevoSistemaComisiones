@@ -41,7 +41,7 @@ const GastosAdmin = () => {
 
     const data = {
       ...filters,
-      vendedor: filters.vendedor || "0",
+      representante: filters.representante || "0",
       fechaInicio,
       fechaFin,
       cod_usu: session.profile.TIENE_ACCESO_VER_TODOS_GASTOS

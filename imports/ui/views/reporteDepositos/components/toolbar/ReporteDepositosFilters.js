@@ -13,18 +13,6 @@ const ReporteDepositosFilters = () => {
     if (!representantes.length) getRepresentantes();
   }, []);
 
-  useEffect(() => {
-    if (representantes.length) {
-      const representanteSeleccionado = representantes.find(r => String(r.CODIGO_REPRESENTANTE) === String(filters.codigoRepresentante));
-      if (representanteSeleccionado) {
-        setFilters({
-          ...filters,
-          nombreRepresentante: representanteSeleccionado.NOMBRE_REPRESENTANTE
-        });
-      }
-    }
-  }, [representantes]);
-
   const getRepresentantes = async () => {
     try {
       const obtenerRepresentantes = await RepresentantesService.getAll({
@@ -49,7 +37,11 @@ const ReporteDepositosFilters = () => {
             <select
               className="custom-select"
               id="representanteSelectDepositosFilter"
-              onChange={(e) => setFilters({ ...filters, codigoRepresentante: e.target.value })}
+              onChange={(e) => setFilters({
+                ...filters,
+                codigoRepresentante: e.target.value, nombreRepresentante:
+                  e.target.options[e.target.selectedIndex].text
+              })}
               value={filters.codigoRepresentante}
             // disabled={true}
             >

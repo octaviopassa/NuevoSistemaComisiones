@@ -151,8 +151,8 @@ const GastosAdminFilters = () => {
             <select
               className="custom-select"
               id="representanteSelect"
-              onChange={(e) => setFilters({ ...filters, vendedor: e.target.value })}
-              value={filters.vendedor}
+              onChange={(e) => setFilters({ ...filters, representante: e.target.value })}
+              value={filters.representante}
             >
               <option value="">Seleccione un representante</option>
               {representates.map((option) => (
