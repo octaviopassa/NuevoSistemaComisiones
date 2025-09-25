@@ -257,5 +257,5 @@ export function limpiarBase64XMLEnMemoria(base64xml) {
 // };
 
 export const version = () => {
-  return "1.0.23";
+  return "1.0.24";
 };
