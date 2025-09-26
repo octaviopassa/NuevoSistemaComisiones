@@ -36,7 +36,7 @@ const Gastos = () => {
         <div className="col-sm-5">
           <TableResumen />
 
-          <GastosActions />
+          {/* <GastosActions /> */}
         </div>
 
         <TableCantidades />

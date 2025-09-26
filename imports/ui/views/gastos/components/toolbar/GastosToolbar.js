@@ -8,6 +8,7 @@ import { GastosFolioInput } from "./GastosFolioInput";
 import { useSearchParams } from "react-router-dom";
 import { ModalRepresentantes } from "../modals/ModalRepresentantes";
 import { RepresentantesService } from "../../../../services/representantes";
+import { GastosActions } from "../actions";
 // import { getAniosComisiones, getMesesComisiones } from "../../../../../utils/utils";
 
 export const GastosToolbar = () => {
@@ -170,6 +171,10 @@ export const GastosToolbar = () => {
 
   return (
     <>
+      <div className="col-sm-4">
+        <GastosActions />
+      </div>
+
       <div className="row mb-3">
         <div className="col-sm-4">
           <div className="input-group">

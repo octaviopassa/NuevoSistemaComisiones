@@ -22,7 +22,7 @@ export const GastosActions = () => {
   const { estatus, propietario } = estatusGastos;
 
   return (
-    <div className="row mt-3 text-center">
+    <div className="row mb-3 text-center">
       <div className="d-flex flex-wrap justify-content-center">
         <ConsultarButton />
         <NuevoButton />
