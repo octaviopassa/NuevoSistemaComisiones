@@ -265,7 +265,7 @@ export const GastosToolbar = () => {
               <option value="">Seleccione...</option>
               {pagarA.map((p, index) => (
                 <option key={`${p.Codigo}-${index}`} value={p.Codigo}>
-                  {p.Nombre}
+                  {p.NUMERO} - {p.BANCO} - {p.NOMBRE_COMPLETO} {p.APELLIDOS}
                 </option>
               ))}
             </select>

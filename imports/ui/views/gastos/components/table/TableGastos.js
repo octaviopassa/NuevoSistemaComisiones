@@ -324,15 +324,15 @@ export const TableGastos = () => {
 
               for (let traslado of traslados) {
                 const impuesto = traslado.getAttribute("Impuesto");
-                const tasa = traslado.getAttribute("TasaOCuota");
+                const tasa = parseFloat(traslado.getAttribute("TasaOCuota"));
                 const importe = traslado.getAttribute("Importe") || "0";
 
                 if (impuesto === "002") {
-                  if (tasa === "0.160000") {
+                  if (tasa === 0.16) {
                     datos.iva_16 = (
                       parseFloat(datos.iva_16) + parseFloat(importe)
                     ).toFixed(2);
-                  } else if (tasa === "0.080000") {
+                  } else if (tasa === 0.08) {
                     datos.iva_8 = (
                       parseFloat(datos.iva_8) + parseFloat(importe)
                     ).toFixed(2);
