@@ -75,6 +75,12 @@ export const GastosToolbar = () => {
   //   }
   // }, [folio]);
 
+  useEffect(() => {
+    if (selectedRepresentante && estatus.estatus === "Nuevo") {
+      getUltimaCuentaUsada();
+    }
+  }, [selectedRepresentante]);
+
   const cargaInicial = async () => {
     try {
       const isConsulta = (folioParam && plazaParam) || estatus.oldFolio;
@@ -130,12 +136,25 @@ export const GastosToolbar = () => {
       // setMeses(meses);
 
       // const anios = getAniosComisiones();
-      // setAnios(anios);
+      // setAnios(anios);      
 
     } catch (error) {
       console.error("Error durante la carga inicial", error);
     }
   };
+
+  const getUltimaCuentaUsada = async () => {
+    try {
+      const data = await GastosService.getUltimaCuentaUsada({
+        cod_usu: user.profile.COD_USU,
+        codigo_representante: selectedRepresentante,
+        servidor: user.profile.servidor,
+      });
+      setPagarASeleccionado(data?.data[0]?.PAGAR_A || "");
+    } catch (error) {
+      console.error("Error en getUltimaCuentaUsada", error);
+    }
+  }
 
   // const getRepresentantes = async () => {
   //   try {
@@ -171,12 +190,12 @@ export const GastosToolbar = () => {
 
   return (
     <>
-      <div className="col-sm-4">
+      <div className="col-sm-12">
         <GastosActions />
       </div>
 
       <div className="row mb-3">
-        <div className="col-sm-4">
+        <div className="col-sm-6">
           <div className="input-group">
             <div className="input-group-prepend">
               <label className="input-group-text" htmlFor="selectPlaza">

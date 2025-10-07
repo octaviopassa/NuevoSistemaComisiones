@@ -40,4 +40,8 @@ GastosService.validaClientePeriodo = async (data) => {
   return await Meteor.callSync("gastos.validaClientePeriodo", data);
 };
 
+GastosService.getUltimaCuentaUsada = async (data) => {
+  return await Meteor.callSync("gastos.getUltimaCuentaUsada", data);
+};
+
 export { GastosService };

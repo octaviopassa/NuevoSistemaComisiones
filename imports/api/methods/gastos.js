@@ -405,4 +405,38 @@ Meteor.methods({
       };
     }
   },
+  "gastos.getUltimaCuentaUsada": async (data) => {
+    try {
+      conexiones.body_bdseleccionada.tipo = "procedimiento";
+      conexiones.body_bdseleccionada.baseDatos = "consumos_passa";
+      conexiones.body_bdseleccionada.query = `SELECT TOP 1 PAGAR_A 
+      FROM GASTOS_GLOBAL 
+      WHERE CODIGO_REPRESENTANTE='${data.codigo_representante}' AND COD_USU_GRABO='${data.cod_usu}' 
+      ORDER BY FECHA DESC`;
+      conexiones.body_bdseleccionada.servidor = data.servidor;
+
+      const response = await axios.get(conexiones.windows_api, {
+        data: conexiones.body_bdseleccionada,
+      });
+
+      if (!response.data.data.esValido) {
+        throw new Error(response.data.data.mensaje);
+      }
+
+      const result = JSON.parse(response.data.data.resultado)
+
+      return {
+        isValid: response.data.data.esValido,
+        data: result,
+        message: response.data.data.mensaje,
+      };
+    } catch (error) {
+      console.log(error);
+      return {
+        isValid: false,
+        data: null,
+        message: error.message,
+      };
+    }
+  },
 });
