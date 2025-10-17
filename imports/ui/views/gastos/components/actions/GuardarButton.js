@@ -8,10 +8,13 @@ import {
 } from "../../../../services";
 import toastr from "toastr";
 import { formatDate } from "../../../../../utils/utils";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 
 export const GuardarButton = () => {
   const [error, setError] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
+
   const {
     documentos,
     setDocumentos,
@@ -30,6 +33,7 @@ export const GuardarButton = () => {
     fecha1,
     fecha2,
   } = useGastosData();
+  const MySwal = withReactContent(Swal)
   const { session } = useUserSession();
   const totalImportes = documentos.reduce(
     (sumaTotales, documento) => {
@@ -82,9 +86,25 @@ export const GuardarButton = () => {
         return;
       }
 
+      let continuarGrabandoSinRenglones = false;
+
       if (documentos.length === 0) {
-        toastr.error("No hay documentos para registrar");
-        return;
+        const result = await MySwal.fire({
+          title: "¿Deseas continuar?",
+          confirmButtonText: "Continuar",
+          showCancelButton: true,
+          text: `No hay documentos para registrar, le aconsejamos agregar al menos un documento o una breve descripción en el recuadro Observaciones. ¿deseas continuar?`,
+          cancelButtonText: "Cancelar",
+          reverseButtons: true,
+          icon: "warning",
+        });
+
+        if (!result.isConfirmed) {
+          return;
+        }
+        continuarGrabandoSinRenglones = true;
+        //   toastr.error("No hay documentos para registrar");
+        //   return;
       }
 
       if (!pagarASeleccionado) {
@@ -435,7 +455,38 @@ export const GuardarButton = () => {
         );
         return;
       }
+
+      if (documentos.length === 0 && continuarGrabandoSinRenglones) {
+        const [resumenData, gastoGlobalData] = await Promise.all([
+          DocumentosService.getResumen({
+            folio: newFolio,
+            servidor: session.profile.servidor,
+          }),
+          DocumentosService.getGastoGlobal({
+            folio: newFolio,
+            plaza: plazaSeleccionada,
+            cod_usu: session.profile.COD_USU,
+            servidor: session.profile.servidor,
+          }),
+        ]);
+
+        if (!resumenData?.isValid) console.error(resumenData);
+
+        setEstatus({
+          ...estatus,
+          estatus: gastoGlobalData.data[0].NOM_ESTATUS,
+          grabo: `${gastoGlobalData.data[0].NOM_USU_GRABO} ${formatDate(
+            gastoGlobalData.data[0].FECHA
+          )}`,
+          observaciones: gastoGlobalData.data[0].OBSERVACION,
+          propietario: !!gastoGlobalData.data[0].EsPropietario,
+          oldFolio: true,
+        });
+        setResumen(resumenData.data);
+      }
+
       toastr.success(`${newFolio} grabado correctamente`);
+
     } catch (error) {
       setError(true);
       // toastr.error(
