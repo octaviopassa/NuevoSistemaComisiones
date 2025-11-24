@@ -17,3 +17,4 @@ export * from './reportes';
 export * from './zonas';
 export * from './representantes';
 export * from './reporteDepositos';
+export * from './reporteComisionesPagadas';
