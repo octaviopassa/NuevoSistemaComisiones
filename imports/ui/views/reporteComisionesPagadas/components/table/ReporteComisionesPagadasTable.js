@@ -1,4 +1,4 @@
-// import React from "react";
+import React from "react";
 import { Spinner, Table } from "reactstrap";
 // import { formatCurrency, formatDate, formatNumConComas } from "../../../../../utils/utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
