@@ -990,7 +990,7 @@ export const TableGastos = () => {
                   />
                 )}
               </th>
-              <th className="text-center" style={{ minWidth: "105px" }}>
+              <th className="text-center" style={{ minWidth: "105px" }} id="atencionClienteTh">
                 {(tipoGastoSeleccionado?.value === 17 ||
                   session.profile.WEB_REACT_CLIENTE_OBLIGATORIO) && (
                     <AsyncSelect
@@ -1005,7 +1005,11 @@ export const TableGastos = () => {
                       value={atencionClienteSeleccionado}
                       styles={customStyles}
                     />
+
                   )}
+                <UncontrolledTooltip placement="top" target="atencionClienteTh">
+                  Si el cliente no aparece en la búsqueda, asegúrese de que dicho cliente esté relacionado con el representante seleccionado.
+                </UncontrolledTooltip>
               </th>
               <th className="text-center" style={{ minWidth: "105px" }}>
                 {tipoDocumento.value === "Nota" && (
