@@ -18,7 +18,7 @@ Meteor.methods({
         @COD_ZONA='',
         @FILTRAR_POR_PTAJE_UTILIDAD_MINIMA='1',
         @PTAJE_UTILIDAD_MINIMA='50'`;
-      conexiones.body_bdseleccionada.servidor = datos.servidor;
+      conexiones.body_bdseleccionada.servidor = conexiones.body_fabrica.servidor;//datos.servidor;
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,

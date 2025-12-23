@@ -7,7 +7,7 @@ Meteor.methods({
       conexiones.body_bdseleccionada.tipo = "consulta";
       conexiones.body_bdseleccionada.baseDatos = data.baseDatos;
       conexiones.body_bdseleccionada.query = `SELECT COD_CTE,NOM_CTE FROM CATCTES WHERE STATUS='A'`;
-      conexiones.body_bdseleccionada.servidor = data.servidor;
+      conexiones.body_bdseleccionada.servidor = conexiones.body_fabrica.servidor;//data.servidor;
 
       const response = await axios.get(conexiones.windows_api, {
         data: conexiones.body_bdseleccionada,

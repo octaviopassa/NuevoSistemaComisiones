@@ -44,7 +44,6 @@ const ReporteDepositos = () => {
       codigoRepresentante: filters.codigoRepresentante,
       fecha1_Comision,
       fecha2_Comision,
-      servidor: "192.168.20.3\\SERVERR2", //session.profile.servidor, //NOTA: No se pudo declarar la cadena de conexion en el archivo de config, llegaba undefined la variable servidor_fabrica, así que se dejó como código duro.
     };
 
     try {

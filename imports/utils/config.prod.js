@@ -1,7 +1,7 @@
 module.exports = {
   windows_api: "http://192.168.20.154:49824/api/querys/ejecutar",
   windows_api_post: "http://192.168.20.154:49824/api/querys/ejecutarPost",
-  body_fabrica: {
+  body_comisiones: {
     usuario: "abacoapp",
     contrasena: "S1stem@Pas5@",
     servidor: "192.168.20.15\\SQL12",
@@ -16,6 +16,16 @@ module.exports = {
     contrasena: "S1stem@Pas5@",
     servidor: "192.168.20.15\\SQL12",
     baseDatos: "EMPRESAS",
+    parametros: [],
+    esValido: true,
+    mensaje: "",
+    resultado: "",
+  },
+  body_fabrica: {
+    usuario: "abacoapp",
+    contrasena: "S1stem@Pas5@",
+    servidor: "192.168.20.3\\SERVERR2",
+    baseDatos: "FABRICA_PASSA",
     parametros: [],
     esValido: true,
     mensaje: "",

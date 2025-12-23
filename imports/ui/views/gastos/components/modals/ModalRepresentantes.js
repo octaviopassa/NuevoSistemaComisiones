@@ -20,6 +20,7 @@ import { useUserSession } from "../../../../store";
 import { ClientesService, RepresentantesService } from "../../../../services";
 import { ZonasService } from "../../../../services/zonas";
 import { RepresentantesFormSchema } from "../../schemas/RepresentantesSchema";
+import { UncontrolledTooltip } from "reactstrap";
 
 export const ModalRepresentantes = ({
   isModalOpen,
@@ -278,6 +279,9 @@ export const ModalRepresentantes = ({
                       <Button color="primary" className="mt-2" type="button" onClick={handleGrabarClienteRelacionado} disabled={!representante}>
                         Agregar
                       </Button>
+                      <UncontrolledTooltip placement="top" target="modalRepresentanteCliente">
+                        Si el cliente pertenece a un grupo, se agregarán también todos los clientes relacionados a dicho grupo.
+                      </UncontrolledTooltip>
                     </div>
 
                     <div className="form-group mt-3">
