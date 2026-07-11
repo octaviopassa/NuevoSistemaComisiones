@@ -2,18 +2,18 @@ import { Input } from "reactstrap";
 import React, { useEffect, useState } from "react";
 import { useUserSession } from "../../../../store";
 import { RepresentantesService } from "../../../../services/representantes";
-import { useFiltrosReporteComisionesPagadasStore } from "../../store";
+import { useFiltrosReporteComisionesPagadasDesglosadoStore } from "../../store";
 import { ClientesService, PlazasService } from "../../../../services";
 import AsyncSelect from "react-select/async";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 
-const ReporteComisionesPagadasFilters = () => {
+const ReporteComisionesPagadasDesglosadoFilters = () => {
   const [representantes, setRepresentantes] = useState([]);
   const [plazas, setPlazas] = useState([]);
   const [plazaSeleccionada, setPlazaSeleccionada] = useState();
   const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
-  const { filters, setFilters } = useFiltrosReporteComisionesPagadasStore();
+  const { filters, setFilters } = useFiltrosReporteComisionesPagadasDesglosadoStore();
   const { session } = useUserSession();
 
   useEffect(() => {
@@ -97,7 +97,7 @@ const ReporteComisionesPagadasFilters = () => {
 
   return (
     <div className="bg-light my-3 border-top border-primary p-3 shadow-sm rounded">
-      <h3>Reporte indicador de comisiones pagadas por meses</h3>
+      <h3>Reporte indicador de comisiones pagadas por meses desglosado</h3>
       <div className="row mt-3">
         <div className="col-sm-3 input-group">
           <div className="input-group-prepend">
@@ -156,6 +156,7 @@ const ReporteComisionesPagadasFilters = () => {
               placeholder="Seleccione cliente"
               value={clienteSeleccionado}
               styles={customStyles}
+              defaultOptions={true}
               noOptionsMessage={() => "Escriba % para buscar todos los clientes"}
             />
             {filters.codigoCliente && (
@@ -209,4 +210,4 @@ const ReporteComisionesPagadasFilters = () => {
   );
 };
 
-export { ReporteComisionesPagadasFilters };
+export { ReporteComisionesPagadasDesglosadoFilters };

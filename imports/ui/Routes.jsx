@@ -10,6 +10,7 @@ import Login from "./views/login/page.js";
 import { useUserLoggedStore } from "./store";
 import ReporteDepositos from "./views/reporteDepositos/page.js";
 import ReporteComisionesPagadas from "./views/reporteComisionesPagadas/page.js";
+import ReporteComisionesPagadasDesglosado from "./views/reporteComisionesPagadasDesglosado/page.js";
 
 const ProtectedRoute = ({ children }) => {
   const { isLogged } = useUserLoggedStore();
@@ -47,6 +48,7 @@ export default function RoutesTree() {
           <Route path="gastos/administracion" element={<GastosAdmin />} />
           <Route path="gastos/reporte-depositos" element={<ReporteDepositos />} />
           <Route path="gastos/reporte-comisiones-pagadas" element={<ReporteComisionesPagadas />} />
+          <Route path="gastos/reporte-comisiones-pagadas-desglosado" element={<ReporteComisionesPagadasDesglosado />} />
         </Route>
         <Route path="*" element={<Navigate to={isLogged ? "/gastos" : "/login"} replace />} />
       </Routes>

@@ -2,7 +2,7 @@ import { format } from "date-fns";
 import { create } from "zustand";
 import { subMonths } from "date-fns";
 
-export const useFiltrosReporteComisionesPagadasStore = create(
+export const useFiltrosReporteComisionesPagadasDesglosadoStore = create(
   (set, get) => ({
     filters: {
       codigoRepresentante: "",
@@ -27,7 +27,7 @@ export const useFiltrosReporteComisionesPagadasStore = create(
         },
       }),
     persist: {
-      name: "filtrosReporteComisionesPagadas",
+      name: "filtrosReporteComisionesPagadasDesglosado",
     },
   })
 );

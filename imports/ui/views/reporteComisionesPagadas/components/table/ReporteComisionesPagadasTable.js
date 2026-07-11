@@ -102,27 +102,27 @@ const ReporteComisionesPagadasTable = ({ comisiones, loading }) => {
           comisiones?.map((comision) => (
             <tr key={comision.NOMBRE_REPRESENTANTE}>
               <td className="text-left">{comision.NOMBRE_REPRESENTANTE}</td>
-              {comision.HUBO_DATOS_MES_01 === 1 ? (
+              {comision.HUBO_DATOS_MES_01 === "1" ? (
                 <td className="text-center"><FontAwesomeIcon icon={faCheck} color="green" /></td>
               ) : (
                 <td className="text-center"></td>
               )}
-              {comision.HUBO_DATOS_MES_02 === 1 ? (
+              {comision.HUBO_DATOS_MES_02 === "1" ? (
                 <td className="text-center"><FontAwesomeIcon icon={faCheck} color="green" /></td>
               ) : (
                 <td className="text-center"></td>
               )}
-              {comision.HUBO_DATOS_MES_03 === 1 ? (
+              {comision.HUBO_DATOS_MES_03 === "1" ? (
                 <td className="text-center"><FontAwesomeIcon icon={faCheck} color="green" /></td>
               ) : (
                 <td className="text-center"></td>
               )}
-              {comision.HUBO_DATOS_MES_04 === 1 ? (
+              {comision.HUBO_DATOS_MES_04 === "1" ? (
                 <td className="text-center"><FontAwesomeIcon icon={faCheck} color="green" /></td>
               ) : (
                 <td className="text-center"></td>
               )}
-              {comision.HUBO_DATOS_MES_05 === 1 ? (
+              {comision.HUBO_DATOS_MES_05 === "1" ? (
                 <td className="text-center"><FontAwesomeIcon icon={faCheck} color="green" /></td>
               ) : (
                 <td className="text-center"></td>
