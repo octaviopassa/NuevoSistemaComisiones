@@ -181,7 +181,6 @@ const ReporteComisionesPagadasFilters = () => {
               id="fecha1ComisionesFilter"
               className="w-100"
               value={filters.fecha1_Comision}
-              // disabled={true}
               onChange={(e) =>
                 setFilters({ ...filters, fecha1_Comision: e.target.value })
               }
@@ -197,7 +196,6 @@ const ReporteComisionesPagadasFilters = () => {
               type="date"
               id="fecha2ComisionesFilter"
               value={filters.fecha2_Comision}
-              // disabled={true}
               onChange={(e) =>
                 setFilters({ ...filters, fecha2_Comision: e.target.value })
               }

@@ -51,8 +51,8 @@ export const TableGastos = () => {
   const [xmlTempData, setXmlTempData] = useState(null);
   const [pdfTempData, setPdfTempData] = useState(null);
   const [tipoDocumento, setTipoDocumento] = useState("");
-  const [fecha1Comision, setFecha1Comision] = useState(format(new Date(), "yyyy-MM-dd"));
-  const [fecha2Comision, setFecha2Comision] = useState(format(new Date(), "yyyy-MM-dd"));
+  const [fecha1ComisionDetalle, setFecha1ComisionDetalle] = useState(format(new Date(), "yyyy-MM-dd"));
+  const [fecha2ComisionDetalle, setFecha2ComisionDetalle] = useState(format(new Date(), "yyyy-MM-dd"));
   const [importesData, setImportesData] = useState({
     fecha: "",
     folio: "",
@@ -653,11 +653,11 @@ export const TableGastos = () => {
   const handleTipoDocumentoChange = (selectedOption) => {
     setTipoDocumento(selectedOption);
     setTipoGastoSeleccionado({ value: 17, label: "ATENCION A CLIENTES" });
-    setFecha1Comision(fecha1);
-    setFecha2Comision(fecha2);
+    setFecha1ComisionDetalle(fecha1);
+    setFecha2ComisionDetalle(fecha2);
   };
 
-  const handleFecha1Change = (index, value) => {
+  const handleFecha1ComisionDetalleChange = (index, value) => {
     try {
       if (estatus.estatus !== "Nuevo") {
         return;
@@ -671,14 +671,14 @@ export const TableGastos = () => {
 
         const documentoSeleccionado = documentos[index];
 
-        if (value > documentoSeleccionado.fecha2Comision) {
+        if (value > documentoSeleccionado.fecha2ComisionDetalle) {
           toastr.error("La fecha inicial no puede ser mayor a la fecha final");
           return;
         }
 
         setDocumentos(
           documentos.map((doc, i) =>
-            i === index ? { ...doc, fecha1Comision: value } : doc
+            i === index ? { ...doc, fecha1ComisionDetalle: value } : doc
           )
         );
       }
@@ -689,7 +689,7 @@ export const TableGastos = () => {
     }
   };
 
-  const handleFecha2Change = (index, value) => {
+  const handleFecha2ComisionDetalleChange = (index, value) => {
     try {
       if (estatus.estatus !== "Nuevo") {
         return;
@@ -703,14 +703,14 @@ export const TableGastos = () => {
 
         const documentoSeleccionado = documentos[index];
 
-        if (value < documentoSeleccionado.fecha1Comision) {
+        if (value < documentoSeleccionado.fecha1ComisionDetalle) {
           toastr.error("La fecha final no puede ser menor a la fecha inicial");
           return;
         }
 
         setDocumentos(
           documentos.map((doc, i) =>
-            i === index ? { ...doc, fecha2Comision: value } : doc
+            i === index ? { ...doc, fecha2ComisionDetalle: value } : doc
           )
         );
       }
@@ -737,13 +737,18 @@ export const TableGastos = () => {
       return;
     }
 
-    if (!fecha1Comision || !fecha2Comision) {
-      toastr.error("Por favor, seleccione las fechas de comisión.");
+    if (!fecha1ComisionDetalle) {
+      toastr.error("La fecha inicial del documento que intenta agregar es inválida.");
       return;
     }
 
-    if (fecha1Comision > fecha2Comision) {
-      toastr.error("La fecha 1 no puede ser mayor a la fecha 2.");
+    if (!fecha2ComisionDetalle) {
+      toastr.error("La fecha final del documento que intenta agregar es inválida.");
+      return;
+    }
+
+    if (fecha1ComisionDetalle > fecha2ComisionDetalle) {
+      toastr.error("La fecha inicial no puede ser mayor a la fecha final.");
       return;
     }
 
@@ -877,8 +882,8 @@ export const TableGastos = () => {
       xmlArchivo: xmlArchivoFinal,
       pdfArchivo: pdfArchivoFinal,
       descartado: false,
-      fecha1Comision,
-      fecha2Comision,
+      fecha1ComisionDetalle,
+      fecha2ComisionDetalle,
     };
 
     setDocumentos([...documentos, nuevoDocumento]);
@@ -942,8 +947,8 @@ export const TableGastos = () => {
       ret: "0.00",
       total: "0.00",
     });
-    setFecha1Comision(format(new Date(), "yyyy-MM-dd"));
-    setFecha2Comision(format(new Date(), "yyyy-MM-dd"));
+    setFecha1ComisionDetalle(format(new Date(), "yyyy-MM-dd"));
+    setFecha2ComisionDetalle(format(new Date(), "yyyy-MM-dd"));
   };
 
   const handleDescartar = async (documento) => {
@@ -1055,16 +1060,16 @@ export const TableGastos = () => {
                 <input
                   className="form-control"
                   type="date"
-                  value={fecha1Comision}
-                  onChange={(e) => setFecha1Comision(e.target.value)}
+                  value={fecha1ComisionDetalle}
+                  onChange={(e) => setFecha1ComisionDetalle(e.target.value)}
                 />
               </th>
               <th className="text-center">
                 <input
                   className="form-control"
                   type="date"
-                  value={fecha2Comision}
-                  onChange={(e) => setFecha2Comision(e.target.value)}
+                  value={fecha2ComisionDetalle}
+                  onChange={(e) => setFecha2ComisionDetalle(e.target.value)}
                 />
               </th>
               <th className="text-center">
@@ -1270,9 +1275,9 @@ export const TableGastos = () => {
                     id={`fecha1Comision-${i}`}
                     className="form-control"
                     type="date"
-                    value={doc?.fecha1Comision}
+                    value={doc?.fecha1ComisionDetalle}
                     disabled={estatus.estatus !== "Nuevo"}
-                    onChange={(e) => handleFecha1Change(i, e.target.value)}
+                    onChange={(e) => handleFecha1ComisionDetalleChange(i, e.target.value)}
                     min={"2020-01-01"}
                   />
                 </td>
@@ -1281,9 +1286,9 @@ export const TableGastos = () => {
                     id={`fecha2Comision-${i}`}
                     className="form-control"
                     type="date"
-                    value={doc?.fecha2Comision}
+                    value={doc?.fecha2ComisionDetalle}
                     disabled={estatus.estatus !== "Nuevo"}
-                    onChange={(e) => handleFecha2Change(i, e.target.value)}
+                    onChange={(e) => handleFecha2ComisionDetalleChange(i, e.target.value)}
                     min={"2020-01-01"}
                   />
                 </td>

@@ -246,8 +246,8 @@ export const GuardarButton = () => {
             concepto,
             importes,
             xmlArchivo,
-            fecha1Comision,
-            fecha2Comision,
+            fecha1ComisionDetalle,
+            fecha2ComisionDetalle,
           } = documento;
           const {
             subtotal,
@@ -305,12 +305,12 @@ export const GuardarButton = () => {
               tipoGasto.value === 17 || documento.detalleGasto.label
                 ? documento.detalleGasto.value
                 : "",
-            fecha1Comision: new Date(fecha1Comision).toISOString()
+            fecha1ComisionDetalle: new Date(fecha1ComisionDetalle).toISOString()
               .slice(0, 10)
               .split("-")
               .reverse()
               .join("-"),
-            fecha2Comision: new Date(fecha2Comision).toISOString()
+            fecha2ComisionDetalle: new Date(fecha2ComisionDetalle).toISOString()
               .slice(0, 10)
               .split("-")
               .reverse()
