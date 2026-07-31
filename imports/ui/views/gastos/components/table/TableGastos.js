@@ -39,6 +39,7 @@ import {
   limpiarCadenaXML,
   validarMismoMesAnioDocumentosIANSA,
 } from "../../../../../utils/utils";
+import { format } from "date-fns";
 
 export const TableGastos = () => {
   const [proveedorSeleccionado, setProveedorSeleccionado] = useState("");
@@ -50,6 +51,8 @@ export const TableGastos = () => {
   const [xmlTempData, setXmlTempData] = useState(null);
   const [pdfTempData, setPdfTempData] = useState(null);
   const [tipoDocumento, setTipoDocumento] = useState("");
+  const [fecha1Comision, setFecha1Comision] = useState(format(new Date(), "yyyy-MM-dd"));
+  const [fecha2Comision, setFecha2Comision] = useState(format(new Date(), "yyyy-MM-dd"));
   const [importesData, setImportesData] = useState({
     fecha: "",
     folio: "",
@@ -107,6 +110,11 @@ export const TableGastos = () => {
   };
 
   const clientesOptions = async (inputValue) => {
+    if (!plazaSeleccionada || !selectedRepresentante) {
+      toastr.error("Seleccione la plaza y el representante");
+      return [];
+    }
+
     if (inputValue.length >= 1) {
       try {
         const clientes = await ClientesService.getAllByName({
@@ -644,12 +652,79 @@ export const TableGastos = () => {
 
   const handleTipoDocumentoChange = (selectedOption) => {
     setTipoDocumento(selectedOption);
+    setTipoGastoSeleccionado({ value: 17, label: "ATENCION A CLIENTES" });
+    setFecha1Comision(fecha1);
+    setFecha2Comision(fecha2);
+  };
+
+  const handleFecha1Change = (index, value) => {
+    try {
+      if (estatus.estatus !== "Nuevo") {
+        return;
+      }
+
+      if (index !== undefined) {
+        if (!value) {
+          toastr.error("Elija una fecha válida");
+          return;
+        }
+
+        const documentoSeleccionado = documentos[index];
+
+        if (value > documentoSeleccionado.fecha2Comision) {
+          toastr.error("La fecha inicial no puede ser mayor a la fecha final");
+          return;
+        }
+
+        setDocumentos(
+          documentos.map((doc, i) =>
+            i === index ? { ...doc, fecha1Comision: value } : doc
+          )
+        );
+      }
+    }
+    catch (error) {
+      toastr.error("Error al actualizar la fecha inicial del renglón " + index);
+      console.error("Error al actualizar la fecha inicial del renglón " + index, error);
+    }
+  };
+
+  const handleFecha2Change = (index, value) => {
+    try {
+      if (estatus.estatus !== "Nuevo") {
+        return;
+      }
+
+      if (index !== undefined) {
+        if (!value) {
+          toastr.error("Elija una fecha válida");
+          return;
+        }
+
+        const documentoSeleccionado = documentos[index];
+
+        if (value < documentoSeleccionado.fecha1Comision) {
+          toastr.error("La fecha final no puede ser menor a la fecha inicial");
+          return;
+        }
+
+        setDocumentos(
+          documentos.map((doc, i) =>
+            i === index ? { ...doc, fecha2Comision: value } : doc
+          )
+        );
+      }
+    }
+    catch (error) {
+      toastr.error("Error al actualizar la fecha final del renglón " + index);
+      console.error("Error al actualizar la fecha final del renglón " + index, error);
+    }
   };
 
   const agregarDocumento = async () => {
     const clienteValidation =
       session.profile.WEB_REACT_CLIENTE_OBLIGATORIO ||
-      tipoGastoSeleccionado === 17;
+      tipoGastoSeleccionado.value === 17;
 
     if (
       !tipoDocumento ||
@@ -659,6 +734,16 @@ export const TableGastos = () => {
       (clienteValidation && !atencionClienteSeleccionado)
     ) {
       toastr.warning("Por favor, llene todos los campos requeridos.");
+      return;
+    }
+
+    if (!fecha1Comision || !fecha2Comision) {
+      toastr.error("Por favor, seleccione las fechas de comisión.");
+      return;
+    }
+
+    if (fecha1Comision > fecha2Comision) {
+      toastr.error("La fecha 1 no puede ser mayor a la fecha 2.");
       return;
     }
 
@@ -792,6 +877,8 @@ export const TableGastos = () => {
       xmlArchivo: xmlArchivoFinal,
       pdfArchivo: pdfArchivoFinal,
       descartado: false,
+      fecha1Comision,
+      fecha2Comision,
     };
 
     setDocumentos([...documentos, nuevoDocumento]);
@@ -855,6 +942,8 @@ export const TableGastos = () => {
       ret: "0.00",
       total: "0.00",
     });
+    setFecha1Comision(format(new Date(), "yyyy-MM-dd"));
+    setFecha2Comision(format(new Date(), "yyyy-MM-dd"));
   };
 
   const handleDescartar = async (documento) => {
@@ -951,7 +1040,7 @@ export const TableGastos = () => {
                   styles={customStyles}
                 />
               </th>
-              <th className="text-center">
+              <th className="text-center" hidden>
                 <Select
                   options={tipoGastos}
                   onChange={handleTipoGastoChange}
@@ -960,6 +1049,22 @@ export const TableGastos = () => {
                   }
                   value={tipoGastoSeleccionado}
                   placeholder="Tipo de gasto"
+                />
+              </th>
+              <th className="text-center">
+                <input
+                  className="form-control"
+                  type="date"
+                  value={fecha1Comision}
+                  onChange={(e) => setFecha1Comision(e.target.value)}
+                />
+              </th>
+              <th className="text-center">
+                <input
+                  className="form-control"
+                  type="date"
+                  value={fecha2Comision}
+                  onChange={(e) => setFecha2Comision(e.target.value)}
                 />
               </th>
               <th className="text-center">
@@ -974,7 +1079,7 @@ export const TableGastos = () => {
                   placeholder="Concepto"
                 />
               </th>
-              <th className="text-center" style={{ minWidth: "105px" }}>
+              <th className="text-center" style={{ minWidth: "105px" }} hidden>
                 {tipoGastoSeleccionado?.value === 1 && (
                   <ModalButton
                     color=""
@@ -1004,6 +1109,7 @@ export const TableGastos = () => {
                       }
                       value={atencionClienteSeleccionado}
                       styles={customStyles}
+                      noOptionsMessage={() => "Escriba % para buscar todos los clientes"}
                     />
 
                   )}
@@ -1114,9 +1220,11 @@ export const TableGastos = () => {
                   ModalComponent={ModalCatalogoProveedores}
                 />
               </th>
-              <th className="text-center">Tipo de gasto</th>
+              <th className="text-center" hidden>Tipo de gasto</th>
+              <th className="text-center">Fecha inicio</th>
+              <th className="text-center">Fecha fin</th>
               <th className="text-center">Concepto</th>
-              <th className="text-center">Detalle</th>
+              <th className="text-center" hidden>Detalle</th>
               <th className="text-center">
                 <span id="clienteHeader">Cliente</span>
                 <FontAwesomeIcon
@@ -1156,9 +1264,31 @@ export const TableGastos = () => {
                 <td className="text-center">{i + 1}</td>
                 <td>{doc?.tipoDocumento}</td>
                 <td>{doc?.proveedor?.label}</td>
-                <td>{doc?.tipoGasto?.label}</td>
-                <td>{doc?.concepto}</td>
+                <td hidden>{doc?.tipoGasto?.label}</td>
                 <td>
+                  <input
+                    id={`fecha1Comision-${i}`}
+                    className="form-control"
+                    type="date"
+                    value={doc?.fecha1Comision}
+                    disabled={estatus.estatus !== "Nuevo"}
+                    onChange={(e) => handleFecha1Change(i, e.target.value)}
+                    min={"2020-01-01"}
+                  />
+                </td>
+                <td>
+                  <input
+                    id={`fecha2Comision-${i}`}
+                    className="form-control"
+                    type="date"
+                    value={doc?.fecha2Comision}
+                    disabled={estatus.estatus !== "Nuevo"}
+                    onChange={(e) => handleFecha2Change(i, e.target.value)}
+                    min={"2020-01-01"}
+                  />
+                </td>
+                <td>{doc?.concepto}</td>
+                <td hidden>
                   {doc.tipoGasto.label === "GASOLINA" && (
                     <span className="">
                       {doc.tipoGasto.label}
@@ -1388,3 +1518,4 @@ export const TableGastos = () => {
     </div>
   );
 };
+

@@ -157,6 +157,8 @@ export const GastosFolioInput = () => {
           xmlArchivo: doc?.IDXML
             ? { id: doc.IDXML, origen: doc?.ORIGEN_XML }
             : "",
+          fecha1Comision: doc.FECHA1_COMISION ? format(new Date(doc.FECHA1_COMISION), "yyyy-MM-dd") : "",
+          fecha2Comision: doc.FECHA2_COMISION ? format(new Date(doc.FECHA2_COMISION), "yyyy-MM-dd") : "",
         };
       });
 

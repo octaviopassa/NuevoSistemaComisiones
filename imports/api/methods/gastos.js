@@ -209,7 +209,9 @@ Meteor.methods({
         @TIENE_TUA_DESGLOSADO='${datos.tua_desglosado}',
         @CLIENTE='${datos.cliente}',
         @ROWUID_PDF_EN_SERVIBOX='',
-        @COD_CTE='${datos.codigoCliente}'
+        @COD_CTE='${datos.codigoCliente}',
+        @FECHA1_COMISION='${datos.fecha1Comision}',
+        @FECHA2_COMISION='${datos.fecha2Comision}'
       `;
       conexiones.body_bdseleccionada.servidor = datos.servidor;
 

@@ -224,7 +224,7 @@ export const GuardarButton = () => {
           // toastr.warning("No se pudo realizar el grabado.");
           toastr.error(grabadoGlobal.message);
           setError(true);
-          console.error(grabadoGlobal);
+          console.error("Error al grabar el global:", grabadoGlobal);
           return;
         }
 
@@ -246,6 +246,8 @@ export const GuardarButton = () => {
             concepto,
             importes,
             xmlArchivo,
+            fecha1Comision,
+            fecha2Comision,
           } = documento;
           const {
             subtotal,
@@ -303,6 +305,16 @@ export const GuardarButton = () => {
               tipoGasto.value === 17 || documento.detalleGasto.label
                 ? documento.detalleGasto.value
                 : "",
+            fecha1Comision: new Date(fecha1Comision).toISOString()
+              .slice(0, 10)
+              .split("-")
+              .reverse()
+              .join("-"),
+            fecha2Comision: new Date(fecha2Comision).toISOString()
+              .slice(0, 10)
+              .split("-")
+              .reverse()
+              .join("-"),
           };
 
           const grabarRenglon = await GastosService.grabarRenglon(
