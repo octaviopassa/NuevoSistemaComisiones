@@ -80,9 +80,9 @@ La imagen utiliza Meteor 3.4 y Node 22 e incluye LibreOffice. MongoDB se ejecuta
 4. Configurar la dirección pública real de la aplicación, descargar la imagen y actualizar el contenedor:
 
    ```bash
-   export APP_ROOT_URL="https://tu-dominio"
-   docker compose -f docker-compose-prod.yml pull portalcomisiones-service
-   docker compose -f docker-compose-prod.yml up -d --no-build portalcomisiones-service
+   docker-compose -f docker-compose-prod.yml down
+   docker-compose -f docker-compose-prod.yml pull
+   docker-compose -f docker-compose-prod.yml up -d
    ```
 
    El contenedor publica la aplicación en el puerto `3011` del servidor.
