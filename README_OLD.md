@@ -50,9 +50,13 @@
 docker network create appnet
 2. Levantar los servicios:
 
---El mongo no hay que levantarlo ya que se levantó en el proyecto del portalgastos
-docker-compose -f .\docker-compose-mongo.yml up -d
-docker-compose -f .\docker-compose-prod.yml up -d 
+# El mongo no hay que levantarlo ya que se levantó en el proyecto del portalgastos
+docker-compose -f docker-compose-mongo.yml up -d
+
+# Levantar el servicio de la aplicación
+docker-compose -f docker-compose-prod.yml down
+docker-compose -f docker-compose-prod.yml pull
+docker-compose -f docker-compose-prod.yml up -d
 
 # Cuando ya se ejecuta la aplicación para que aparezca el menú de gastos
 
