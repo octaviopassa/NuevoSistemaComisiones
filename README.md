@@ -72,7 +72,7 @@ La imagen utiliza Meteor 3.4 y Node 22 e incluye LibreOffice. MongoDB se ejecuta
 3. Si MongoDB se administra con `docker-compose-mongo.yml`, iniciarlo conservando la ruta del volumen de datos existente en el servidor:
 
    ```bash
-   docker compose -f docker-compose-mongo.yml up -d mongo-service
+   docker-compose -f docker-compose-mongo.yml up -d
    ```
 
    La aplicación está configurada para conectarse a `mongodb://mongo-service:27017/comisiones` por la red `appnet`. Si el servidor utiliza otra conexión, ajustar `MONGO_URL` en `docker-compose-prod.yml`.
