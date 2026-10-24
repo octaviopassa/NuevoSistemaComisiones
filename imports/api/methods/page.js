@@ -3,7 +3,7 @@ import Pages from "../collections/Page";
 
 Meteor.methods({
   "pages.getAll": async () => {
-    const paginas = await Pages.find({}).fetch();
+    const paginas = await Pages.find({}).fetchAsync();
     return paginas;
   },
   "pages.save": async (data) => {
@@ -26,8 +26,8 @@ Meteor.methods({
     return modules;
   },
   "pages.getAllWithModules": async () => {
-    const pages = await Pages.find({}).fetch();
-    const modules = await Modulo.find({}).fetch();
+    const pages = await Pages.find({}).fetchAsync();
+    const modules = await Modulo.find({}).fetchAsync();
 
     for (const page of pages) {
       page.modules = modules.filter((m) => m.pageId == page._id);

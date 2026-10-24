@@ -4,7 +4,7 @@ import Role from "../../api/collections/Role";
 Meteor.startup(setup);
 
 async function setup() {
-  if (Page.find().count() === 0) {
+  if ((await Page.find().countAsync()) === 0) {
     const superAdmin = await Role.createRole("SuperAdmin");
     const adminRole = await Role.createRole("Admin");
     const gerenteRole = await Role.createRole("Gerente");

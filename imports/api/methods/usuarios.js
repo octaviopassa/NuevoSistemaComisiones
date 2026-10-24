@@ -6,31 +6,31 @@ import axios from "axios";
 
 Meteor.methods({
   "usuario.getAll": async () => {
-    const usuarios = Meteor.users.find().fetch();
+    const usuarios = (await Meteor.users.find().fetchAsync());
     for (const usuario of usuarios) {
-      const rol = RoleAssignment.findOne({
+      const rol = await RoleAssignment.findOneAsync({
         userId: usuario._id,
       });
       usuario.rol = rol.roleId;
-      usuario.rolObj = Role.findOne({ _id: rol.roleId });
+      usuario.rolObj = await Role.findOneAsync({ _id: rol.roleId });
     }
 
     return usuarios;
   },
   "usuarios.getById": async (usuarioId) => {
-    const usuario = await Meteor.users.findOne({ _id: usuarioId });
+    const usuario = await Meteor.users.findOneAsync({ _id: usuarioId });
     return usuario;
   },
   "usuario.getByDepartamento": async (depto_id) => {
-    const usuarios = Meteor.users
+    const usuarios = (await Meteor.users
       .find({ "profile.departamentoExterno_id": depto_id })
-      .fetch();
+      .fetchAsync());
     for (const usuario of usuarios) {
-      const rol = RoleAssignment.findOne({
+      const rol = await RoleAssignment.findOneAsync({
         userId: usuario._id,
       });
       usuario.rol = rol.roleId;
-      usuario.rolObj = Role.findOne({ _id: rol.roleId });
+      usuario.rolObj = await Role.findOneAsync({ _id: rol.roleId });
     }
 
     return usuarios;
@@ -39,20 +39,20 @@ Meteor.methods({
     try {
       let usuario_id;
       if (usuario._id == "") {
-        usuario_id = Accounts.createUser({
+        usuario_id = await Accounts.createUserAsync({
           username: usuario.username,
           password: usuario.password,
           profile: usuario.profile,
         });
       } else {
         usuario_id = usuario._id;
-        Meteor.users.update(
+        await Meteor.users.updateAsync(
           { _id: usuario._id },
           { $set: { profile: usuario.profile } }
         );
       }
 
-      Role.setUserRole(usuario_id, rol);
+      await Role.setUserRole(usuario_id, rol);
 
       return true;
     } catch (e) {
@@ -60,29 +60,29 @@ Meteor.methods({
       return false;
     }
   },
-  "usuario.updatePassword"(usuario_id, password) {
-    Accounts.setPassword(usuario_id, password, { logout: true });
+  async "usuario.updatePassword"(usuario_id, password) {
+    await Accounts.setPasswordAsync(usuario_id, password, { logout: true });
     return true;
   },
-  "usuario.getUsersByRole"(rol) {
+  async "usuario.getUsersByRole"(rol) {
     try {
-      const role = Role.findOne({ name: rol });
+      const role = await Role.findOneAsync({ name: rol });
 
-      const roles = RoleAssignment.find({ roleId: role._id }).fetch();
+      const roles = (await RoleAssignment.find({ roleId: role._id }).fetchAsync());
       let usuarios = [];
-      roles.map((rol) => {
-        let usuarioActual = Meteor.users.findOne({ _id: rol.userId });
+      for (const rol of roles) {
+        let usuarioActual = await Meteor.users.findOneAsync({ _id: rol.userId });
         usuarios.push(usuarioActual);
-      });
+      }
       return usuarios;
       //usuario = Meteor.users.findOne({ _id:  });
     } catch (e) {
       throw new Meteor.Error("404", "Hubo un error al obtener los usuarios");
     }
   },
-  "usuario.getUsersByCustomer"(customer) {
+  async "usuario.getUsersByCustomer"(customer) {
     try {
-      const usuarios = Meteor.users.find(customer).fetch();
+      const usuarios = (await Meteor.users.find(customer).fetchAsync());
 
       return usuarios;
       //usuario = Meteor.users.findOne({ _id:  });
@@ -90,9 +90,9 @@ Meteor.methods({
       throw new Meteor.Error("404", "Hubo un error al obtener los usuarios");
     }
   },
-  "usuario.getRole"(usuario_id) {
+  async "usuario.getRole"(usuario_id) {
     try {
-      return Meteor.roleAssignment.findOne({ "user._id": usuario_id });
+      return await RoleAssignment.findOneAsync({ userId: usuario_id });
     } catch (error) {
       console.error(error);
       throw new Meteor.Error("404", "Hubo un error al obtener los roles");
@@ -108,7 +108,7 @@ Meteor.methods({
     }
   },
   "usuario.cambiarIdioma": async (params) => {
-    Meteor.users.update(
+    await Meteor.users.updateAsync(
       { _id: params.userId },
       { $set: { "profile.idioma": params.idioma } }
     );
@@ -116,30 +116,30 @@ Meteor.methods({
     return true;
   },
   "usuario.cambiarEstatus": async (usuario_id) => {
-    const usuario = Meteor.users.findOne({ _id: usuario_id });
-    Meteor.users.update(
+    const usuario = await Meteor.users.findOneAsync({ _id: usuario_id });
+    await Meteor.users.updateAsync(
       { _id: usuario_id },
       { $set: { "profile.estatus": !usuario.profile.estatus } }
     );
 
     return true;
   },
-  "usuario.savePermisos": ({ userId: _id, permissions }) => {
-    Meteor.users.update({ _id }, { $set: { permissions } });
+  "usuario.savePermisos": async ({ userId: _id, permissions }) => {
+    await Meteor.users.updateAsync({ _id }, { $set: { permissions } });
     return true;
   },
-  "usuario.getPermisosByUserId": (p) => {
-    return Permisos.find({
+  "usuario.getPermisosByUserId": async (p) => {
+    return (await Permisos.find({
       usuario_id: p.usuario_id,
       cliente_id: p.cliente_id,
-    }).fetch();
+    }).fetchAsync());
   },
   "usuarios.createUser": async (datos) => {
     try {
       const usuario = datos.empleado;
       const rol = datos.rol;
 
-      profile = {
+      const profile = {
         nombreCompleto:
           usuario.nombre.trim() +
           " " +
@@ -160,22 +160,22 @@ Meteor.methods({
 
       let usuario_id;
       if (usuario._id == "" || usuario._id == undefined) {
-        usuario_id = await Accounts.createUser({
+        usuario_id = await Accounts.createUserAsync({
           username: usuario.cEmpleadoExternoId,
           password: usuario.cEmpleadoExternoId,
           profile: profile,
         });
         const admin_role = await Role.createRole(rol);
-        Role.setUserRole(usuario_id, admin_role);
+        await Role.setUserRole(usuario_id, admin_role);
       } else {
         usuario_id = usuario._id;
-        await Meteor.users.update(
+        await Meteor.users.updateAsync(
           { _id: usuario._id },
           { $set: { profile: profile } }
         );
 
         const admin_role = await Role.createRole("Gerente");
-        Role.setUserRole(usuario_id, admin_role);
+        await Role.setUserRole(usuario_id, admin_role);
       }
 
       return true;
@@ -185,8 +185,8 @@ Meteor.methods({
   },
   "usuarios.saveBitacora": async (bitacora) => {
     try {
-      await Bitacoras.insert(bitacora);
-      await Meteor.users.update(
+      await Bitacoras.insertAsync(bitacora);
+      await Meteor.users.updateAsync(
         { _id: bitacora.usuarioId },
         { $set: { "profile.fechaUltimaSesion": new Date() } }
       );
@@ -197,7 +197,7 @@ Meteor.methods({
   },
   "usuarios.getBitacoras": async (data) => {
     try {
-      const bitacoras = await Bitacoras.find(data).fetch();
+      const bitacoras = await Bitacoras.find(data).fetchAsync();
 
       return bitacoras;
     } catch (e) {
@@ -224,19 +224,19 @@ Meteor.methods({
         const userData = respuesta[0];
 
         // Primero verificamos si existe el usuario con la combinación específica
-        let existingUser = Meteor.users.findOne({
+        let existingUser = await Meteor.users.findOneAsync({
           username: data.params.nombre_usuario,
           "profile.baseDatos": data.BASE_DATOS,
         });
 
         // Verificamos si existe el usuario con el mismo username pero diferente base de datos
-        const userWithSameUsername = Meteor.users.findOne({
+        const userWithSameUsername = await Meteor.users.findOneAsync({
           username: data.params.nombre_usuario,
         });
 
         if (!existingUser && userWithSameUsername) {
           // Si existe el usuario pero con otra base de datos, creamos una nueva entrada
-          await Meteor.users.update(
+          await Meteor.users.updateAsync(
             { _id: userWithSameUsername._id },
             {
               $set: {
@@ -253,12 +253,12 @@ Meteor.methods({
           const userId = userWithSameUsername._id;
 
           const admin_role = await Role.createRole("Admin");
-          Role.setUserRole(userId, admin_role);
+          await Role.setUserRole(userId, admin_role);
 
-          existingUser = Meteor.users.findOne(userId);
+          existingUser = await Meteor.users.findOneAsync(userId);
         } else if (!existingUser) {
           // Si no existe el usuario en absoluto, lo creamos
-          const userId = Accounts.createUser({
+          const userId = await Accounts.createUserAsync({
             username: data.params.nombre_usuario,
             password: data.params.contrasenia,
             profile: {
@@ -271,13 +271,13 @@ Meteor.methods({
           });
 
           const admin_role = await Role.createRole("Admin");
-          Role.setUserRole(userId, admin_role);
+          await Role.setUserRole(userId, admin_role);
 
-          existingUser = Meteor.users.findOne(userId);
+          existingUser = await Meteor.users.findOneAsync(userId);
         }
         else if (existingUser && userWithSameUsername) {
           // Si existe el usuario con la misma base de datos, actualizamos sus datos
-          Meteor.users.update(
+          await Meteor.users.updateAsync(
             { _id: existingUser._id },
             {
               $set: {
@@ -295,7 +295,7 @@ Meteor.methods({
 
         // Generar un token de inicio de sesión para el usuario
         const stampedLoginToken = Accounts._generateStampedLoginToken();
-        Accounts._insertLoginToken(existingUser._id, stampedLoginToken);
+        await Accounts._insertLoginToken(existingUser._id, stampedLoginToken);
 
         return {
           success: true,

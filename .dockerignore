@@ -1,2 +1,8 @@
 node_modules
-.meteor/local
+.meteor/local*
+.git
+dump
+data
+npm-debug.log*
+.env
+.env.*

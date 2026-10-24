@@ -1,16 +1,7 @@
 import $ from "jquery";
-Meteor.callSync = (method, params) => {
-	return new Promise((resolve, reject) => {
-		Meteor.call(method, params, (err, res) => {
-			if (err) {
-				return reject(err);
-			}
-			resolve(res);
-		});
-	});
-};
+Meteor.callSync = (method, ...params) => Meteor.callAsync(method, ...params);
 
-ocultarDropdown = () => {
+const ocultarDropdown = () => {
 	$("div.dropdown-menu").removeClass("show");
 	$("div.btn-group.dropleft").removeClass("show");
 };

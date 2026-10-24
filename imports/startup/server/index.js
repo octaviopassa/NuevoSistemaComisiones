@@ -1,16 +1,7 @@
 import moment from "moment-timezone";
 moment.tz.setDefault("America/Mazatlan");
 
-Meteor.callSync = (method, params) => {
-  return new Promise((resolve, reject) => {
-    Meteor.call(method, params, (err, res) => {
-      if (err) {
-        return reject(err);
-      }
-      resolve(res);
-    });
-  });
-};
+Meteor.callSync = (method, ...params) => Meteor.callAsync(method, ...params);
 
 Accounts.validateLoginAttempt((options) => {
   if (options.user && options.user.profile && !options.user.profile.estatus) {

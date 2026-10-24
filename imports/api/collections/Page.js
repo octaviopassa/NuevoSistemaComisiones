@@ -1,21 +1,22 @@
 import Role from "./Role";
+import { Mongo } from "meteor/mongo";
 import Modulo from "./Modulo";
 
 const Pages = new Mongo.Collection("pages");
 
 Pages.createPage = async (name, path) => {
-	const page = await Pages.findOne({ path });
+	const page = await Pages.findOneAsync({ path });
 	// if (page) return page._id;
 
-	const id = Pages.insert({ name, path, modules: [] });
+	const id = await Pages.insertAsync({ name, path, modules: [] });
 	return id;
 };
 
 Pages.updatePage = async (name, path, pageId) => {
-	const page = await Pages.findOne({ _id: pageId });
+	const page = await Pages.findOneAsync({ _id: pageId });
 	if (page == undefined) return;
 
-	await Pages.update({ _id: pageId }, { name, path, modules: [] });
+	await Pages.updateAsync({ _id: pageId }, { name, path, modules: [] });
 
 	return pageId;
 };
@@ -24,10 +25,10 @@ Pages.setModules = async (pageId, modules) => {
 	try {
 		let modulesId = [];
 
-		await Modulo.remove({ pageId });
+		await Modulo.removeAsync({ pageId });
 
 		for (const module of modules) {
-			const moduleId = await Modulo.insert({
+			const moduleId = await Modulo.insertAsync({
 				pageId,
 				name: module.name,
 				description: module.description,
@@ -35,7 +36,7 @@ Pages.setModules = async (pageId, modules) => {
 			modulesId.push(moduleId);
 		}
 
-		return await Pages.update(
+		return await Pages.updateAsync(
 			{ _id: pageId },
 			{ $set: { modules: modulesId } }
 		);
@@ -52,17 +53,17 @@ Pages.createDefaultModules = async (page) => {
 };
 
 Pages.addModule = async (pageId, name, description) => {
-	const page = await Pages.findOne({ _id: pageId });
+	const page = await Pages.findOneAsync({ _id: pageId });
 	if (page == null) return;
 
 	const data = { pageId, name, description };
-	const module = await Modulo.findOne(data);
+	const module = await Modulo.findOneAsync(data);
 
 	if (module == undefined) {
-		const moduleId = Modulo.insert(data);
+		const moduleId = await Modulo.insertAsync(data);
 		page.modules.push(moduleId);
 
-		await Pages.update({ _id: pageId }, { $set: { modules: page.modules } });
+		await Pages.updateAsync({ _id: pageId }, { $set: { modules: page.modules } });
 
 		return moduleId;
 	}
@@ -72,7 +73,7 @@ Pages.addModule = async (pageId, name, description) => {
 
 Pages.getModules = async (pageId) => {
 	let modules = [];
-	modules = await Modulo.find({ pageId }).fetch();
+	modules = await Modulo.find({ pageId }).fetchAsync();
 
 	return modules;
 };

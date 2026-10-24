@@ -3,10 +3,10 @@ import Role from "../../api/collections/Role";
 Meteor.startup(initialLoad);
 
 async function initialLoad() {
-  if (Meteor.users.find().count() === 0) {
+  if ((await Meteor.users.find().countAsync()) === 0) {
     // Crear los roles
     const superAdmin_role = await Role.createRole("SuperAdmin");
-    const usuario_id = Accounts.createUser({
+    const usuario_id = await Accounts.createUserAsync({
       username: "roberto",
       password: "roberto",
       profile: {
@@ -16,6 +16,6 @@ async function initialLoad() {
         estatus: true,
       },
     });
-    Role.setUserRole(usuario_id, superAdmin_role);
+    await Role.setUserRole(usuario_id, superAdmin_role);
   }
 }

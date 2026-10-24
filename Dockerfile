@@ -1,86 +1,93 @@
-#1.Etapa de construcción (builder):
-# Build stage
-# Usa una imagen base especializada para construir aplicaciones Meteor (versión 2.15)
-FROM zcloudws/meteor-build:2.15 as builder
+# Versión principal de Node compartida por las tres etapas.
+# Meteor 3.4 requiere Node 22. La versión menor la proporciona la etiqueta de Node.
+ARG NODE_VERSION=22
 
-# Agregar argumento para el ambiente
+# 1. Etapa de construcción (builder).
+# Debian Bookworm con Node y herramientas para instalar dependencias y compilar Meteor.
+FROM node:${NODE_VERSION}-bookworm AS builder
+# Estos argumentos permiten seleccionar Meteor y la configuración de la aplicación.
+ARG METEOR_VERSION=3.4
 ARG NODE_ENV=production
 
-# Cambia temporalmente a usuario root para crear directorios y establecer permisos
-USER root
+# curl descarga el instalador oficial; los certificados permiten conexiones HTTPS.
+# Python, make y g++ permiten compilar dependencias nativas de Node.
+# Se eliminan los índices de apt para reducir el espacio de esta capa.
+RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates python3 make g++ \
+    && rm -rf /var/lib/apt/lists/*
+# La instalación de Meteor y la compilación se ejecutan con el usuario node.
+USER node
+WORKDIR /home/node
+# Instala la versión indicada de Meteor dentro del directorio personal del usuario.
+RUN curl -fsSL "https://install.meteor.com/?release=${METEOR_VERSION}" -o /tmp/install-meteor.sh \
+    && sh /tmp/install-meteor.sh \
+    && rm /tmp/install-meteor.sh
+# Hace que el comando meteor esté disponible durante la construcción.
+ENV PATH="/home/node/.meteor:${PATH}"
+WORKDIR /home/node/source
+# Copia el código con permisos del usuario node. .dockerignore excluye, entre otros,
+# node_modules, los datos locales y las compilaciones anteriores de Meteor.
+COPY --chown=node:node . .
+# Comprueba que la versión del proyecto coincida con la instalada.
+# tr elimina los finales de línea de Windows antes de comparar .meteor/release.
+# En producción se utiliza config.prod.js como configuración de la aplicación.
+# npm ci instala las versiones del package-lock.json y utiliza también .npmrc.
+# meteor build genera el bundle desplegable; --server-only omite aplicaciones
+# móviles, pero conserva el cliente web que sirve esta aplicación.
+RUN test "$(tr -d '\r\n' < .meteor/release)" = "METEOR@${METEOR_VERSION}" \
+    && if [ "$NODE_ENV" = "production" ]; then cp imports/utils/config.prod.js imports/utils/config.js; fi \
+    && meteor npm ci \
+    && meteor build --directory /home/node/build --server-only
 
-RUN mkdir -p /build/source && chown zcloud:zcloud -R /build
+# 2. Etapa de dependencias del servidor (server-dependencies).
+# Usa la misma versión principal de Node y distribución Linux que las otras etapas
+# para instalar las dependencias del bundle, incluidas las que requieren compilación.
+FROM node:${NODE_VERSION}-bookworm AS server-dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends python3 make g++ \
+    && rm -rf /var/lib/apt/lists/*
+WORKDIR /app/programs/server
+COPY --from=builder /home/node/build/bundle/programs/server/ ./
+# Instala las dependencias de ejecución del servidor generado por Meteor.
+# Las herramientas de compilación de esta etapa no se copian a la imagen final.
+RUN npm install --omit=dev
 
-# Luego vuelve al usuario no privilegiado 'zcloud' para seguridad
-USER zcloud
+# 3. Etapa de ejecución (runtime).
+# La variante slim reduce la imagen base. El bundle funciona con Node directamente,
+# por lo que esta etapa no necesita instalar la herramienta de desarrollo Meteor.
+FROM node:${NODE_VERSION}-bookworm-slim AS runtime
+# LibreOffice dispone de un directorio personal escribible para su perfil.
+ENV NODE_ENV=production PORT=3000 HOME=/home/node
+# LibreOffice convierte los reportes a PDF; las fuentes se usan al renderizarlos.
+# --no-install-recommends evita paquetes recomendados adicionales y la limpieza
+# de los índices de apt reduce el espacio ocupado por la capa.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends libreoffice fonts-dejavu-core ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+WORKDIR /app
+# Copia el bundle y después incorpora las dependencias preparadas del servidor.
+# Los archivos pertenecen al usuario node, que ejecutará la aplicación.
+COPY --from=builder --chown=node:node /home/node/build/bundle/ ./
+COPY --from=server-dependencies --chown=node:node /app/programs/server/ ./programs/server/
+USER node
+# Documenta el puerto interno. Docker Compose publica este puerto en el servidor.
+EXPOSE 3000
+# Arranca el bundle sin depender de un script de inicio de una imagen de terceros.
+CMD ["node", "main.js"]
 
-# Copia todo el código fuente al contenedor, manteniendo los permisos del usuario zcloud
-COPY --chown=zcloud:zcloud . /build/source
-
-# Copia la configuración correcta según el ambiente
-RUN if [ "$NODE_ENV" = "production" ]; then \
-    cp /build/source/imports/utils/config.prod.js /build/source/imports/utils/config.js; \
-    fi
-
-# Instala dependencias NPM y construye la aplicación Meteor en el directorio /build/app-build
-RUN cd /build/source && \
-    meteor npm install && \
-    meteor build --directory ../app-build
-
-#2.Etapa de ejecución:
-# Clean image with builded app
-# Usa una imagen más ligera que incluye Node.js, MongoDB y el runtime necesario para Meteor
-FROM zcloudws/meteor-node-mongodb-runtime:2.15
-
-# Install LibreOffice
-#3.Instalación de dependencias del sistema:
-# Instala LibreOffice (probablemente necesario para generar reportes/documentos)
-# Limpia la caché de paquetes para reducir el tamaño de la imagen
-USER root
-RUN apt-get update && \
-    apt-get install -y libreoffice && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
-#4.Preparación de la aplicación:
-USER zcloud
-
-# Copia la aplicación construida desde la etapa builder
-COPY --from=builder /build/app-build/bundle /home/zcloud/app
-
-# Instala las dependencias del servidor
-RUN cd /home/zcloud/app/programs/server && npm install
-
-#5.Configuración final:
-# Establece el directorio de trabajo
-# Usa un script de inicio proporcionado por la imagen base    
-WORKDIR /home/zcloud/app
-
-# Entrypoint from image
-ENTRYPOINT ["/scripts/startup.sh"]
-
-#                                   Explicación detallada
-# 1. Etapa de construcción (builder):
-# Usa una imagen base especializada para construir aplicaciones Meteor (versión 2.15)
-# Crea directorios y establece permisos como root, luego vuelve al usuario 'zcloud'
-# Copia el código fuente y mantiene los permisos
-# Instala dependencias NPM y construye la aplicación Meteor
-
-# 2. Etapa de ejecución:
-# Usa una imagen más ligera con Node.js, MongoDB y runtime para Meteor
-# Instala LibreOffice (probablemente para generar reportes/documentos)
-# Limpia la caché de paquetes para reducir el tamaño de la imagen
-
-# 3. Preparación de la aplicación:
-# Copia la aplicación construida desde la etapa builder
-# Instala las dependencias del servidor
-# Establece el directorio de trabajo y script de inicio
-
-# Este Dockerfile sigue mejores prácticas como:
-# Uso de multi-stage builds para reducir tamaño final
-# Uso de usuario no root cuando es posible
-# Limpieza de caché de paquetes
-# Separación clara entre etapa de construcción y ejecución
-
-# El Dockerfile está configurado para una aplicación Meteor que probablemente genera documentos/reportes usando LibreOffice. 
-# La estructura sigue un flujo estándar para aplicaciones Meteor con Node.js y MongoDB.
+# Explicación detallada del despliegue:
+# 1. builder instala Meteor 3.4, selecciona la configuración de producción y
+#    transforma el código fuente en un bundle con servidor y cliente web.
+# 2. server-dependencies prepara las dependencias de ejecución con Node 22.
+# 3. runtime contiene Node 22, el bundle y LibreOffice. Las herramientas de
+#    construcción y la instalación de Meteor permanecen en etapas anteriores.
+# 4. MongoDB no se instala en esta imagen: se ejecuta en un contenedor o servidor
+#    separado. MONGO_URL indica a la aplicación dónde está su base de datos.
+# 5. ROOT_URL debe contener la dirección pública de la aplicación. Estas variables
+#    se proporcionan al iniciar el contenedor mediante Docker Compose.
+# 6. La aplicación escucha en el puerto interno 3000; docker-compose-prod.yml lo
+#    publica en el puerto 3011 del servidor y conecta los servicios por appnet.
+# 7. El usuario node ejecuta la aplicación sin privilegios de root. LibreOffice
+#    utiliza su perfil de usuario y los directorios temporales para las conversiones.
+#
+# La construcción en varias etapas evita incluir herramientas de desarrollo en la
+# imagen final. LibreOffice y las dependencias de la aplicación también contribuyen
+# al tamaño final, aunque se utilice una imagen base slim.

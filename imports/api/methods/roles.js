@@ -3,7 +3,7 @@ import Role from "../collections/Role";
 Meteor.methods({
   "roles.getAll": async () => {
     try {
-      const roles = await Role.find({}).fetch();
+      const roles = await Role.find({}).fetchAsync();
       return roles;
     } catch (error) {
       console.error(error);
@@ -34,7 +34,7 @@ Meteor.methods({
   "roles.modulesId": async ({ roleId }) => {
     let modulesId = [];
     try {
-      const role = await Role.find({ _id: roleId }).fetch();
+      const role = await Role.find({ _id: roleId }).fetchAsync();
 
       modulesId = role[0].modules;
     } catch (error) {
@@ -49,7 +49,7 @@ Meteor.methods({
     const roles = await Role.find(
       { _id: { $in: role.subroles } },
       { fields: { name: 1 } }
-    ).fetch();
+    ).fetchAsync();
     return roles;
   },
   "roles.getUserRole": async (userId, populate = false) => {
